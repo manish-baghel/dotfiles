@@ -1,8 +1,9 @@
 # My Dotfiles
 
 ## Vim
-    - Put
-        ```
+    - Put below content into ~/.vimrc
+        
+        ```vim
         source Path/to/dotfiles/vim/ultimate_rc.vim
         source Path/to/dotfiles/vim/plugins_config.vim
         ```
