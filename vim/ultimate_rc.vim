@@ -1,12 +1,18 @@
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Author:
 "       Manish Baghel - @manish-baghel
 "
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Plugins
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" This is a life saver 
+" it should work but for some reason 
+" holding down arrow still act as inserting B
+set nocompatible
+
 call plug#begin('~/.vim/plugged')
 
 Plug 'scrooloose/nerdtree'
@@ -23,6 +29,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-commentary'
 Plug 'leafgarland/typescript-vim'
 Plug 'neoclide/vim-jsx-improve'
+Plug 'mattn/emmet-vim'
 
 call plug#end()
 
@@ -49,10 +56,13 @@ au FocusGained,BufEnter * checktime
 "   - :W sudo save
 nmap <leader>w :w!<cr>
 command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
+command! Q execute 'q'
 
 " Fast editing and reloading of vimrc
 map <leader>e :e! ~/dotfiles/vim/ultimate_rc.vim<cr>
+map <leader>E :e! ~/dotfiles/vim/plugins_config.vim<cr>
 autocmd! bufwritepost ~/dotfiles/vim/ultimate_rc.vim source ~/.vimrc
+autocmd! bufwritepost ~/dotfiles/vim/plugins_config.vim source ~/.vimrc
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " VIM UI Config
@@ -60,10 +70,11 @@ autocmd! bufwritepost ~/dotfiles/vim/ultimate_rc.vim source ~/.vimrc
 
 " Wild Menu
 set wildmenu
-set wildignore+=*.o,*~,*pyc,*/.DS_Store,*/.git,*/node_modules
+set wildignore+=*.o,*~,*pyc,*/.DS_Store,*/.git,**/node_modules/**
 
 " Current position, cmd bar height, statusline
 set ruler
+set colorcolumn=100
 set cmdheight=1
 set laststatus=2
 "set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
@@ -135,7 +146,6 @@ catch
 endtry
 
 " find on steroids
-set nocompatible
 set path+=**
 
 " ctags if needed
@@ -196,8 +206,8 @@ map <C-k> <C-W>k
 map <C-l> <C-W>l
 
 " buffer movements
-map <leader>l :bnext<cr>
-map <leader>n :bprevious<cr>
+map <leader>/ :bnext<cr>
+map <leader>. :bprevious<cr>
 
 " closing buffers - current and all
 map <leader>bd :Bclose<cr>:tabclose<cr>gT
@@ -254,7 +264,7 @@ fun! CleanExtraSpaces()
 endfun
 
 if has("autocmd")
-    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.coffee :call CleanExtraSpaces()
+    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh :call CleanExtraSpaces()
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -281,7 +291,7 @@ au FileType python map <buffer> <leader>D ?def
 
 
 " JavaScript section
-" au BufNewFile,BufRead *.js set syntax=javascript.jsx
+"au BufNewFile,BufRead *.js set syntax=javascript.jsx
 
 au FileType javascript map <leader>k :call JavaScriptFold()<CR>
 au FileType javascript setl fen

@@ -12,7 +12,7 @@ map <leader>o :BufExplorer<cr>
 " => MRU plugin
 """"""""""""""""""""""""""""""
 let MRU_Max_Entries = 400
-map <leader>f :MRU<CR>
+map <leader>m :MRU<CR>
 
 
 """"""""""""""""""""""""""""""
@@ -75,10 +75,33 @@ nnoremap <silent> <leader>z :Goyo<cr>
 let g:gitgutter_enabled=0
 nnoremap <silent> <leader>d :GitGutterToggle<cr>
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Emmet
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let g:user_emmet_mode='a'    "enable all function in all mode
+let g:user_emmet_settings = { 
+\  'html': {                                                                                                                                                      
+\    'snippets': {                                                                                                                                                
+\      'html:5': '!!!+html>(head>(meta[charset=${charset}]+meta[name="viewport" content="width=device-width,initial-scale=1.0"]+meta[http-equiv="X-UA-Compatible" content="ie=edge"]+title +body'
+            \}
+ \},
+\  'javascript' : {
+\      'extends' : 'jsx',
+\  },
+\}
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => FZF
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+map <leader>s :FZF<cr>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Ack searching and cope displaying
 "    requires ack.vim - it's much better than vimgrep/grep
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Use the the_silver_searcher if possible (much faster than Ack)
 if executable('ag')
@@ -129,7 +152,11 @@ set shortmess+=c
 
 " Always show the signcolumn, otherwise it would shift the text each time
 " diagnostics appear/become resolved.
-set signcolumn=number
+if has('nvim')
+    set signcolumn=auto:1
+else
+    set signcolumn=number
+end
 
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
@@ -188,6 +215,7 @@ nmap <leader>rn <Plug>(coc-rename)
 " Formatting selected code.
 xmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
+command! -nargs=0 Prettier :CocCommand prettier.formatFile " prettier for js and ts
 
 augroup mygroup
   autocmd!
@@ -241,8 +269,12 @@ nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
 " Search workspace symbols.
 nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
 " Do default action for next item.
-nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+" nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 " Do default action for previous item.
-nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+" nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+
+" key bindings for next and prev error/warnings
+noremap <silent> <space>k :execute "normal \<Plug>(coc-diagnostic-next)"<CR>
+noremap <silent> <space>j :execute "normal \<Plug>(coc-diagnostic-prev)"<CR>
