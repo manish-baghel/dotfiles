@@ -275,6 +275,9 @@ nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
 " Resume latest coc list.
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
+" Coc Explorer
+nnoremap <leader>aa :<C-u>CocCommand explorer<cr>
+
 " key bindings for next and prev error/warnings
 noremap <silent> <space>k :execute "normal \<Plug>(coc-diagnostic-next)"<CR>
 noremap <silent> <space>j :execute "normal \<Plug>(coc-diagnostic-prev)"<CR>

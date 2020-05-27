@@ -10,7 +10,8 @@
 
 " This is a life saver 
 " it should work but for some reason 
-" holding down arrow still act as inserting B
+" holding down arrow still act as inserting B in vim
+" Works fine in nvim
 set nocompatible
 
 call plug#begin('~/.vim/plugged')
@@ -71,6 +72,11 @@ autocmd! bufwritepost ~/dotfiles/vim/plugins_config.vim source ~/.vimrc
 " Wild Menu
 set wildmenu
 set wildignore+=*.o,*~,*pyc,*/.DS_Store,*/.git,**/node_modules/**
+set wildignore+=node_modules
+set wildignore+=**/node_modules
+set wildignore+=node_modules/**
+set wildignore+=**/node_modules/**
+set wildignore+=*/node_modules/*
 
 " Current position, cmd bar height, statusline
 set ruler
@@ -130,13 +136,13 @@ set background=dark
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Prevent unloading a buffer when it is abandoned
-set hid
+set hidden
 
 set nobackup
 set noswapfile
 
 set encoding=utf8 " utf8 as standard encoding
-set ffs=unix,dos,mac " unix as standard file type
+set fileformats=unix,dos,mac " unix as standard file type
 
 " persistent undo
 try
@@ -145,7 +151,7 @@ try
 catch
 endtry
 
-" find on steroids
+" find on steroids [ this is a crazy option]
 set path+=**
 
 " ctags if needed
@@ -175,11 +181,11 @@ set smarttab
 set shiftwidth=4
 set tabstop=4
 
-set lbr
-set tw=500
+set linebreak
+set textwidth=500
 
-set ai
-set si
+set autoindent
+set smartindent
 set wrap
 
 
@@ -240,7 +246,7 @@ map <leader>cd :cd %:p:h<cr>:pwd<cr>
 " Specify the behavior when switching between buffers 
 try
   set switchbuf=useopen,usetab,newtab
-  set stal=2
+  set showtabline=2
 catch
 endtry
 
