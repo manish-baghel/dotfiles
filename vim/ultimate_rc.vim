@@ -31,6 +31,7 @@ Plug 'tpope/vim-commentary'
 Plug 'leafgarland/typescript-vim'
 Plug 'neoclide/vim-jsx-improve'
 Plug 'mattn/emmet-vim'
+Plug 'honza/vim-snippets'
 
 call plug#end()
 
@@ -320,7 +321,11 @@ function! JavaScriptFold()
     setl foldtext=FoldText()
 endfunction
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Nvim providers
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+let g:python3_host_prog = '/Library/Frameworks/Python.framework/Versions/3.7/bin/python3'
 
 
 
