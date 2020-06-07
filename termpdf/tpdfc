@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+# this is a script for controlling running instances of termpdf
+
+function help(){
+    echo "$(basename $0) usage:"
+    echo "    $(basename $0) <option> <termpdf command>"
+    echo "    options:"
+    echo "       -n N    if there is more than one instance of termpdf"
+    echo "               running, communicate with the Nth instance."
+    echo "               (As ordered by pgrep -f termpdf)"
+    echo "       -p PID  communicate with the instance of termpdf with"
+    echo "               the specified PID"
+    echo "       -l      list all running instances of termpdf"
+    echo "       -h      see this help"
+    echo
+    echo "    <termpdf command> can be any command available from the"
+    echo "    command mode within termpdf. E.g., 'goto 5' will flip to"
+    echo "    page 5."
+}
+
+function list_instances(){
+    echo "N PID FILE"
+    pgrep -l -f termpdf | cat -n | awk '{print $1,$2,$5}' | column -t
+}
+
+n=1
+
+if [[ "$1" == "-h" || "$1" == "--help" || $# -eq 0 ]]; then
+    help
+    exit
+fi
+
+if ! pgrep -f termpdf &>/dev/null ; then
+    echo "No instances of termpdf to control."
+    exit
+fi
+
+if [[ "$1" == "-l" ]]; then
+    list_instances
+    exit
+fi
+
+if [[ "$1" == '-n' ]]; then
+    shift
+    if [[ "$1" =~ ^[0-9]+$ ]]; then
+        n="$1"
+        shift
+    else
+        help
+        exit 1
+    fi
+fi
+
+if [[ "$1" == '-p' ]]; then
+    shift
+    if [[ "$1" =~ ^[0-9]+$ ]]; then
+        termpdfPID="$1"
+        shift
+    else
+        help
+        exit 1
+    fi
+else
+    termpdfPID=$(pgrep -f termpdf | sed $n'q;d')
+    if [[ $termpdfPID == "" ]]; then
+        echo "No instance $n of termpdf to control."
+        list_instances
+    fi
+fi
+
+signal_file="$HOME/.config/termpdf/sigusr1"
+echo "$@" > "$signal_file"
+kill -SIGUSR1 $termpdfPID

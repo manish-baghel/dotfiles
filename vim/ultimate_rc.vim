@@ -11,7 +11,7 @@
 " This is a life saver 
 " it should work but for some reason 
 " holding down arrow still act as inserting B in vim
-" Works fine in nvim
+" Works fine in nvim [ but there are .1 or .2% cases where it fails]
 set nocompatible
 
 call plug#begin('~/.vim/plugged')
@@ -32,6 +32,7 @@ Plug 'leafgarland/typescript-vim'
 Plug 'neoclide/vim-jsx-improve'
 Plug 'mattn/emmet-vim'
 Plug 'honza/vim-snippets'
+Plug 'norcalli/nvim-colorizer.lua' 
 
 call plug#end()
 
@@ -73,18 +74,18 @@ autocmd! bufwritepost ~/dotfiles/vim/plugins_config.vim source ~/.vimrc
 " Wild Menu
 set wildmenu
 set wildignore+=*.o,*~,*pyc,*/.DS_Store,*/.git,**/node_modules/**
-set wildignore+=node_modules
-set wildignore+=**/node_modules
-set wildignore+=node_modules/**
-set wildignore+=**/node_modules/**
-set wildignore+=*/node_modules/*
+" set wildignore+=node_modules
+" set wildignore+=**/node_modules
+" set wildignore+=node_modules/**
+" set wildignore+=**/node_modules/**
+" set wildignore+=*/node_modules/*
 
 " Current position, cmd bar height, statusline
 set ruler
 set colorcolumn=100
 set cmdheight=1
 set laststatus=2
-"set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
+" set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
 
 " backspace config as it should be
 set backspace=eol,start,indent
@@ -106,7 +107,7 @@ set mat=2
 
 set magic " Regex magic
 
-"disabling annoying sounds in error
+"disabling annoying sounds on error
 set noerrorbells
 set novisualbell
 set t_vb=
@@ -132,6 +133,9 @@ set t_Co=256
 colorscheme simple-dark
 set background=dark
 
+" Colorizer in lua [ sets for filetype *]
+lua require'colorizer'.setup() 
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Files, backups and undo 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -139,8 +143,9 @@ set background=dark
 " Prevent unloading a buffer when it is abandoned
 set hidden
 
-set nobackup
+" set nobackup
 set noswapfile
+set backupcopy=yes
 
 set encoding=utf8 " utf8 as standard encoding
 set fileformats=unix,dos,mac " unix as standard file type
@@ -159,6 +164,7 @@ set path+=**
 command! MakeTags !ctags -R --exclude=.git --exclude=node_modules --exclude=dist
 
 " Crazy OSC52 escape sequence for yanking directly to system clipboard
+" This even works through ssh and stuff
 function! Osc52Yank()
     let buffer=system("base64 -b0", @0)
     let buffer=substitute(buffer, "\n$", "", "")
@@ -179,8 +185,8 @@ augroup END
 set expandtab
 set smarttab
 
-set shiftwidth=4
-set tabstop=4
+set shiftwidth=2
+set tabstop=2
 
 set linebreak
 set textwidth=500
@@ -274,6 +280,8 @@ if has("autocmd")
     autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh :call CleanExtraSpaces()
 endif
 
+imap <C-u> <ESC>O<BS>
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Filetype stuff
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -285,7 +293,7 @@ au FileType python syn keyword pythonDecorator True None False self
 au BufNewFile,BufRead *.jinja set syntax=htmljinja
 au BufNewFile,BufRead *.mako set ft=mako
 
-au FileType python map <buffer> F :set foldmethod=indent<cr>
+" au FileType python map <buffer> F :set foldmethod=indent<cr>
 
 au FileType python inoremap <buffer> $r return 
 au FileType python inoremap <buffer> $i import 
