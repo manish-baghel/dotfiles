@@ -21,7 +21,7 @@ source Path/to/dotfiles/zsh/themes/powerlevel9k/powerlevel9k.zsh-theme
 
 ## Random Stuff
 
-### Git Congif for diff
+### Git Config for diff
 
 ```bash
 git config --global diff.tool vimdiff

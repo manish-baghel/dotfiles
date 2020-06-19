@@ -152,7 +152,9 @@ set hidden
 
 " set nobackup
 set noswapfile
-set backupcopy=yes
+set backupcopy=yes " this is a useful option while using watchers in js projects
+                   " for eg - parcel-bundler or webpack
+                   " it helps them detecting changes in files
 
 set encoding=utf8 " utf8 as standard encoding
 set fileformats=unix,dos,mac " unix as standard file type
