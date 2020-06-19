@@ -1,3 +1,9 @@
+"  _   _                 _           
+" | \ | | ___  _____   _(_)_ __ ___  
+" |  \| |/ _ \/ _ \ \ / / | '_ ` _ \ 
+" | |\  |  __/ (_) \ V /| | | | | | |
+" |_| \_|\___|\___/ \_/ |_|_| |_| |_|
+                                   
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Author:
 "       Manish Baghel - @manish-baghel
@@ -33,6 +39,7 @@ Plug 'neoclide/vim-jsx-improve'
 Plug 'mattn/emmet-vim'
 Plug 'honza/vim-snippets'
 Plug 'norcalli/nvim-colorizer.lua' 
+Plug 'chemzqm/macdown.vim'
 
 call plug#end()
 

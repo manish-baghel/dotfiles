@@ -222,6 +222,8 @@ nmap <leader>rn <Plug>(coc-rename)
 xmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
 command! -nargs=0 Prettier :CocCommand prettier.formatFile " prettier for js and ts
+" Prettier
+nmap <leader>l :Prettier<CR>
 
 augroup mygroup
   autocmd!
@@ -300,4 +302,6 @@ function! s:check_back_space() abort
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
+" coc_snippet
 let g:coc_snippet_next = '<tab>'
+
