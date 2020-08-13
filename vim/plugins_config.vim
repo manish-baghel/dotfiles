@@ -63,7 +63,7 @@ autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vimroom
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:goyo_width=100
+let g:goyo_width=150
 let g:goyo_margin_top = 2
 let g:goyo_margin_bottom = 2
 nnoremap <silent> <leader>z :Goyo<cr>
@@ -96,6 +96,7 @@ let g:user_emmet_settings = {
 " => FZF
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 map <leader>s :FZF<cr>
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => nvim-colorizer
