@@ -24,22 +24,27 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'scrooloose/nerdtree'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'yegappan/mru'
 Plug 'maxbrunsfeld/vim-yankstack'
 Plug 'tpope/vim-surround'
 Plug 'itchyny/lightline.vim'
+Plug 'shinchu/lightline-gruvbox.vim'
 Plug 'junegunn/goyo.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'mileszs/ack.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-commentary'
+Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
-Plug 'neoclide/vim-jsx-improve'
+Plug 'maxmellon/vim-jsx-pretty'
 Plug 'mattn/emmet-vim'
 Plug 'honza/vim-snippets'
 Plug 'norcalli/nvim-colorizer.lua' 
 Plug 'chemzqm/macdown.vim'
+Plug 'gruvbox-community/gruvbox'
+Plug 'glacambre/firenvim', {'do': { _ -> firenvim#install(0)}}
 
 call plug#end()
 
@@ -81,11 +86,6 @@ autocmd! bufwritepost ~/dotfiles/vim/plugins_config.vim source ~/.vimrc
 " Wild Menu
 set wildmenu
 set wildignore+=*.o,*~,*pyc,*/.DS_Store,*/.git,**/node_modules/**
-" set wildignore+=node_modules
-" set wildignore+=**/node_modules
-" set wildignore+=node_modules/**
-" set wildignore+=**/node_modules/**
-" set wildignore+=*/node_modules/*
 
 " Current position, cmd bar height, statusline
 set ruler
@@ -137,8 +137,27 @@ syntax enable
 
 set termguicolors
 set t_Co=256
-colorscheme simple-dark
+" colorscheme simple-dark
+colorscheme gruvbox
+let g:gruvbox_contrast_dark='hard'
 set background=dark
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+
+" Toggle below two comments for transparency in nvim
+
+highlight Normal guibg=None
+highlight NonText guibg=None
+
+
+" Syntax Highlighting but in browser 
+" From the AWESOME GUY ->  The Primagean
+augroup AWESOME
+    autocmd!
+    au BufEnter github.com_*.txt set filetype=markdown
+    au BufEnter txti.es_*.txt set filetype=typescript
+augroup END
+
+
 
 " Colorizer in lua [ sets for filetype *]
 lua require'colorizer'.setup() 
@@ -168,6 +187,9 @@ endtry
 
 " find on steroids [ this is a crazy option]
 set path+=**
+
+" c++ header
+set path+=/usr/local/include
 
 " ctags if needed
 command! MakeTags !ctags -R --exclude=.git --exclude=node_modules --exclude=dist
@@ -315,7 +337,8 @@ au FileType python map <buffer> <leader>D ?def
 
 
 " JavaScript section
-"au BufNewFile,BufRead *.js set syntax=javascript.jsx
+" au BufNewFile,BufRead *.js set syntax=javascriptreact
+au BufNewFile,BufRead *.js set filetype=javascriptreact
 
 au FileType javascript map <leader>k :call JavaScriptFold()<CR>
 au FileType javascript setl fen
@@ -399,3 +422,5 @@ function! VisualSelection(direction, extra_filter) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunction
+
+

@@ -46,8 +46,9 @@ au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => lightline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Themes - wombat,gruvbox
 let g:lightline = {
-	\ 'colorscheme': 'wombat',
+	\ 'colorscheme': 'gruvbox',
 	\ 'active': {
 	\   'left': [ [ 'mode', 'paste' ],
 	\             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
@@ -63,7 +64,7 @@ autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vimroom
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:goyo_width=150
+let g:goyo_width=140
 let g:goyo_margin_top = 2
 let g:goyo_margin_bottom = 2
 nnoremap <silent> <leader>z :Goyo<cr>
@@ -95,8 +96,12 @@ let g:user_emmet_settings = {
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => FZF
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-map <leader>s :FZF<cr>
-let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
+map <leader>s :Files<cr>
+let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6, 'border':'sharp'} }
+let g:fzf_preview_window = ['right:50%', 'ctrl-/']
+command! -bang -nargs=? -complete=dir Files
+    \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'options': ['--layout=reverse', '--info=inline']}), <bang>0)
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => nvim-colorizer
