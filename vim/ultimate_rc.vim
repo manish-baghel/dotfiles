@@ -29,8 +29,8 @@ Plug 'jlanzarotta/bufexplorer'
 Plug 'yegappan/mru'
 Plug 'maxbrunsfeld/vim-yankstack'
 Plug 'tpope/vim-surround'
-Plug 'itchyny/lightline.vim'
-Plug 'shinchu/lightline-gruvbox.vim'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'junegunn/goyo.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'mileszs/ack.vim'
@@ -45,6 +45,10 @@ Plug 'norcalli/nvim-colorizer.lua'
 Plug 'chemzqm/macdown.vim'
 Plug 'gruvbox-community/gruvbox'
 Plug 'glacambre/firenvim', {'do': { _ -> firenvim#install(0)}}
+Plug 'NLKNguyen/papercolor-theme'
+Plug 'ryanoasis/vim-devicons'
+
+
 
 call plug#end()
 
@@ -138,8 +142,9 @@ syntax enable
 set termguicolors
 set t_Co=256
 " colorscheme simple-dark
-colorscheme gruvbox
-let g:gruvbox_contrast_dark='hard'
+" colorscheme gruvbox
+" let g:gruvbox_contrast_dark='hard'
+colorscheme PaperColor
 set background=dark
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
@@ -197,7 +202,7 @@ command! MakeTags !ctags -R --exclude=.git --exclude=node_modules --exclude=dist
 " Crazy OSC52 escape sequence for yanking directly to system clipboard
 " This even works through ssh and stuff
 function! Osc52Yank()
-    let buffer=system("base64 -b0", @0)
+    let buffer=system("base64 -w0", @0)
     let buffer=substitute(buffer, "\n$", "", "")
     let buffer='\e]52;c;'.buffer.'\x07'
     silent exe "!echo -ne ".shellescape(buffer)." > ".shellescape(g:tty)

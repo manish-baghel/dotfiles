@@ -47,19 +47,19 @@ au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
 " => lightline
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Themes - wombat,gruvbox
-let g:lightline = {
-	\ 'colorscheme': 'gruvbox',
-	\ 'active': {
-	\   'left': [ [ 'mode', 'paste' ],
-	\             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
-	\ },
-	\ 'component_function': {
-	\   'cocstatus': 'coc#status'
-	\ },
-	\ }
+" let g:lightline = {
+" 	\ 'colorscheme': 'gruvbox',
+" 	\ 'active': {
+" 	\   'left': [ [ 'mode', 'paste' ],
+" 	\             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
+" 	\ },
+" 	\ 'component_function': {
+" 	\   'cocstatus': 'coc#status'
+" 	\ },
+" 	\ }
 
 " Use autocmd to force lightline update.
-autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
+" autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vimroom
