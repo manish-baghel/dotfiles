@@ -40,12 +40,14 @@ Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'mattn/emmet-vim'
+Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'norcalli/nvim-colorizer.lua' 
 Plug 'chemzqm/macdown.vim'
 Plug 'gruvbox-community/gruvbox'
-Plug 'glacambre/firenvim', {'do': { _ -> firenvim#install(0)}}
 Plug 'NLKNguyen/papercolor-theme'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'Chiel92/vim-autoformat' 
 Plug 'ryanoasis/vim-devicons'
 
 
@@ -55,6 +57,7 @@ call plug#end()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " General Config
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set clipboard=unnamedplus
 
 "leader key mapping
 let mapleader = ","
@@ -148,14 +151,9 @@ colorscheme PaperColor
 set background=dark
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
-" Toggle below two comments for transparency in nvim
-
-highlight Normal guibg=None
-highlight NonText guibg=None
 
 
 " Syntax Highlighting but in browser 
-" From the AWESOME GUY ->  The Primagean
 augroup AWESOME
     autocmd!
     au BufEnter github.com_*.txt set filetype=markdown
@@ -165,7 +163,7 @@ augroup END
 
 
 " Colorizer in lua [ sets for filetype *]
-lua require'colorizer'.setup() 
+" lua require'colorizer'.setup() 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Files, backups and undo 
@@ -180,7 +178,7 @@ set backupcopy=yes " this is a useful option while using watchers in js projects
                    " for eg - parcel-bundler or webpack
                    " it helps them detecting changes in files
 
-set encoding=utf8 " utf8 as standard encoding
+set encoding=UTF-8 " utf8 as standard encoding
 set fileformats=unix,dos,mac " unix as standard file type
 
 " persistent undo
@@ -189,6 +187,17 @@ try
     set undofile
 catch
 endtry
+
+" Fix for stupid shift  key hits
+command! -bang -nargs=* -complete=file E e<bang> <args>
+command! -bang -nargs=* -complete=file W w<bang> <args>
+command! -bang -nargs=* -complete=file Wq wq<bang> <args>
+command! -bang -nargs=* -complete=file WQ wq<bang> <args>
+command! -bang Wa wa<bang>
+command! -bang WA wa<bang>
+command! -bang Q q<bang>
+command! -bang QA qa<bang>
+command! -bang Qa qa<bang>
 
 " find on steroids [ this is a crazy option]
 set path+=**
@@ -271,8 +280,8 @@ map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
 map <leader>tm :tabmove
-map <F1> :tabp<cr>
-map <F2> :tabn<cr>
+" map <F1> :tabp<cr>
+" map <F2> :tabn<cr>
 
 " move to last accessed tab with <leader>tl
 let g:lasttab=1
@@ -301,7 +310,8 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Remap 0 to first non-blank character
-map 0 ^
+" map 0 ^
+
 
 " Delete trailing white space on save, useful for some filetypes ;)
 fun! CleanExtraSpaces()
@@ -316,7 +326,32 @@ if has("autocmd")
     autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh :call CleanExtraSpaces()
 endif
 
-imap <C-u> <ESC>O<BS>
+imap <C-u> <ESC>O<BS><TAB>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Custom commands
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+" For sorting methods in golang 
+" set custom word ordering in <F2> map and revert the replace op in <F3> map
+
+" This pushes the comment above methods inside the methods
+nnoremap <F1> :silent!g/\/\/.*\nfunc/normal ddp<cr>
+
+" This replaces method names with given order and collpases them
+" so every new line is diff. function/method
+nnoremap <F2> :silent!%s/^\(func.*\)\( admin\)\(.*\)$/\1 2@\3/g<cr>:silent!%s/^\(func.*\)\( consumer\)\(.*\)$/\1 1@\3/g<cr>:silent!%s/^\(func.*\)\( internal\)\(.*\)$/\1 3@\3/g<cr>:silent!%s/^\(func.*\)\( global\)\(.*\)$/\1 4@\3/g<cr>:silent!g/func /,/^}$/ s/$\n/@@@<cr>
+
+" EXTRA MANUAL STEP TO PERFORM
+" VisualSelection on all the methods and call :sort /func /
+" This will sort them accordingly
+
+" This reverts back the functions/methods to orginal state
+nnoremap<F3> :silent!%s/@@@/\r/g<cr>:silent!%s/ 1@/ consumer/g<cr>:silent!%s/ 2@/ admin/g<cr>:silent!%s/ 3@/ internal/g<cr>:silent!%s/ 4@/ global/g<cr>
+
+" This pusshes the comments back to original position i.e above the functions/methods
+nnoremap<F4> :silent!g/^func.*\n\/\// normal ddp<cr>
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Filetype stuff
@@ -370,7 +405,7 @@ endfunction
 " Nvim providers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-let g:python3_host_prog = '/Library/Frameworks/Python.framework/Versions/3.7/bin/python3'
+let g:python3_host_prog = '/usr/local/bin/python3'
 
 
 

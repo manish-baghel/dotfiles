@@ -1,11 +1,11 @@
 """"""""""""""""""""""""""""""
 " => bufExplorer plugin
 """"""""""""""""""""""""""""""
-let g:bufExplorerDefaultHelp=0
-let g:bufExplorerShowRelativePath=1
-let g:bufExplorerFindActive=1
-let g:bufExplorerSortBy='name'
-map <leader>o :BufExplorer<cr>
+" let g:bufExplorerDefaultHelp=0
+" let g:bufExplorerShowRelativePath=1
+" let g:bufExplorerFindActive=1
+" let g:bufExplorerSortBy='name'
+" map <leader>o :BufExplorer<cr>
 
 
 """"""""""""""""""""""""""""""
@@ -51,7 +51,7 @@ au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
 " 	\ 'colorscheme': 'gruvbox',
 " 	\ 'active': {
 " 	\   'left': [ [ 'mode', 'paste' ],
-" 	\             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
+" 	\             [ 'cocstatus', 'readonly', 'filename', 'modified','absolutepath' ] ]
 " 	\ },
 " 	\ 'component_function': {
 " 	\   'cocstatus': 'coc#status'
@@ -92,6 +92,30 @@ let g:user_emmet_settings = {
 \  },
 \}
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => vim-go
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+let g:go_highlight_format_strings = 1
+let g:go_highlight_function_arguments = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_types = 1
+
+let g:go_highlight_extra_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_generate_tags = 1
+let g:go_highlight_variable_assignments = 1
+let g:go_highlight_variable_declarations = 1
+
+let g:go_fmt_command = "goimports"
+
+map <leader>gr :GoReferrers<cr>
+map <leader>gd :GoImpl<cr>
+map <leader>gl :GoDecls<cr>
+map <leader>gt :GoTest<cr>
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => FZF
@@ -101,13 +125,14 @@ let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6, 'border':'sharp'} 
 let g:fzf_preview_window = ['right:50%', 'ctrl-/']
 command! -bang -nargs=? -complete=dir Files
     \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'options': ['--layout=reverse', '--info=inline']}), <bang>0)
+map <leader>o :Buffers<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => nvim-colorizer
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " enable for all filetypes
-lua require'colorizer'.setup()
+" lua require'colorizer'.setup()
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -124,7 +149,7 @@ endif
 vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
 
 " Open Ack and put the cursor in the right position
-map <leader>g :Ack 
+map <leader>g :Rg<CR>
 
 " When you press <leader>r you can search and replace the selected text
 vnoremap <silent> <leader>r :call VisualSelection('replace', '')<CR>
@@ -208,7 +233,7 @@ nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
 " Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
+nnoremap <silent> L :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
