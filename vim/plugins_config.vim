@@ -14,6 +14,17 @@ map <leader>o :BufExplorer<cr>
 let MRU_Max_Entries = 400
 map <leader>m :MRU<CR>
 
+""""""""""""""""""""""""""""""
+" => vim-go
+""""""""""""""""""""""""""""""
+let g:go_doc_popup_window = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_space_tab_error = 1
+let g:go_highlight_trailing_whitespace_error = 1
+let g:go_highlight_types = 1
+let g:go_highlight_function_calls =1
+let g:go_highlight_fields = 1
+let g:go_highlight_operators = 1
 
 """"""""""""""""""""""""""""""
 " => YankStack
@@ -124,7 +135,7 @@ endif
 vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
 
 " Open Ack and put the cursor in the right position
-map <leader>g :Ack 
+map <leader>g :Rg<cr>
 
 " When you press <leader>r you can search and replace the selected text
 vnoremap <silent> <leader>r :call VisualSelection('replace', '')<CR>

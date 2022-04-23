@@ -47,6 +47,11 @@ Plug 'gruvbox-community/gruvbox'
 Plug 'glacambre/firenvim', {'do': { _ -> firenvim#install(0)}}
 Plug 'NLKNguyen/papercolor-theme'
 Plug 'ryanoasis/vim-devicons'
+Plug 'f-person/git-blame.nvim'
+Plug 'fatih/vim-go'
+Plug 'fatih/molokai'
+
+
 
 
 
@@ -144,9 +149,13 @@ set t_Co=256
 " colorscheme simple-dark
 " colorscheme gruvbox
 " let g:gruvbox_contrast_dark='hard'
-colorscheme PaperColor
+" colorscheme PaperColor
 set background=dark
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+
+let g:rehash256 = 1
+let g:molokai_original = 1
+colorscheme molokai
 
 " Toggle below two comments for transparency in nvim
 
