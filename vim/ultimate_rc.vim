@@ -50,6 +50,9 @@ Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'Chiel92/vim-autoformat' 
 Plug 'ryanoasis/vim-devicons'
 Plug 'junegunn/vim-easy-align'
+Plug 'f-person/git-blame.nvim'
+Plug 'fatih/molokai'
+
 
 
 
@@ -150,12 +153,20 @@ syntax enable
 set termguicolors
 set t_Co=256
 " colorscheme simple-dark
-colorscheme gruvbox
-let g:gruvbox_contrast_dark='hard'
+" colorscheme gruvbox
+" let g:gruvbox_contrast_dark='hard'
 " colorscheme PaperColor
 set background=dark
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
+let g:rehash256 = 1
+let g:molokai_original = 1
+colorscheme molokai
+
+" Toggle below two comments for transparency in nvim
+
+highlight Normal guibg=None
+highlight NonText guibg=None
 
 
 " Syntax Highlighting but in browser 

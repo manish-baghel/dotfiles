@@ -23,6 +23,17 @@ nmap ga <Plug>(EasyAlign)
 let MRU_Max_Entries = 400
 map <leader>m :MRU<CR>
 
+""""""""""""""""""""""""""""""
+" => vim-go
+""""""""""""""""""""""""""""""
+let g:go_doc_popup_window = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_space_tab_error = 1
+let g:go_highlight_trailing_whitespace_error = 1
+let g:go_highlight_types = 1
+let g:go_highlight_function_calls =1
+let g:go_highlight_fields = 1
+let g:go_highlight_operators = 1
 
 """"""""""""""""""""""""""""""
 " => YankStack
