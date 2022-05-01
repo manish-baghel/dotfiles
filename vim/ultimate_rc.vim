@@ -49,6 +49,7 @@ Plug 'NLKNguyen/papercolor-theme'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'Chiel92/vim-autoformat' 
 Plug 'ryanoasis/vim-devicons'
+Plug 'junegunn/vim-easy-align'
 
 
 
@@ -79,6 +80,10 @@ au FocusGained,BufEnter * checktime
 nmap <leader>w :w!<cr>
 command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 command! Q execute 'q'
+
+" g command output to new scratch bugger
+command! -nargs=? Gst let @a='' | execute 'g/<args>/y A' | new | setlocal bt=nofile | put! a
+
 
 " Fast editing and reloading of vimrc
 map <leader>e :e! ~/dotfiles/vim/ultimate_rc.vim<cr>
@@ -145,9 +150,9 @@ syntax enable
 set termguicolors
 set t_Co=256
 " colorscheme simple-dark
-" colorscheme gruvbox
-" let g:gruvbox_contrast_dark='hard'
-colorscheme PaperColor
+colorscheme gruvbox
+let g:gruvbox_contrast_dark='hard'
+" colorscheme PaperColor
 set background=dark
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
@@ -198,6 +203,7 @@ command! -bang WA wa<bang>
 command! -bang Q q<bang>
 command! -bang QA qa<bang>
 command! -bang Qa qa<bang>
+vnoremap <S-Down> <Nop>
 
 " find on steroids [ this is a crazy option]
 set path+=**
@@ -211,7 +217,7 @@ command! MakeTags !ctags -R --exclude=.git --exclude=node_modules --exclude=dist
 " Crazy OSC52 escape sequence for yanking directly to system clipboard
 " This even works through ssh and stuff
 function! Osc52Yank()
-    let buffer=system("base64 -w0", @0)
+    let buffer=system("base64 -b0", @0)
     let buffer=substitute(buffer, "\n$", "", "")
     let buffer='\e]52;c;'.buffer.'\x07'
     silent exe "!echo -ne ".shellescape(buffer)." > ".shellescape(g:tty)
