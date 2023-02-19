@@ -34,26 +34,34 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'junegunn/goyo.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'mileszs/ack.vim'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'tpope/vim-commentary'
 Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'mattn/emmet-vim'
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
 Plug 'norcalli/nvim-colorizer.lua' 
 Plug 'chemzqm/macdown.vim'
 Plug 'gruvbox-community/gruvbox'
 Plug 'NLKNguyen/papercolor-theme'
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'Chiel92/vim-autoformat' 
 Plug 'ryanoasis/vim-devicons'
 Plug 'junegunn/vim-easy-align'
 Plug 'f-person/git-blame.nvim'
 Plug 'fatih/molokai'
-
-
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'glepnir/lspsaga.nvim'
+Plug 'L3MON4D3/LuaSnip'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'folke/lsp-colors.nvim'
+Plug 'navarasu/onedark.nvim'
+Plug 'tiagovla/tokyodark.nvim'
+Plug 'weirongxu/plantuml-previewer.vim'
+Plug 'tyru/open-browser.vim'
 
 
 call plug#end()
@@ -83,6 +91,7 @@ au FocusGained,BufEnter * checktime
 nmap <leader>w :w!<cr>
 command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 command! Q execute 'q'
+command! Y execute 'yy'
 
 " g command output to new scratch bugger
 command! -nargs=? Gst let @a='' | execute 'g/<args>/y A' | new | setlocal bt=nofile | put! a
@@ -159,9 +168,27 @@ set t_Co=256
 set background=dark
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
-let g:rehash256 = 1
-let g:molokai_original = 1
-colorscheme molokai
+let g:onedark_config = {
+  \ 'style': 'dark',
+  \ 'toggle_style_key': '<leader>ts',
+  \ 'ending_tildes': v:true,
+  \ 'diagnostics': {
+    \ 'darker': v:false,
+    \ 'background': v:false,
+  \ },
+\ }
+colorscheme onedark
+
+
+" let g:tokyodark_transparent_background = 0
+" let g:tokyodark_enable_italic_comment = 1
+" let g:tokyodark_enable_italic = 1
+" let g:tokyodark_color_gamma = "1.0"
+" colorscheme tokyodark
+
+" let g:rehash256 = 1
+" let g:molokai_original = 1
+" colorscheme molokai
 
 " Toggle below two comments for transparency in nvim
 
@@ -228,7 +255,7 @@ command! MakeTags !ctags -R --exclude=.git --exclude=node_modules --exclude=dist
 " Crazy OSC52 escape sequence for yanking directly to system clipboard
 " This even works through ssh and stuff
 function! Osc52Yank()
-    let buffer=system("base64 -b0", @0)
+    let buffer=system("base64 -b 0", @0)
     let buffer=substitute(buffer, "\n$", "", "")
     let buffer='\e]52;c;'.buffer.'\x07'
     silent exe "!echo -ne ".shellescape(buffer)." > ".shellescape(g:tty)
@@ -266,6 +293,8 @@ set wrap
 vnoremap <silent> * :<C-u>call VisualSelection(''.'')<CR>/<C-R>=@/<CR><CR>
 vnoremap <silent> # :<C-u>call VisualSelection(''.'')<CR>/<C-R>=@/<CR><CR>
 
+vnoremap <silent> <leader>? :<C-u>call VisualSelection('replace')<CR>
+
 " Disable highlight when <leader><cr> is pressed
 map <silent> <leader><cr> :noh<cr>
 
@@ -297,8 +326,11 @@ map <leader>tn :tabnew<cr>
 map <leader>to :tabonly<cr>
 map <leader>tc :tabclose<cr>
 map <leader>tm :tabmove
-" map <F1> :tabp<cr>
-" map <F2> :tabn<cr>
+map <F1> :tabp<cr>
+map <F2> :tabn<cr>
+
+nnoremap <silent> <F3> :redir @a<CR>:g//<CR>:redir END<CR>:new<CR>:put! a<CR>
+
 
 " move to last accessed tab with <leader>tl
 let g:lasttab=1
@@ -353,21 +385,21 @@ imap <C-u> <ESC>O<BS><TAB>
 " set custom word ordering in <F2> map and revert the replace op in <F3> map
 
 " This pushes the comment above methods inside the methods
-nnoremap <F1> :silent!g/\/\/.*\nfunc/normal ddp<cr>
+" nnoremap <F1> :silent!g/\/\/.*\nfunc/normal ddp<cr>
 
 " This replaces method names with given order and collpases them
 " so every new line is diff. function/method
-nnoremap <F2> :silent!%s/^\(func.*\)\( admin\)\(.*\)$/\1 2@\3/g<cr>:silent!%s/^\(func.*\)\( consumer\)\(.*\)$/\1 1@\3/g<cr>:silent!%s/^\(func.*\)\( internal\)\(.*\)$/\1 3@\3/g<cr>:silent!%s/^\(func.*\)\( global\)\(.*\)$/\1 4@\3/g<cr>:silent!g/func /,/^}$/ s/$\n/@@@<cr>
+" nnoremap <F2> :silent!%s/^\(func.*\)\( admin\)\(.*\)$/\1 2@\3/g<cr>:silent!%s/^\(func.*\)\( consumer\)\(.*\)$/\1 1@\3/g<cr>:silent!%s/^\(func.*\)\( internal\)\(.*\)$/\1 3@\3/g<cr>:silent!%s/^\(func.*\)\( global\)\(.*\)$/\1 4@\3/g<cr>:silent!g/func /,/^}$/ s/$\n/@@@<cr>
 
 " EXTRA MANUAL STEP TO PERFORM
 " VisualSelection on all the methods and call :sort /func /
 " This will sort them accordingly
 
 " This reverts back the functions/methods to orginal state
-nnoremap<F3> :silent!%s/@@@/\r/g<cr>:silent!%s/ 1@/ consumer/g<cr>:silent!%s/ 2@/ admin/g<cr>:silent!%s/ 3@/ internal/g<cr>:silent!%s/ 4@/ global/g<cr>
+" nnoremap<F3> :silent!%s/@@@/\r/g<cr>:silent!%s/ 1@/ consumer/g<cr>:silent!%s/ 2@/ admin/g<cr>:silent!%s/ 3@/ internal/g<cr>:silent!%s/ 4@/ global/g<cr>
 
 " This pusshes the comments back to original position i.e above the functions/methods
-nnoremap<F4> :silent!g/^func.*\n\/\// normal ddp<cr>
+" nnoremap<F4> :silent!g/^func.*\n\/\// normal ddp<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -481,3 +513,35 @@ function! VisualSelection(direction, extra_filter) range
 endfunction
 
 
+" Copy matches of the last search to a register (default is the clipboard).
+" Accepts a range (default is whole file).
+" 'CopyMatches'   copy matches to clipboard (each match has \n added).
+" 'CopyMatches x' copy matches to register x (clears register first).
+" 'CopyMatches X' append matches to register x.
+" We skip empty hits to ensure patterns using '\ze' don't loop forever.
+command! -range=% -register CopyMatches call s:CopyMatches(<line1>, <line2>, '<reg>')
+function! s:CopyMatches(line1, line2, reg)
+  let hits = []
+  for line in range(a:line1, a:line2)
+    let txt = getline(line)
+    let idx = match(txt, @/)
+    while idx >= 0
+      let end = matchend(txt, @/, idx)
+      if end > idx
+	call add(hits, strpart(txt, idx, end-idx))
+      else
+	let end += 1
+      endif
+      if @/[0] == '^'
+        break  " to avoid false hits
+      endif
+      let idx = match(txt, @/, end)
+    endwhile
+  endfor
+  if len(hits) > 0
+    let reg = empty(a:reg) ? '+' : a:reg
+    execute 'let @'.reg.' = join(hits, "\n") . "\n"'
+  else
+    echo 'No hits'
+  endif
+endfunction
