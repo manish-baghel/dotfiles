@@ -100,31 +100,6 @@ let g:user_emmet_settings = {
 \  },
 \}
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"" => vim-go
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-"let g:go_highlight_format_strings = 1
-"let g:go_highlight_function_arguments = 1
-"let g:go_highlight_function_calls = 1
-"let g:go_highlight_functions = 1
-"let g:go_highlight_operators = 1
-"let g:go_highlight_types = 1
-
-"let g:go_highlight_extra_types = 1
-"let g:go_highlight_fields = 1
-"let g:go_highlight_generate_tags = 1
-"let g:go_highlight_variable_assignments = 1
-"let g:go_highlight_variable_declarations = 1
-
-"let g:go_fmt_command = "goimports"
-
-"map gr :GoReferrers<cr>
-"map gd :GoImpl<cr>
-"map gl :GoDecls<cr>
-"map gt :GoTest<cr>
-
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => FZF
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -156,7 +131,7 @@ endif
 " When you press gv you Ack after the selected text
 vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
 
-" Open Ack and put the cursor in the right position
+" Open Ack/Rg and put the cursor in the right position
 map <leader>g :Rg<CR>
 
 " When you press <leader>r you can search and replace the selected text
@@ -269,9 +244,10 @@ lua <<EOF
   })
 
   -- Setup lspconfig.
-  local capabilities = require('cmp_nvim_lsp').default_capabilities()
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
 --require'navigator'.setup()
 local nvim_lsp = require('lspconfig')
+local util = require('lspconfig/util')
 --
 -- local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
@@ -298,7 +274,7 @@ local on_attach = function(client, bufnr)
     }
     vim.diagnostic.open_float(nil, opts)
   end
-})
+  })
 --
 --  -- Mappings.
   local opts = { noremap=true, silent=true }
@@ -339,58 +315,41 @@ local on_attach = function(client, bufnr)
      augroup END
    ]], false)
  end
-end
+
+end -- on_attach end
 
 nvim_lsp.tsserver.setup{
   cmd = { "typescript-language-server", "--stdio" },
   filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
 }
 nvim_lsp.gopls.setup{
-	cmd = {'gopls'},
+	cmd = {'gopls', 'serve'},
+  filetypes = {"go", "gomod"},
+  root_dir = util.root_pattern("go.work", "go.mod", ".git"),
 	-- for postfix snippets and analyzers
 	capabilities = capabilities,
-	    settings = {
-	      gopls = {
-		      experimentalPostfixCompletions = true,
-		      analyses = {
-		        unusedparams = true,
-		        shadow = true,
-		     },
-		     staticcheck = true,
-		    },
-	    },
+  settings = {
+    gopls = {
+      experimentalPostfixCompletions = true,
+      analyses = {
+        unusedparams = true,
+        shadow = true,
+     },
+     staticcheck = true,
+    },
+  },
+  init_options = {
+    usePlaceholders = true,
+  },
 	on_attach = on_attach,
 }
-
-  function goimports(timeoutms)
-    local context = { source = { organizeImports = true } }
-    vim.validate { context = { context, "t", true } }
-
-    local params = vim.lsp.util.make_range_params()
-    params.context = context
-
-    -- See the implementation of the textDocument/codeAction callback
-    -- (lua/vim/lsp/handler.lua) for how to do this properly.
-    local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, timeout_ms)
-    if not result or next(result) == nil then return end
-    local actions = result[1].result
-    if not actions then return end
-    local action = actions[1]
-
-    -- textDocument/codeAction can return either Command[] or CodeAction[]. If it
-    -- is a CodeAction, it can have either an edit, a command or both. Edits
-    -- should be executed first.
-    if action.edit or type(action.command) == "table" then
-      if action.edit then
-        vim.lsp.util.apply_workspace_edit(action.edit)
-      end
-      if type(action.command) == "table" then
-        vim.lsp.buf.execute_command(action.command)
-      end
-    else
-      vim.lsp.buf.execute_command(action)
-    end
+vim.api.nvim_create_autocmd('BufWritePre', {
+  pattern = '*.go',
+  callback = function()
+    vim.lsp.buf.code_action({ context = { only = { 'source.organizeImports' } }, apply = true })
   end
+})
+
 
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all"
@@ -417,6 +376,3 @@ require'nvim-treesitter.configs'.setup {
     },
   }
 EOF
-
-autocmd BufWritePre *.go lua vim.lsp.buf.formatting()
-autocmd BufWritePre *.go lua goimports(1000)
