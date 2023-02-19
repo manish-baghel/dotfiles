@@ -50,6 +50,9 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'f-person/git-blame.nvim'
 Plug 'fatih/vim-go'
 Plug 'fatih/molokai'
+Plug 'aklt/plantuml-syntax'
+Plug 'tyru/open-browser.vim'
+Plug 'weirongxu/plantuml-previewer.vim'
 
 
 
