@@ -295,7 +295,11 @@ command! MakeTags !ctags -R --exclude=.git --exclude=node_modules --exclude=dist
 " Mac -> base64 -b 0
 " Linux -> base64 -w 0
 function! Osc52Yank()
-    let buffer=system("base64 -w 0", @0)
+    if has('mac')
+      let buffer=system("base64 -b 0", @0)
+    else
+      let buffer=system("base64 -w 0", @0)
+    endif
     let buffer=substitute(buffer, "\n$", "", "")
     let buffer='\e]52;c;'.buffer.'\x07'
     silent exe "!echo -ne ".shellescape(buffer)." > ".shellescape(g:tty)
