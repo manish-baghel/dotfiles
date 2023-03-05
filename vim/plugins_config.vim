@@ -54,6 +54,13 @@ EOF
 nmap <leader>nn :NvimTreeToggle<CR>
 nmap <leader>nf :NvimTreeFindFile<CR>
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Neoformat
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:neoformat_try_node_exe = 1
+autocmd BufWritePre *.js,*.ts Neoformat
+
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => surround.vim config
 " Annotate strings with gettext
@@ -364,6 +371,7 @@ end -- on_attach end
 nvim_lsp.tsserver.setup{
   cmd = { "typescript-language-server", "--stdio" },
   filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
+  on_attach = on_attach,
 }
 nvim_lsp.gopls.setup{
 	cmd = {'gopls', 'serve'},
@@ -420,3 +428,5 @@ require'nvim-treesitter.configs'.setup {
     },
   }
 EOF
+
+
