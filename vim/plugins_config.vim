@@ -33,15 +33,26 @@ nmap <C-p> <Plug>yankstack_substitute_older_paste
 nmap <C-n> <Plug>yankstack_substitute_newer_paste
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Nerd Tree
+" => Nvim Tree
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:NERDTreeWinPos = "right"
-let NERDTreeShowHidden=0
-let NERDTreeIgnore = ['\.pyc$', '__pycache__']
-let g:NERDTreeWinSize=35
-map <leader>nn :NERDTreeToggle<cr>
-map <leader>nb :NERDTreeFromBookmark<Space>
-map <leader>nf :NERDTreeFind<cr>
+lua <<EOF
+local function open_nvim_tree()
+
+  -- open the tree
+  require("nvim-tree.api").tree.open()
+end
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+require("nvim-tree").setup({
+  sort_by = "case_sensitive",
+  renderer = {
+    group_empty = true,
+  },
+})
+vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
+EOF
+nmap <leader>nn :NvimTreeToggle<CR>
+nmap <leader>nf :NvimTreeFindFile<CR>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => surround.vim config
@@ -52,22 +63,50 @@ au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => lightline
+" => lualine
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Themes - wombat,gruvbox
-" let g:lightline = {
-" 	\ 'colorscheme': 'gruvbox',
-" 	\ 'active': {
-" 	\   'left': [ [ 'mode', 'paste' ],
-" 	\             [ 'cocstatus', 'readonly', 'filename', 'modified','absolutepath' ] ]
-" 	\ },
-" 	\ 'component_function': {
-" 	\   'cocstatus': 'coc#status'
-" 	\ },
-" 	\ }
-
-" Use autocmd to force lightline update.
-" autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
+lua << END
+require('lualine').setup {
+  options = {
+    icons_enabled = true,
+    theme = 'auto',
+    component_separators = { left = '', right = ''},
+    section_separators = { left = '', right = ''},
+    disabled_filetypes = {
+      statusline = {},
+      winbar = {},
+    },
+    ignore_focus = {},
+    always_divide_middle = true,
+    globalstatus = false,
+    refresh = {
+      statusline = 1000,
+      tabline = 1000,
+      winbar = 1000,
+    }
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch', 'diff', 'diagnostics'},
+    lualine_c = {'filename'},
+    lualine_x = {'encoding', 'fileformat', 'filetype'},
+    lualine_y = {'progress'},
+    lualine_z = {'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+  tabline = {},
+  winbar = {},
+  inactive_winbar = {},
+  extensions = {}
+}
+END
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vimroom
@@ -197,8 +236,12 @@ lua <<EOF
       end,
     },
     window = {
+      border = "rounded",
        completion = cmp.config.window.bordered(),
        documentation = cmp.config.window.bordered(),
+    },
+    completion = {
+      border = "rounded",
     },
     mapping = cmp.mapping.preset.insert({
       ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -267,7 +310,7 @@ local on_attach = function(client, bufnr)
     local opts = {
       focusable = false,
       close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-      border = 'rounded',
+      border = "rounded",
       source = 'always',
       prefix = ' ',
       scope = 'cursor',
@@ -347,6 +390,7 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = '*.go',
   callback = function()
     vim.lsp.buf.code_action({ context = { only = { 'source.organizeImports' } }, apply = true })
+    vim.lsp.buf.format()
   end
 })
 

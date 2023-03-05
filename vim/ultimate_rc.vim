@@ -22,15 +22,14 @@ set nocompatible
 
 call plug#begin('~/.vim/plugged')
 
-Plug 'scrooloose/nerdtree'
+Plug 'nvim-tree/nvim-tree.lua'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'jlanzarotta/bufexplorer'
-Plug 'yegappan/mru'
 Plug 'maxbrunsfeld/vim-yankstack'
 Plug 'tpope/vim-surround'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'kyazdani42/nvim-web-devicons'
 Plug 'junegunn/goyo.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'mileszs/ack.vim'
@@ -43,15 +42,13 @@ Plug 'norcalli/nvim-colorizer.lua'
 Plug 'chemzqm/macdown.vim'
 Plug 'gruvbox-community/gruvbox'
 Plug 'NLKNguyen/papercolor-theme'
-Plug 'Chiel92/vim-autoformat' 
-Plug 'ryanoasis/vim-devicons'
 Plug 'junegunn/vim-easy-align'
 Plug 'f-person/git-blame.nvim'
 Plug 'fatih/molokai'
+Plug 'loctvl842/monokai-pro.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'glepnir/lspsaga.nvim'
-Plug 'L3MON4D3/LuaSnip'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
@@ -96,7 +93,7 @@ command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 command! Q execute 'q'
 command! Y execute 'yy'
 
-" g command output to new scratch bugger
+" g command output to new scratch buffer
 command! -nargs=? Gst let @a='' | execute 'g/<args>/y A' | new | setlocal bt=nofile | put! a
 
 
@@ -171,16 +168,53 @@ set t_Co=256
 set background=dark
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
-let g:onedark_config = {
-  \ 'style': 'dark',
-  \ 'toggle_style_key': '<leader>ts',
-  \ 'ending_tildes': v:true,
-  \ 'diagnostics': {
-    \ 'darker': v:false,
-    \ 'background': v:false,
-  \ },
-\ }
-colorscheme onedark
+" let g:onedark_config = {
+"   \ 'style': 'dark',
+"   \ 'toggle_style_key': '<leader>ts',
+"   \ 'ending_tildes': v:true,
+"   \ 'diagnostics': {
+"     \ 'darker': v:false,
+"     \ 'background': v:false,
+"   \ },
+" \ }
+" colorscheme onedark
+
+lua <<EOF
+require("monokai-pro").setup({
+  transparent_background = false,
+  terminal_colors = true,
+  devicons = true, -- highlight the icons of `nvim-web-devicons`
+  italic_comments = true,
+  filter = "pro", -- classic | octagon | pro | machine | ristretto | spectrum
+  -- Enable this will disable filter option
+  day_night = {
+    enable = false, -- turn off by default
+    day_filter = "pro", -- classic | octagon | pro | machine | ristretto | spectrum
+    night_filter = "spectrum", -- classic | octagon | pro | machine | ristretto | spectrum
+  },
+  inc_search = "background", -- underline | background
+  background_clear = {
+    "float_win",
+    "toggleterm",
+    "telescope",
+    "which-key",
+    "renamer"
+  },-- "float_win", "toggleterm", "telescope", "which-key", "renamer", "neo-tree"
+  plugins = {
+    bufferline = {
+      underline_selected = false,
+      underline_visible = false,
+    },
+    indent_blankline = {
+      context_highlight = "default", -- default | pro
+      context_start_underline = false,
+    },
+  },
+  ---@param c Colorscheme
+  override = function(c) end,
+})
+EOF
+colorscheme monokai-pro
 
 
 " let g:tokyodark_transparent_background = 0
@@ -349,7 +383,7 @@ map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
 " Specify the behavior when switching between buffers 
 try
-  set switchbuf=useopen,usetab,newtab
+  set switchbuf=useopen,usetab,vsplit
   set showtabline=2
 catch
 endtry
@@ -375,7 +409,7 @@ fun! CleanExtraSpaces()
 endfun
 
 if has("autocmd")
-    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh :call CleanExtraSpaces()
+    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.go :call CleanExtraSpaces()
 endif
 
 imap <C-u> <ESC>O<BS><TAB>
@@ -386,6 +420,7 @@ imap <C-u> <ESC>O<BS><TAB>
 
 " For sorting methods in golang 
 " set custom word ordering in <F2> map and revert the replace op in <F3> map
+"
 
 " This pushes the comment above methods inside the methods
 " nnoremap <F1> :silent!g/\/\/.*\nfunc/normal ddp<cr>
@@ -498,7 +533,7 @@ function! CmdLine(str)
     call feedkeys(":" . a:str)
 endfunction 
 
-function! VisualSelection(direction, extra_filter) range
+function! VisualSelection(direction) range
     let l:saved_reg = @"
     execute "normal! vgvy"
 
