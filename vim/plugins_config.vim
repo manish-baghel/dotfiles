@@ -1,12 +1,188 @@
-""""""""""""""""""""""""""""""
-" => bufExplorer plugin
-""""""""""""""""""""""""""""""
-" let g:bufExplorerDefaultHelp=0
-" let g:bufExplorerShowRelativePath=1
-" let g:bufExplorerFindActive=1
-" let g:bufExplorerSortBy='name'
-" map <leader>o :BufExplorer<cr>
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => Colorscheme
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+lua <<EOF
+require("monokai-pro").setup({
+  transparent_background = true,
+  terminal_colors = true,
+  devicons = true, -- highlight the icons of `nvim-web-devicons`
+  italic_comments = true,
+  filter = "pro", -- classic | octagon | pro | machine | ristretto | spectrum
+  -- Enable this will disable filter option
+  day_night = {
+    enable = false, -- turn off by default
+    day_filter = "pro", -- classic | octagon | pro | machine | ristretto | spectrum
+    night_filter = "spectrum", -- classic | octagon | pro | machine | ristretto | spectrum
+  },
+  inc_search = "background", -- underline | background
+  background_clear = {
+    "float_win",
+    "toggleterm",
+    "telescope",
+    "which-key",
+    "renamer"
+  },-- "float_win", "toggleterm", "telescope", "which-key", "renamer", "neo-tree"
+  plugins = {
+    bufferline = {
+      underline_selected = false,
+      underline_visible = false,
+    },
+    indent_blankline = {
+      context_highlight = "default", -- default | pro
+      context_start_underline = false,
+    },
+  },
+  ---@param c Colorscheme
+  override = function(c) end,
+})
 
+require("catppuccin").setup({
+		flavour = "mocha", -- Can be one of: latte, frappe, macchiato, mocha
+		background = { light = "latte", dark = "mocha" },
+		dim_inactive = {
+			enabled = false,
+			-- Dim inactive splits/windows/buffers.
+			-- NOT recommended if you use old palette (a.k.a., mocha).
+			shade = "dark",
+			percentage = 0.15,
+		},
+		transparent_background = true,
+		show_end_of_buffer = false, -- show the '~' characters after the end of buffers
+		term_colors = true,
+		compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
+		styles = {
+			comments = { "italic" },
+			properties = { "italic" },
+			functions = { "bold" },
+			keywords = { "italic" },
+			operators = { "bold" },
+			conditionals = { "bold" },
+			loops = { "bold" },
+			booleans = { "bold", "italic" },
+			numbers = {},
+			types = {},
+			strings = {},
+			variables = {},
+		},
+		integrations = {
+			treesitter = true,
+			native_lsp = {
+				enabled = true,
+				virtual_text = {
+					errors = { "italic" },
+					hints = { "italic" },
+					warnings = { "italic" },
+					information = { "italic" },
+				},
+				underlines = {
+					errors = { "underline" },
+					hints = { "underline" },
+					warnings = { "underline" },
+					information = { "underline" },
+				},
+			},
+			aerial = false,
+			barbar = false,
+			beacon = false,
+			cmp = true,
+			coc_nvim = false,
+			dap = { enabled = true, enable_ui = true },
+			dashboard = false,
+			fern = false,
+			fidget = true,
+			gitgutter = false,
+			gitsigns = true,
+			harpoon = false,
+			hop = true,
+			illuminate = true,
+			indent_blankline = { enabled = true, colored_indent_levels = false },
+			leap = false,
+			lightspeed = false,
+			lsp_saga = true,
+			lsp_trouble = true,
+			markdown = true,
+			mason = true,
+			mini = false,
+			navic = { enabled = false },
+			neogit = false,
+			neotest = false,
+			neotree = { enabled = false, show_root = true, transparent_panel = false },
+			noice = false,
+			notify = true,
+			nvimtree = true,
+			overseer = false,
+			pounce = false,
+			semantic_tokens = false,
+			symbols_outline = false,
+			telekasten = false,
+			telescope = true,
+			treesitter_context = true,
+			ts_rainbow = true,
+			vim_sneak = false,
+			vimwiki = false,
+			which_key = true,
+		},
+		color_overrides = {
+			mocha = {
+        rosewater = "#EA6962",
+        flamingo = "#EA6962",
+        pink = "#D3869B",
+        mauve = "#D3869B",
+        red = "#EA6962",
+        maroon = "#EA6962",
+        peach = "#BD6F3E",
+        yellow = "#D8A657",
+        green = "#A9B665",
+        teal = "#89B482",
+        sky = "#89B482",
+        sapphire = "#89B482",
+        blue = "#7DAEA3",
+        lavender = "#7DAEA3",
+        text = "#D4BE98",
+        subtext1 = "#BDAE8B",
+        subtext0 = "#A69372",
+        overlay2 = "#8C7A58",
+        overlay1 = "#735F3F",
+        overlay0 = "#5A4525",
+        surface2 = "#4B4F51",
+        surface1 = "#2A2D2E",
+        surface0 = "#232728",
+
+        base = "#1D2021",
+        mantle = "#191C1D",
+        crust = "#151819",
+			},
+		},
+    custom_highlights = function(colors)
+    return {
+        NormalFloat = { bg = colors.crust },
+        FloatBorder = { bg = colors.crust, fg = colors.crust },
+        VertSplit = { bg = colors.base, fg = colors.surface0 },
+        CursorLineNr = { fg = colors.mauve, style = { "bold" } },
+        Pmenu = { bg = colors.crust, fg = "" },
+        PmenuSel = { bg = colors.surface0, fg = "" },
+        -- TelescopeSelection = { bg = colors.surface0 },
+        -- TelescopePromptCounter = { fg = colors.mauve, style = { "bold" } },
+        -- TelescopePromptPrefix = { bg = colors.surface0 },
+        -- TelescopePromptNormal = { bg = colors.surface0 },
+        -- TelescopeResultsNormal = { bg = colors.mantle },
+        -- TelescopePreviewNormal = { bg = colors.crust },
+        -- TelescopePromptBorder = { bg = colors.surface0, fg = colors.surface0 },
+        -- TelescopeResultsBorder = { bg = colors.mantle, fg = colors.mantle },
+        -- TelescopePreviewBorder = { bg = colors.crust, fg = colors.crust },
+        -- TelescopePromptTitle = { fg = colors.surface0, bg = colors.surface0 },
+        -- TelescopeResultsTitle = { fg = colors.mantle, bg = colors.mantle },
+        -- TelescopePreviewTitle = { fg = colors.crust, bg = colors.crust },
+        IndentBlanklineChar = { fg = colors.surface0 },
+        IndentBlanklineContextChar = { fg = colors.surface2 },
+        GitSignsChange = { fg = colors.peach },
+        NvimTreeIndentMarker = { link = "IndentBlanklineChar" },
+        NvimTreeExecFile = { fg = colors.text },
+        }
+    end,
+})
+EOF
+colorscheme catppuccin
 
 """"""""""""""""""""""""""""""
 " => Easy Align
@@ -16,12 +192,6 @@ xmap ga <Plug>(EasyAlign)
 
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
-
-""""""""""""""""""""""""""""""
-" => MRU plugin
-""""""""""""""""""""""""""""""
-let MRU_Max_Entries = 400
-map <leader>m :MRU<CR>
 
 """"""""""""""""""""""""""""""
 " => YankStack
@@ -43,13 +213,17 @@ local function open_nvim_tree()
 end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
+-- set termguicolors to enable highlight groups
+vim.opt.termguicolors = true
 require("nvim-tree").setup({
   sort_by = "case_sensitive",
   renderer = {
     group_empty = true,
+    highlight_git = true,
+    highlight_modified = "icon",
   },
 })
-vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
+-- vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
 EOF
 nmap <leader>nn :NvimTreeToggle<CR>
 nmap <leader>nf :NvimTreeFindFile<CR>
@@ -139,54 +313,41 @@ let g:user_emmet_settings = {
 \  },
 \}
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => FZF
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-map <leader>s :Files<cr>
-let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6, 'border':'sharp'} }
-let g:fzf_preview_window = ['right:50%', 'ctrl-/']
-command! -bang -nargs=? -complete=dir Files
-    \ call fzf#vim#files(<q-args>, fzf#vim#with_preview({'options': ['--layout=reverse', '--info=inline']}), <bang>0)
-map <leader>o :Buffers<cr>
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => nvim-colorizer
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" enable for all filetypes
-" lua require'colorizer'.setup()
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => telescope
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+lua << EOF
+require('telescope').setup({})
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>s', builtin.find_files, {})
+vim.keymap.set('n', '<leader>g', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>o', builtin.buffers, {})
+vim.keymap.set('n', '<leader>h', builtin.help_tags, {})
+EOF
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Ack searching and cope displaying
 "    requires ack.vim - it's much better than vimgrep/grep
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Use the the_silver_searcher if possible (much faster than Ack)
-if executable('ag')
-  let g:ackprg = 'ag --vimgrep --smart-case'
-endif
-
 " When you press gv you Ack after the selected text
 vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
 
-" Open Ack/Rg and put the cursor in the right position
-map <leader>g :Rg<CR>
 
 " When you press <leader>r you can search and replace the selected text
 vnoremap <silent> <leader>r :call VisualSelection('replace', '')<CR>
 
-" Do :help cope if you are unsure what cope is. It's super useful!
-"
-" When you search with Ack, display your results in cope by doing:
-"   <leader>cc
-"
-" To go to the next search result do:
-"   <leader>n
-"
-" To go to the previous search results do:
-"   <leader>p
-"
+ " Do :help cope if you are unsure what cope is. It's super useful!
+
+ " When you search with Ack, display your results in cope by doing:
+   " <leader>cc
+
+ " To go to the next search result do:
+   " <leader>n
+
+ " To go to the previous search results do:
+   " <leader>p
+
 map <leader>cc :botright cope<cr>
 map <leader>co ggVGy:tabnew<cr>:set syntax=qf<cr>pgg
 map <leader>n :cn<cr>
@@ -365,6 +526,10 @@ nvim_lsp.tsserver.setup{
   cmd = { "typescript-language-server", "--stdio" },
   filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
 }
+nvim_lsp.sqlls.setup{
+  filetypes = { "sql" },
+}
+
 nvim_lsp.gopls.setup{
 	cmd = {'gopls', 'serve'},
   filetypes = {"go", "gomod"},
@@ -397,7 +562,7 @@ vim.api.nvim_create_autocmd('BufWritePre', {
 
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all"
-  ensure_installed = { "go", "typescript", "yaml", "json" },
+  ensure_installed = { "go", "typescript", "yaml", "json", "sql" },
    -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
    -- List of parsers to ignore installing (for "all")
@@ -408,6 +573,7 @@ require'nvim-treesitter.configs'.setup {
 
       -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
       -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
+
       -- the name of the parser)
       -- list of language that will be disabled
       --disable = { "c", "rust" },
@@ -419,4 +585,26 @@ require'nvim-treesitter.configs'.setup {
       additional_vim_regex_highlighting = false,
     },
   }
+
+require'treesitter-context'.setup{
+  enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+  max_lines = 0, -- How many lines the window should span. Values <= 0 mean no limit.
+  min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+  line_numbers = true,
+  multiline_threshold = 20, -- Maximum number of lines to collapse for a single context line
+  trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+  mode = 'cursor',  -- Line used to calculate context. Choices: 'cursor', 'topline'
+  -- Separator between context and content. Should be a single character string, like '-'.
+  -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+  separator = nil,
+  zindex = 20, -- The Z-index of the context window
+}
+
 EOF
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" => nvim-colorizer
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" keep this at the bottom
+" enable for all filetypes
+lua require'colorizer'.setup()
