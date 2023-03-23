@@ -67,6 +67,7 @@ Plug 'tiagovla/tokyodark.nvim'
 Plug 'weirongxu/plantuml-previewer.vim'
 Plug 'tyru/open-browser.vim'
 Plug 'sbdchd/neoformat'
+Plug 'folke/neodev.nvim'
 
 
 call plug#end()

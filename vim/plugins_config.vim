@@ -46,7 +46,7 @@ require("catppuccin").setup({
 			shade = "dark",
 			percentage = 0.15,
 		},
-		transparent_background = true,
+		transparent_background = false,
 		show_end_of_buffer = false, -- show the '~' characters after the end of buffers
 		term_colors = true,
 		compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
@@ -138,9 +138,9 @@ require("catppuccin").setup({
         sapphire = "#89B482",
         blue = "#7DAEA3",
         lavender = "#7DAEA3",
-        text = "#D4BE98",
+        text = "#E4CEA8",
         subtext1 = "#BDAE8B",
-        subtext0 = "#A69372",
+        subtext0 = "#968362",
         overlay2 = "#8C7A58",
         overlay1 = "#735F3F",
         overlay0 = "#5A4525",
@@ -148,7 +148,7 @@ require("catppuccin").setup({
         surface1 = "#2A2D2E",
         surface0 = "#232728",
 
-        base = "#1D2021",
+        base = "#000000",
         mantle = "#191C1D",
         crust = "#151819",
 			},
@@ -207,9 +207,8 @@ nmap <C-n> <Plug>yankstack_substitute_newer_paste
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 lua <<EOF
 local function open_nvim_tree()
-
-  -- open the tree
-  require("nvim-tree.api").tree.open()
+-- open the tree
+require("nvim-tree.api").tree.open()
 end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
@@ -223,7 +222,7 @@ require("nvim-tree").setup({
     highlight_modified = "icon",
   },
 })
--- vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
+vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
 EOF
 nmap <leader>nn :NvimTreeToggle<CR>
 nmap <leader>nf :NvimTreeFindFile<CR>
@@ -454,7 +453,12 @@ lua <<EOF
     })
   })
 
-  -- Setup lspconfig.
+-- IMPORTANT: make sure to setup neodev BEFORE lspconfig
+require("neodev").setup({
+  -- add any options here, or leave empty to use the default settings
+})
+
+-- Setup lspconfig.
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
 --require'navigator'.setup()
 local nvim_lsp = require('lspconfig')
@@ -567,10 +571,34 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   end
 })
 
+nvim_lsp.vimls.setup{}
+nvim_lsp.lua_ls.setup {
+  settings = {
+    Lua = {
+      runtime = {
+        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+        version = 'LuaJIT',
+      },
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = {'vim'},
+      },
+      workspace = {
+        -- Make the server aware of Neovim runtime files
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      -- Do not send telemetry data containing a randomized but unique identifier
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
+}
+
 
 require'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all"
-  ensure_installed = { "go", "typescript", "yaml", "json", "sql" },
+  ensure_installed = { "go", "typescript", "yaml", "json", "sql", "lua", "bash", "vim" },
    -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
    -- List of parsers to ignore installing (for "all")
