@@ -23,9 +23,11 @@ set nocompatible
 call plug#begin('~/.vim/plugged')
 
 Plug 'nvim-tree/nvim-tree.lua'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-Plug 'jlanzarotta/bufexplorer'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+" " or                                , { 'branch': '0.1.x' }
+" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+" Plug 'junegunn/fzf.vim'
 Plug 'maxbrunsfeld/vim-yankstack'
 Plug 'tpope/vim-surround'
 Plug 'nvim-lualine/lualine.nvim'
@@ -46,8 +48,10 @@ Plug 'junegunn/vim-easy-align'
 Plug 'f-person/git-blame.nvim'
 Plug 'fatih/molokai'
 Plug 'loctvl842/monokai-pro.nvim'
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-treesitter/nvim-treesitter-context'
 Plug 'glepnir/lspsaga.nvim'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
@@ -63,6 +67,7 @@ Plug 'tiagovla/tokyodark.nvim'
 Plug 'weirongxu/plantuml-previewer.vim'
 Plug 'tyru/open-browser.vim'
 Plug 'sbdchd/neoformat'
+Plug 'folke/neodev.nvim'
 
 
 call plug#end()
@@ -180,42 +185,6 @@ let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 " \ }
 " colorscheme onedark
 
-lua <<EOF
-require("monokai-pro").setup({
-  transparent_background = false,
-  terminal_colors = true,
-  devicons = true, -- highlight the icons of `nvim-web-devicons`
-  italic_comments = true,
-  filter = "pro", -- classic | octagon | pro | machine | ristretto | spectrum
-  -- Enable this will disable filter option
-  day_night = {
-    enable = false, -- turn off by default
-    day_filter = "pro", -- classic | octagon | pro | machine | ristretto | spectrum
-    night_filter = "spectrum", -- classic | octagon | pro | machine | ristretto | spectrum
-  },
-  inc_search = "background", -- underline | background
-  background_clear = {
-    "float_win",
-    "toggleterm",
-    "telescope",
-    "which-key",
-    "renamer"
-  },-- "float_win", "toggleterm", "telescope", "which-key", "renamer", "neo-tree"
-  plugins = {
-    bufferline = {
-      underline_selected = false,
-      underline_visible = false,
-    },
-    indent_blankline = {
-      context_highlight = "default", -- default | pro
-      context_start_underline = false,
-    },
-  },
-  ---@param c Colorscheme
-  override = function(c) end,
-})
-EOF
-colorscheme monokai-pro
 
 
 " let g:tokyodark_transparent_background = 0
