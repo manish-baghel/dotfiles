@@ -140,10 +140,10 @@ require("catppuccin").setup({
         lavender = "#7DAEA3",
         text = "#E4CEA8",
         subtext1 = "#BDAE8B",
-        subtext0 = "#968362",
+        subtext0 = "#D6C3A2",
         overlay2 = "#8C7A58",
         overlay1 = "#735F3F",
-        overlay0 = "#5A4525",
+        overlay0 = "#DAC5A5",
         surface2 = "#4B4F51",
         surface1 = "#2A2D2E",
         surface0 = "#232728",
@@ -323,7 +323,18 @@ let g:user_emmet_settings = {
 " => telescope
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 lua << EOF
-require('telescope').setup({})
+require('telescope').setup({
+  defaults = { 
+    file_ignore_patterns = { 
+      "node_modules" 
+    }
+  },
+  pickers = {
+    buffers = {
+      sort_mru = true
+    }
+  }
+})
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>s', builtin.find_files, {})
 vim.keymap.set('n', '<leader>g', builtin.live_grep, {})
@@ -564,10 +575,10 @@ nvim_lsp.gopls.setup{
 	on_attach = on_attach,
 }
 vim.api.nvim_create_autocmd('BufWritePre', {
-  pattern = '*.go',
+  pattern = { "*.go", ".tsx" },
   callback = function()
     vim.lsp.buf.code_action({ context = { only = { 'source.organizeImports' } }, apply = true })
-    vim.lsp.buf.format()
+    vim.lsp.buf.formatting()
   end
 })
 
