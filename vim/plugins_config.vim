@@ -145,10 +145,19 @@ require("catppuccin").setup({
         overlay1 = "#735F3F",
         overlay0 = "#DAC5A5",
         surface2 = "#4B4F51",
+--        blue = "#9DCEF3",
+--        lavender = "#9DCEF3",
+--        text = "#F4DEC8",
+--        subtext1 = "#CDBEAB",
+--        subtext0 = "#B6A382",
+--        overlay2 = "#AC9A78",
+--        overlay1 = "#937F5F",
+--        overlay0 = "#7A6545",
+--        surface2 = "#6B6F71",
         surface1 = "#2A2D2E",
         surface0 = "#232728",
 
-        base = "#000000",
+        base = "#1D2021",
         mantle = "#191C1D",
         crust = "#151819",
 			},
@@ -159,20 +168,21 @@ require("catppuccin").setup({
         FloatBorder = { bg = colors.crust, fg = colors.crust },
         VertSplit = { bg = colors.base, fg = colors.surface0 },
         CursorLineNr = { fg = colors.mauve, style = { "bold" } },
+        LineNr = { fg = colors.surface2 },
         Pmenu = { bg = colors.crust, fg = "" },
         PmenuSel = { bg = colors.surface0, fg = "" },
-        -- TelescopeSelection = { bg = colors.surface0 },
-        -- TelescopePromptCounter = { fg = colors.mauve, style = { "bold" } },
-        -- TelescopePromptPrefix = { bg = colors.surface0 },
-        -- TelescopePromptNormal = { bg = colors.surface0 },
-        -- TelescopeResultsNormal = { bg = colors.mantle },
-        -- TelescopePreviewNormal = { bg = colors.crust },
-        -- TelescopePromptBorder = { bg = colors.surface0, fg = colors.surface0 },
-        -- TelescopeResultsBorder = { bg = colors.mantle, fg = colors.mantle },
-        -- TelescopePreviewBorder = { bg = colors.crust, fg = colors.crust },
-        -- TelescopePromptTitle = { fg = colors.surface0, bg = colors.surface0 },
-        -- TelescopeResultsTitle = { fg = colors.mantle, bg = colors.mantle },
-        -- TelescopePreviewTitle = { fg = colors.crust, bg = colors.crust },
+--        TelescopeSelection = { bg = colors.surface0 },
+--        TelescopePromptCounter = { fg = colors.mauve, style = { "bold" } },
+--        TelescopePromptPrefix = { bg = colors.surface0 },
+--        TelescopePromptNormal = { bg = colors.surface0 },
+--        TelescopeResultsNormal = { bg = colors.mantle },
+--        TelescopePreviewNormal = { bg = colors.crust },
+--        TelescopePromptBorder = { bg = colors.surface0, fg = colors.surface0 },
+--        TelescopeResultsBorder = { bg = colors.mantle, fg = colors.mantle },
+--        TelescopePreviewBorder = { bg = colors.crust, fg = colors.crust },
+--        TelescopePromptTitle = { fg = colors.surface0, bg = colors.surface0 },
+--        TelescopeResultsTitle = { fg = colors.mantle, bg = colors.mantle },
+--        TelescopePreviewTitle = { fg = colors.crust, bg = colors.crust },
         IndentBlanklineChar = { fg = colors.surface0 },
         IndentBlanklineContextChar = { fg = colors.surface2 },
         GitSignsChange = { fg = colors.peach },
@@ -647,11 +657,8 @@ require'treesitter-context'.setup{
   zindex = 20, -- The Z-index of the context window
 }
 
-EOF
+-- keep this at the bottom
+-- enable for all filetypes
+require'colorizer'.setup()
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => nvim-colorizer
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" keep this at the bottom
-" enable for all filetypes
-lua require'colorizer'.setup()
+EOF
