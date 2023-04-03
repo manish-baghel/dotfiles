@@ -36,163 +36,8 @@ require("monokai-pro").setup({
   override = function(c) end,
 })
 
-require("catppuccin").setup({
-		flavour = "mocha", -- Can be one of: latte, frappe, macchiato, mocha
-		background = { light = "latte", dark = "mocha" },
-		dim_inactive = {
-			enabled = false,
-			-- Dim inactive splits/windows/buffers.
-			-- NOT recommended if you use old palette (a.k.a., mocha).
-			shade = "dark",
-			percentage = 0.15,
-		},
-		transparent_background = false,
-		show_end_of_buffer = false, -- show the '~' characters after the end of buffers
-		term_colors = true,
-		compile_path = vim.fn.stdpath("cache") .. "/catppuccin",
-		styles = {
-			comments = { "italic" },
-			properties = { "italic" },
-			functions = { "bold" },
-			keywords = { "italic" },
-			operators = { "bold" },
-			conditionals = { "bold" },
-			loops = { "bold" },
-			booleans = { "bold", "italic" },
-			numbers = {},
-			types = {},
-			strings = {},
-			variables = {},
-		},
-		integrations = {
-			treesitter = true,
-			native_lsp = {
-				enabled = true,
-				virtual_text = {
-					errors = { "italic" },
-					hints = { "italic" },
-					warnings = { "italic" },
-					information = { "italic" },
-				},
-				underlines = {
-					errors = { "underline" },
-					hints = { "underline" },
-					warnings = { "underline" },
-					information = { "underline" },
-				},
-			},
-			aerial = false,
-			barbar = false,
-			beacon = false,
-			cmp = true,
-			coc_nvim = false,
-			dap = { enabled = true, enable_ui = true },
-			dashboard = false,
-			fern = false,
-			fidget = true,
-			gitgutter = false,
-			gitsigns = true,
-			harpoon = false,
-			hop = true,
-			illuminate = true,
-			indent_blankline = { enabled = true, colored_indent_levels = false },
-			leap = false,
-			lightspeed = false,
-			lsp_saga = true,
-			lsp_trouble = true,
-			markdown = true,
-			mason = true,
-			mini = false,
-			navic = { enabled = false },
-			neogit = false,
-			neotest = false,
-			neotree = { enabled = false, show_root = true, transparent_panel = false },
-			noice = false,
-			notify = true,
-			nvimtree = true,
-			overseer = false,
-			pounce = false,
-			semantic_tokens = false,
-			symbols_outline = false,
-			telekasten = false,
-			telescope = true,
-			treesitter_context = true,
-			ts_rainbow = true,
-			vim_sneak = false,
-			vimwiki = false,
-			which_key = true,
-		},
-		color_overrides = {
-			mocha = {
-        rosewater = "#EA6962",
-        flamingo = "#EA6962",
-        pink = "#D3869B",
-        mauve = "#D3869B",
-        red = "#EA6962",
-        maroon = "#EA6962",
-        peach = "#BD6F3E",
-        yellow = "#D8A657",
-        green = "#A9B665",
-        teal = "#89B482",
-        sky = "#89B482",
-        sapphire = "#89B482",
-        blue = "#7DAEA3",
-        lavender = "#7DAEA3",
-        text = "#E4CEA8",
-        subtext1 = "#BDAE8B",
-        subtext0 = "#D6C3A2",
-        overlay2 = "#8C7A58",
-        overlay1 = "#735F3F",
-        overlay0 = "#DAC5A5",
-        surface2 = "#4B4F51",
---        blue = "#9DCEF3",
---        lavender = "#9DCEF3",
---        text = "#F4DEC8",
---        subtext1 = "#CDBEAB",
---        subtext0 = "#B6A382",
---        overlay2 = "#AC9A78",
---        overlay1 = "#937F5F",
---        overlay0 = "#7A6545",
---        surface2 = "#6B6F71",
-        surface1 = "#2A2D2E",
-        surface0 = "#232728",
-
-        base = "#1D2021",
-        mantle = "#191C1D",
-        crust = "#151819",
-			},
-		},
-    custom_highlights = function(colors)
-    return {
-        NormalFloat = { bg = colors.crust },
-        FloatBorder = { bg = colors.crust, fg = colors.crust },
-        VertSplit = { bg = colors.base, fg = colors.surface0 },
-        CursorLineNr = { fg = colors.mauve, style = { "bold" } },
-        LineNr = { fg = colors.surface2 },
-        Pmenu = { bg = colors.crust, fg = "" },
-        PmenuSel = { bg = colors.surface0, fg = "" },
---        TelescopeSelection = { bg = colors.surface0 },
---        TelescopePromptCounter = { fg = colors.mauve, style = { "bold" } },
---        TelescopePromptPrefix = { bg = colors.surface0 },
---        TelescopePromptNormal = { bg = colors.surface0 },
---        TelescopeResultsNormal = { bg = colors.mantle },
---        TelescopePreviewNormal = { bg = colors.crust },
---        TelescopePromptBorder = { bg = colors.surface0, fg = colors.surface0 },
---        TelescopeResultsBorder = { bg = colors.mantle, fg = colors.mantle },
---        TelescopePreviewBorder = { bg = colors.crust, fg = colors.crust },
---        TelescopePromptTitle = { fg = colors.surface0, bg = colors.surface0 },
---        TelescopeResultsTitle = { fg = colors.mantle, bg = colors.mantle },
---        TelescopePreviewTitle = { fg = colors.crust, bg = colors.crust },
-        IndentBlanklineChar = { fg = colors.surface0 },
-        IndentBlanklineContextChar = { fg = colors.surface2 },
-        GitSignsChange = { fg = colors.peach },
-        NvimTreeIndentMarker = { link = "IndentBlanklineChar" },
-        NvimTreeExecFile = { fg = colors.text },
-        }
-    end,
-})
 EOF
-colorscheme catppuccin
+colorscheme monokai-pro
 
 """"""""""""""""""""""""""""""
 " => Easy Align
@@ -225,14 +70,20 @@ vim.g.loaded_netrwPlugin = 1
 -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
 require("nvim-tree").setup({
+  open_on_setup = false,
+  open_on_setup_file = false,
   sort_by = "case_sensitive",
   renderer = {
     group_empty = true,
     highlight_git = true,
     highlight_modified = "icon",
   },
+  hijack_directories = {
+    enable = false,
+    auto_open = true,
+  },
 })
-vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
+-- vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
 EOF
 nmap <leader>nn :NvimTreeToggle<CR>
 nmap <leader>nf :NvimTreeFindFile<CR>
@@ -587,8 +438,8 @@ nvim_lsp.gopls.setup{
 vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = { "*.go", ".tsx" },
   callback = function()
-    vim.lsp.buf.code_action({ context = { only = { 'source.organizeImports' } }, apply = true })
-    vim.lsp.buf.formatting()
+--    vim.lsp.buf.code_action({ context = { only = { 'source.organizeImports' } }, apply = true })
+    vim.lsp.buf.format()
   end
 })
 
@@ -656,6 +507,18 @@ require'treesitter-context'.setup{
   separator = nil,
   zindex = 20, -- The Z-index of the context window
 }
+
+-- run tests
+require("neotest").setup({
+  adapters = {
+    require("neotest-go")({
+      experimental = {
+        test_table = true,
+      },
+      args = { "-count=1", "-timeout=60s" }
+    })
+  }
+})
 
 -- keep this at the bottom
 -- enable for all filetypes

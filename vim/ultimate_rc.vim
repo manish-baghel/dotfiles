@@ -48,7 +48,6 @@ Plug 'junegunn/vim-easy-align'
 Plug 'f-person/git-blame.nvim'
 Plug 'fatih/molokai'
 Plug 'loctvl842/monokai-pro.nvim'
-Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'neovim/nvim-lspconfig'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'nvim-treesitter/nvim-treesitter-context'
@@ -68,6 +67,9 @@ Plug 'weirongxu/plantuml-previewer.vim'
 Plug 'tyru/open-browser.vim'
 Plug 'sbdchd/neoformat'
 Plug 'folke/neodev.nvim'
+Plug 'antoinemadec/FixCursorHold.nvim'
+Plug 'nvim-neotest/neotest'
+Plug 'nvim-neotest/neotest-go'
 
 
 call plug#end()
