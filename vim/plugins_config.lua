@@ -36,10 +36,10 @@ require("monokai-pro").setup({
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => Nvim Tree
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-local function open_nvim_tree()
-  -- open the tree
-  require("nvim-tree.api").tree.open()
-end
+-- local function open_nvim_tree()
+--   -- open the tree
+--   require("nvim-tree.api").tree.open()
+-- end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 -- -- set termguicolors to enable highlight groups
@@ -58,7 +58,7 @@ require("nvim-tree").setup({
     auto_open = false,
   },
 })
-vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
+-- vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
 
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => lualine
