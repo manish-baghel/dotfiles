@@ -1,5 +1,5 @@
 require("monokai-pro").setup({
-  transparent_background = true,
+  transparent_background = false,
   terminal_colors = true,
   devicons = true, -- highlight the icons of `nvim-web-devicons`
   italic_comments = true,
@@ -42,7 +42,7 @@ local function open_nvim_tree()
 end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
--- set termguicolors to enable highlight groups
+-- -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
 require("nvim-tree").setup({
   open_on_setup = false,
@@ -55,7 +55,7 @@ require("nvim-tree").setup({
   },
   hijack_directories = {
     enable = false,
-    auto_open = true,
+    auto_open = false,
   },
 })
 vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
@@ -111,7 +111,7 @@ require('telescope').setup({
   defaults = {
     file_ignore_patterns = {
       "node_modules"
-    }
+    },
   },
   pickers = {
     buffers = {
@@ -122,8 +122,11 @@ require('telescope').setup({
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>s', builtin.find_files, {})
 vim.keymap.set('n', '<leader>g', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>rs', builtin.resume, {}) -- resumes last picker(find_file, live_grep, etc.) with cached keywords
 vim.keymap.set('n', '<leader>o', builtin.buffers, {})
 vim.keymap.set('n', '<leader>h', builtin.help_tags, {})
+vim.api.nvim_set_var('telescope#buffer#open_file_in_current_window', true)
+vim.api.nvim_set_var('telescope#live_grep#open_file_in_current_window', true)
 
 -- """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => LSP
@@ -233,9 +236,9 @@ local on_attach = function(client, bufnr)
   local opts = { noremap = true, silent = true }
   buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
   buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   buf_set_keymap('n', 'ga', '<Cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
   buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)

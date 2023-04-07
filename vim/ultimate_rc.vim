@@ -24,10 +24,7 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'nvim-tree/nvim-tree.lua'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
-" " or                                , { 'branch': '0.1.x' }
-" Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-" Plug 'junegunn/fzf.vim'
+Plug 'nvim-telescope/telescope.nvim'
 Plug 'maxbrunsfeld/vim-yankstack'
 Plug 'tpope/vim-surround'
 Plug 'nvim-lualine/lualine.nvim'
@@ -108,8 +105,10 @@ command! -nargs=? Gst let @a='' | execute 'g/<args>/y A' | new | setlocal bt=nof
 " Fast editing and reloading of vimrc
 map <leader>e :e! ~/dotfiles/vim/ultimate_rc.vim<cr>
 map <leader>E :e! ~/dotfiles/vim/plugins_config.vim<cr>
+map <leader>E :e! ~/dotfiles/vim/plugins_config.lua<cr>
 autocmd! bufwritepost ~/dotfiles/vim/ultimate_rc.vim source ~/.vimrc
 autocmd! bufwritepost ~/dotfiles/vim/plugins_config.vim source ~/.vimrc
+autocmd! bufwritepost ~/dotfiles/vim/plugins_config.lua source ~/.vimrc
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " VIM UI Config
@@ -361,7 +360,7 @@ map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
 " Specify the behavior when switching between buffers 
 try
-  set switchbuf=useopen,usetab,vsplit
+  set switchbuf=useopen,usetab
   set showtabline=2
 catch
 endtry

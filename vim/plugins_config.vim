@@ -4,13 +4,14 @@
 colorscheme monokai-pro
 
 """"""""""""""""""""""""""""""
-" => Easy Align
+"    => Easy Align
 """"""""""""""""""""""""""""""
-" Start interactive EasyAlign in visual mode (e.g. vipga)
-xmap ga <Plug>(EasyAlign)
+"    Start interactive EasyAlign in visual mode (e.g. vipga)
+xmap <leader>al <Plug>(EasyAlign)
 
-" Start interactive EasyAlign for a motion/text object (e.g. gaip)
-nmap ga <Plug>(EasyAlign)
+"    Start interactive EasyAlign for a motion/text object (e.g. gaip)
+"    For eg. <leader>al<space>
+nmap <leader>al <Plug>(EasyAlign)
 
 """"""""""""""""""""""""""""""
 " => YankStack
