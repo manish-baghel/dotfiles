@@ -7,8 +7,14 @@ Put below content in `~/.vimrc`
 Note: There are some Compatibility issues with vim, but works fine with neovim 
 
 ```vim
-source Path/to/dotfiles/vim/ultimate_rc.vim
-source Path/to/dotfiles/vim/plugins_config.vim
+source ~/dotfiles/vim/ultimate_rc.vim
+lua require('plugins_config')
+source ~/dotfiles/vim/plugins_config.vim
+```
+And follow below steps to transfer the necessary file to `.config/nvim/lua` directory
+```bash
+mkdir -p ~/.config/nvim/lua
+cp ~/dotfiles/vim/plugins_config.lua ~/.config/nvim/lua/
 ```
 
 ## ZSH
