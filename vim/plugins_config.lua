@@ -37,9 +37,9 @@ require("monokai-pro").setup({
 -- " => Nvim Tree
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- local function open_nvim_tree()
---   -- open the tree
---   require("nvim-tree.api").tree.open()
--- end
+  --   -- open the tree
+  --   require("nvim-tree.api").tree.open()
+  -- end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 -- -- set termguicolors to enable highlight groups
@@ -107,7 +107,10 @@ require('lualine').setup {
 -- """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => telescope
 -- """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-require('telescope').setup({
+local telescope = require("telescope")
+telescope.load_extension("live_grep_args")
+local lga_actions = require("telescope-live-grep-args.actions")
+telescope.setup {
   defaults = {
     file_ignore_patterns = {
       "node_modules"
@@ -117,11 +120,28 @@ require('telescope').setup({
     buffers = {
       sort_mru = true
     }
+  },
+  extensions = {
+    live_grep_args = {
+      auto_quoting = true, -- enable/disable auto-quoting
+      -- define mappings, e.g.
+      mappings = { -- extend mappings
+      i = {
+        ["<C-k>"] = lga_actions.quote_prompt(),
+        ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+      },
+    },
+    -- ... also accepts theme settings, for example:
+    -- theme = "dropdown", -- use dropdown theme
+    -- theme = { }, -- use own theme spec
+    -- layout_config = { mirror=true }, -- mirror preview pane
   }
-})
+}
+}
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>s', builtin.find_files, {})
-vim.keymap.set('n', '<leader>g', builtin.live_grep, {})
+vim.keymap.set("n", "<leader>g", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
+vim.keymap.set('n', '<leader>gs', builtin.grep_string, {})
 vim.keymap.set('n', '<leader>rs', builtin.resume, {}) -- resumes last picker(find_file, live_grep, etc.) with cached keywords
 vim.keymap.set('n', '<leader>o', builtin.buffers, {})
 vim.keymap.set('n', '<leader>h', builtin.help_tags, {})
@@ -261,16 +281,18 @@ local on_attach = function(client, bufnr)
   -- Set autocommands conditional on server_capabilities
   if client.server_capabilities.document_highlight then
     vim.api.nvim_exec([[
-     hi LspReferenceRead cterm=bold ctermfg=Black ctermbg=LightYellow guibg=LightYellow
-     hi LspReferenceText cterm=bold ctermfg=Black ctermbg=LightYellow guibg=LightYellow
-     hi LspReferenceWrite cterm=bold ctermfg=Black ctermbg=LightYellow guibg=LightYellow
-     augroup lsp_document_highlight
-       autocmd! * <buffer>
-       autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-       autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-     augroup END
-   ]], false)
+    hi LspReferenceRead cterm=bold ctermfg=Black ctermbg=LightYellow guibg=LightYellow
+    hi LspReferenceText cterm=bold ctermfg=Black ctermbg=LightYellow guibg=LightYellow
+    hi LspReferenceWrite cterm=bold ctermfg=Black ctermbg=LightYellow guibg=LightYellow
+    augroup lsp_document_highlight
+    autocmd! * <buffer>
+    autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
+    autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
+    augroup END
+    ]], false)
   end
+
+  require "lsp-inlayhints".on_attach(client, bufnr)
 end -- on_attach end
 
 nvim_lsp.tsserver.setup{
@@ -296,6 +318,14 @@ nvim_lsp.gopls.setup {
         shadow = true,
       },
       staticcheck = true,
+      hints = {
+        assignVariableTypes = true,
+        compositeLiteralFields = true,
+        constantValues = true,
+        functionTypeParameters = true,
+        parameterNames = true,
+        rangeVariableTypes = true,
+      },
     },
   },
   init_options = {
@@ -376,7 +406,48 @@ require 'treesitter-context'.setup {
 }
 
 -- run tests
-require("neotest").setup({
+local neotest = require('neotest')
+local lib = require("neotest.lib")
+local get_env = function()
+  local env = {}
+  local file = ".env"
+  if not lib.files.exists(file) then
+    return {}
+  end
+
+  for _, line in ipairs(vim.fn.readfile(file)) do
+    for name, value in string.gmatch(line, "(%S+)=['\"]?(.*)['\"]?") do
+      local str_end = string.sub(value, -1, -1)
+      if str_end == "'" or str_end == '"' then
+        value = string.sub(value, 1, -2)
+      end
+
+      env[name] = value
+    end
+  end
+  return env
+end
+neotest.setup({
+  log_level = vim.log.levels.DEBUG,
+  quickfix = {
+    open = false,
+  },
+  status = {
+    virtual_text = true,
+    signs = true,
+  },
+  output = {
+    open_on_run = false,
+
+  },
+  icons = {
+    running_animated = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
+  },
+  strategies = {
+    integrated = {
+      width = 180,
+    },
+  },
   adapters = {
     require("neotest-go")({
       experimental = {
@@ -386,7 +457,89 @@ require("neotest").setup({
     })
   }
 })
+local mappings = {
+  ["<leader>nr"] = function()
+    neotest.run.run({ vim.fn.expand("%:p"), env = get_env() })
+  end,
+  ["<leader>ns"] = function()
+    for _, adapter_id in ipairs(neotest.state.adapter_ids()) do
+      neotest.run.run({ suite = true, adapter = adapter_id, env = get_env() })
+    end
+  end,
+  ["<leader>nx"] = function()
+    neotest.run.stop()
+  end,
+  ["<leader>nn"] = function()
+    neotest.run.run({ env = get_env() })
+  end,
+  ["<leader>nd"] = function()
+    neotest.run.run({ strategy = "dap", env = get_env() })
+  end,
+  ["<leader>nl"] = neotest.run.run_last,
+  ["<leader>nD"] = function()
+    neotest.run.run_last({ strategy = "dap" })
+  end,
+  ["<leader>na"] = neotest.run.attach,
+  ["<leader>no"] = function()
+    neotest.output.open({ enter = true, last_run = true })
+  end,
+  ["<leader>ni"] = function()
+    neotest.output.open({ enter = true })
+  end,
+  ["<leader>nO"] = function()
+    neotest.output.open({ enter = true, short = true })
+  end,
+  ["<leader>np"] = neotest.summary.toggle,
+  ["<leader>nm"] = neotest.summary.run_marked,
+  ["<leader>ne"] = neotest.output_panel.toggle,
+  ["[n"] = function()
+    neotest.jump.prev({ status = "failed" })
+  end,
+  ["]n"] = function()
+    neotest.jump.next({ status = "failed" })
+  end,
+}
+
+for keys, mapping in pairs(mappings) do
+  vim.api.nvim_set_keymap("n", keys, "", { callback = mapping, noremap = true })
+end
+
 
 -- keep this at the bottom
 -- enable for all filetypes
 require 'colorizer'.setup()
+
+require("lsp-inlayhints").setup({
+  inlay_hints = {
+    parameter_hints = {
+      show = true,
+      prefix = "<- ",
+      separator = ", ",
+      remove_colon_start = false,
+      remove_colon_end = true,
+    },
+    type_hints = {
+      -- type and other hints
+      show = true,
+      prefix = "",
+      separator = ", ",
+      remove_colon_start = false,
+      remove_colon_end = false,
+    },
+    only_current_line = false,
+    -- separator between types and parameter hints. Note that type hints are
+    -- shown before parameter
+    labels_separator = "  ",
+    -- whether to align to the length of the longest line in the file
+    max_len_align = false,
+    -- padding from the left if max_len_align is true
+    max_len_align_padding = 1,
+    -- highlight group
+    highlight = "Comment",
+    -- virt_text priority
+    priority = 0,
+  },
+  enabled_at_startup = true,
+  debug_mode = false,
+}
+)
