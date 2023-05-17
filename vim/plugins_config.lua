@@ -46,7 +46,6 @@ vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
 require("nvim-tree").setup({
   open_on_setup = false,
-  open_on_setup_file = false,
   sort_by = "case_sensitive",
   renderer = {
     group_empty = true,
@@ -135,9 +134,10 @@ telescope.setup {
     -- theme = "dropdown", -- use dropdown theme
     -- theme = { }, -- use own theme spec
     -- layout_config = { mirror=true }, -- mirror preview pane
+    }
   }
 }
-}
+
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>s', builtin.find_files, {})
 vim.keymap.set("n", "<leader>g", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
@@ -273,7 +273,7 @@ local on_attach = function(client, bufnr)
   --
   -- Set some keybinds conditional on server capabilities
   if client.server_capabilities.document_formatting then
-    buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.format({async = true})<CR>", opts)
+    buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.format()<CR>", opts)
   elseif client.server_capabilities.document_range_formatting then
     buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.range_formatting()<CR>", opts)
   end
@@ -356,6 +356,7 @@ nvim_lsp.lua_ls.setup {
       workspace = {
         -- Make the server aware of Neovim runtime files
         library = vim.api.nvim_get_runtime_file("", true),
+        checkThirdParty = false,
       },
       -- Do not send telemetry data containing a randomized but unique identifier
       telemetry = {
@@ -504,6 +505,20 @@ for keys, mapping in pairs(mappings) do
   vim.api.nvim_set_keymap("n", keys, "", { callback = mapping, noremap = true })
 end
 
+
+-- hugging face code completion model 
+require('hfcc').setup({
+  api_token = "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",
+  model = "bigcode/starcoder"
+})
+-- vim.keymap.set("i", "<leader>ai", require('hfcc').HFccSuggestion, {})
+
+-- hugging face code completion model 
+require('hfcc').setup({
+  api_token = "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",
+  model = "bigcode/starcoder"
+})
+-- vim.keymap.set("i", "<leader>ai", require('hfcc').HFccSuggestion, {})
 
 -- keep this at the bottom
 -- enable for all filetypes

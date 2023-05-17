@@ -68,6 +68,7 @@ Plug 'folke/neodev.nvim'
 Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'nvim-neotest/neotest'
 Plug 'nvim-neotest/neotest-go'
+Plug 'huggingface/hfcc.nvim'
 
 
 call plug#end()
@@ -561,3 +562,5 @@ function! s:CopyMatches(line1, line2, reg)
     echo 'No hits'
   endif
 endfunction
+
+nnoremap <leader>ai :HFccSuggestion<cr>
