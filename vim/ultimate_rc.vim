@@ -47,8 +47,7 @@ Plug 'fatih/molokai'
 Plug 'loctvl842/monokai-pro.nvim'
 Plug 'neovim/nvim-lspconfig'
 Plug 'lvimuser/lsp-inlayhints.nvim'
-Plug 'nvim-treesitter/nvim-treesitter'
-Plug 'nvim-treesitter/nvim-treesitter-context'
+Plug 'nvim-treesitter/nvim-treesitter' | Plug 'nvim-treesitter/nvim-treesitter-context' | Plug 'andrewferrier/debugprint.nvim'
 Plug 'glepnir/lspsaga.nvim'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
@@ -69,6 +68,7 @@ Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'nvim-neotest/neotest'
 Plug 'nvim-neotest/neotest-go'
 Plug 'huggingface/hfcc.nvim'
+Plug 'rebelot/kanagawa.nvim'
 
 
 call plug#end()

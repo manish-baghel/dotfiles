@@ -1,45 +1,13 @@
-require("monokai-pro").setup({
-  transparent_background = false,
-  terminal_colors = true,
-  devicons = true, -- highlight the icons of `nvim-web-devicons`
-  italic_comments = true,
-  filter = "pro",  -- classic | octagon | pro | machine | ristretto | spectrum
-  -- Enable this will disable filter option
-  day_night = {
-    enable = false,            -- turn off by default
-    day_filter = "pro",        -- classic | octagon | pro | machine | ristretto | spectrum
-    night_filter = "spectrum", -- classic | octagon | pro | machine | ristretto | spectrum
-  },
-  inc_search = "background",   -- underline | background
-  background_clear = {
-    "float_win",
-    "toggleterm",
-    "telescope",
-    "which-key",
-    "renamer"
-  }, -- "float_win", "toggleterm", "telescope", "which-key", "renamer", "neo-tree"
-  plugins = {
-    bufferline = {
-      underline_selected = false,
-      underline_visible = false,
-    },
-    indent_blankline = {
-      context_highlight = "default", -- default | pro
-      context_start_underline = false,
-    },
-  },
-  ---@param c Colorscheme
-  override = function(c)
-  end,
-})
+-- setup must be called before loading
+vim.cmd("colorscheme kanagawa-wave")
 
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => Nvim Tree
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- local function open_nvim_tree()
-  --   -- open the tree
-  --   require("nvim-tree.api").tree.open()
-  -- end
+--   -- open the tree
+--   require("nvim-tree.api").tree.open()
+-- end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 -- -- set termguicolors to enable highlight groups
@@ -124,16 +92,17 @@ telescope.setup {
     live_grep_args = {
       auto_quoting = true, -- enable/disable auto-quoting
       -- define mappings, e.g.
-      mappings = { -- extend mappings
-      i = {
-        ["<C-k>"] = lga_actions.quote_prompt(),
-        ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+      mappings = {
+        -- extend mappings
+        i = {
+          ["<C-k>"] = lga_actions.quote_prompt(),
+          ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+        },
       },
-    },
-    -- ... also accepts theme settings, for example:
-    -- theme = "dropdown", -- use dropdown theme
-    -- theme = { }, -- use own theme spec
-    -- layout_config = { mirror=true }, -- mirror preview pane
+      -- ... also accepts theme settings, for example:
+      -- theme = "dropdown", -- use dropdown theme
+      -- theme = { }, -- use own theme spec
+      -- layout_config = { mirror=true }, -- mirror preview pane
     }
   }
 }
@@ -272,36 +241,47 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
   --
   -- Set some keybinds conditional on server capabilities
-  if client.server_capabilities.document_formatting then
+  if client.server_capabilities.documentFormattingProvider then
     buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.format()<CR>", opts)
-  elseif client.server_capabilities.document_range_formatting then
+  elseif client.server_capabilities.documentRangeFormattingProvider then
     buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.range_formatting()<CR>", opts)
+  else
+    buf_set_keymap("n", "ff", '<cmd>lua print("formatting is not supported by this lsp server")<CR>', opts)
   end
   --
   -- Set autocommands conditional on server_capabilities
-  if client.server_capabilities.document_highlight then
-    vim.api.nvim_exec([[
-    hi LspReferenceRead cterm=bold ctermfg=Black ctermbg=LightYellow guibg=LightYellow
-    hi LspReferenceText cterm=bold ctermfg=Black ctermbg=LightYellow guibg=LightYellow
-    hi LspReferenceWrite cterm=bold ctermfg=Black ctermbg=LightYellow guibg=LightYellow
-    augroup lsp_document_highlight
-    autocmd! * <buffer>
-    autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-    autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-    augroup END
-    ]], false)
+  if client.server_capabilities.documentHighlightProvider then
+    local group = vim.api.nvim_create_augroup("LSPDocumentHighlight", {})
+
+    vim.opt.updatetime = 1000
+
+    vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+      buffer = bufnr,
+      group = group,
+      callback = function()
+        vim.lsp.buf.document_highlight()
+      end,
+    })
+    vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+      buffer = bufnr,
+      group = group,
+      callback = function()
+        vim.lsp.buf.clear_references()
+      end,
+    })
   end
 
-  require "lsp-inlayhints".on_attach(client, bufnr)
+  require "lsp-inlayhints".on_attach(client, bufnr, true)
 end -- on_attach end
 
-nvim_lsp.tsserver.setup{
+nvim_lsp.tsserver.setup {
   cmd = { "typescript-language-server", "--stdio" },
   filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
   on_attach = on_attach,
 }
 nvim_lsp.sqlls.setup {
   filetypes = { "sql" },
+  on_attach = on_attach
 }
 
 nvim_lsp.gopls.setup {
@@ -334,7 +314,7 @@ nvim_lsp.gopls.setup {
   on_attach = on_attach,
 }
 vim.api.nvim_create_autocmd('BufWritePre', {
-  pattern = { "*.go", ".tsx" },
+  pattern = { "*.go", "*.tsx", "*.lua" },
   callback = function()
     --    vim.lsp.buf.code_action({ context = { only = { 'source.organizeImports' } }, apply = true })
     vim.lsp.buf.format()
@@ -356,14 +336,20 @@ nvim_lsp.lua_ls.setup {
       workspace = {
         -- Make the server aware of Neovim runtime files
         library = vim.api.nvim_get_runtime_file("", true),
-        checkThirdParty = false,
+        checkThirdParty = true,
       },
       -- Do not send telemetry data containing a randomized but unique identifier
       telemetry = {
         enable = false,
       },
+      -- inlay hints
+      hint = {
+        enabled = true,
+        setType = true,
+      },
     },
   },
+  on_attach = on_attach,
 }
 
 
@@ -506,19 +492,26 @@ for keys, mapping in pairs(mappings) do
 end
 
 
--- hugging face code completion model 
+-- hugging face code completion model
 require('hfcc').setup({
   api_token = "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",
-  model = "bigcode/starcoder"
+  model = "bigcode/starcoder",
+  -- parameters that are added to the request body
+  query_params = {
+    max_new_tokens = 60,
+    temperature = 0.2,
+    top_p = 0.95,
+    stop_token = "<|endoftext|>",
+  },
+  -- set this if the model supports fill in the middle
+  fim = {
+    enabled = true,
+    prefix = "<fim_prefix>",
+    middle = "<fim_middle>",
+    suffix = "<fim_suffix>",
+  },
 })
--- vim.keymap.set("i", "<leader>ai", require('hfcc').HFccSuggestion, {})
-
--- hugging face code completion model 
-require('hfcc').setup({
-  api_token = "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",
-  model = "bigcode/starcoder"
-})
--- vim.keymap.set("i", "<leader>ai", require('hfcc').HFccSuggestion, {})
+vim.keymap.set("n", "<leader>ai", "<cmd>HFccSuggestion<CR>", {})
 
 -- keep this at the bottom
 -- enable for all filetypes
@@ -528,7 +521,7 @@ require("lsp-inlayhints").setup({
   inlay_hints = {
     parameter_hints = {
       show = true,
-      prefix = "<- ",
+      prefix = ": ",
       separator = ", ",
       remove_colon_start = false,
       remove_colon_end = true,
@@ -558,3 +551,5 @@ require("lsp-inlayhints").setup({
   debug_mode = false,
 }
 )
+
+require("debugprint").setup {}
