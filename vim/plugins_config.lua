@@ -298,6 +298,32 @@ end -- on_attach end
 nvim_lsp.tsserver.setup{
   cmd = { "typescript-language-server", "--stdio" },
   filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
+  settings = {
+    typescript = {
+      inlayHints = {
+        includeInlayParameterNameHints = 'all',
+        includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayVariableTypeHints = true,
+        includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayEnumMemberValueHints = true,
+      }
+    },
+    javascript = {
+      inlayHints = {
+        includeInlayParameterNameHints = 'all',
+        includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayVariableTypeHints = true,
+        includeInlayVariableTypeHintsWhenTypeMatchesName = true,
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayEnumMemberValueHints = true,
+      }
+    },
+  },
   on_attach = on_attach,
 }
 nvim_lsp.sqlls.setup {
@@ -362,8 +388,15 @@ nvim_lsp.lua_ls.setup {
       telemetry = {
         enable = false,
       },
+      hints = {
+        enable = true,
+      },
+      inlayHints = {
+        enable = true,
+      },
     },
   },
+  on_attach = on_attach,
 }
 
 
@@ -528,7 +561,7 @@ require("lsp-inlayhints").setup({
   inlay_hints = {
     parameter_hints = {
       show = true,
-      prefix = "<- ",
+      prefix = ": ",
       separator = ", ",
       remove_colon_start = false,
       remove_colon_end = true,
@@ -546,7 +579,7 @@ require("lsp-inlayhints").setup({
     -- shown before parameter
     labels_separator = "  ",
     -- whether to align to the length of the longest line in the file
-    max_len_align = false,
+    max_len_align = true,
     -- padding from the left if max_len_align is true
     max_len_align_padding = 1,
     -- highlight group
