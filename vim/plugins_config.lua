@@ -13,7 +13,6 @@ vim.g.loaded_netrwPlugin = 1
 -- -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
 require("nvim-tree").setup({
-  open_on_setup = false,
   sort_by = "case_sensitive",
   renderer = {
     group_empty = true,
@@ -24,6 +23,9 @@ require("nvim-tree").setup({
     enable = false,
     auto_open = true,
   },
+  update_focused_file = {
+    enable = true,
+  }
 })
 -- vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
 
@@ -80,7 +82,10 @@ local lga_actions = require("telescope-live-grep-args.actions")
 telescope.setup {
   defaults = {
     file_ignore_patterns = {
-      "node_modules"
+      "node_modules",
+      "webpack",
+      "build",
+      "**/package-lock.json"
     },
   },
   pickers = {
@@ -93,7 +98,6 @@ telescope.setup {
       auto_quoting = true, -- enable/disable auto-quoting
       -- define mappings, e.g.
       mappings = {
-        -- extend mappings
         i = {
           ["<C-k>"] = lga_actions.quote_prompt(),
           ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
@@ -277,6 +281,32 @@ end -- on_attach end
 nvim_lsp.tsserver.setup {
   cmd = { "typescript-language-server", "--stdio" },
   filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
+  settings = {
+    typescript = {
+      inlayHints = {
+        includeInlayParameterNameHints = 'all',
+        includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayVariableTypeHints = true,
+        includeInlayVariableTypeHintsWhenTypeMatchesName = false,
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayEnumMemberValueHints = true,
+      }
+    },
+    javascript = {
+      inlayHints = {
+        includeInlayParameterNameHints = 'all',
+        includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+        includeInlayFunctionParameterTypeHints = true,
+        includeInlayVariableTypeHints = true,
+        includeInlayVariableTypeHintsWhenTypeMatchesName = true,
+        includeInlayPropertyDeclarationTypeHints = true,
+        includeInlayFunctionLikeReturnTypeHints = true,
+        includeInlayEnumMemberValueHints = true,
+      }
+    },
+  },
   on_attach = on_attach,
 }
 nvim_lsp.sqlls.setup {
@@ -355,7 +385,7 @@ nvim_lsp.lua_ls.setup {
 
 require 'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all"
-  ensure_installed = { "go", "typescript", "yaml", "json", "sql", "lua", "bash", "vim" },
+  ensure_installed = "all",
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
   -- List of parsers to ignore installing (for "all")
@@ -374,7 +404,7 @@ require 'nvim-treesitter.configs'.setup {
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
     -- Instead of true it can also be a list of languages
-    additional_vim_regex_highlighting = false,
+    additional_vim_regex_highlighting = true,
   },
 }
 
@@ -445,40 +475,40 @@ neotest.setup({
   }
 })
 local mappings = {
-  ["<leader>nr"] = function()
+  ["<leader.tr"] = function()
     neotest.run.run({ vim.fn.expand("%:p"), env = get_env() })
   end,
-  ["<leader>ns"] = function()
+  ["<leader.ts"] = function()
     for _, adapter_id in ipairs(neotest.state.adapter_ids()) do
       neotest.run.run({ suite = true, adapter = adapter_id, env = get_env() })
     end
   end,
-  ["<leader>nx"] = function()
+  ["<leader.tx"] = function()
     neotest.run.stop()
   end,
-  ["<leader>nn"] = function()
+  ["<leader.tn"] = function()
     neotest.run.run({ env = get_env() })
   end,
-  ["<leader>nd"] = function()
+  ["<leader.td"] = function()
     neotest.run.run({ strategy = "dap", env = get_env() })
   end,
-  ["<leader>nl"] = neotest.run.run_last,
-  ["<leader>nD"] = function()
+  ["<leader.tl"] = neotest.run.run_last,
+  ["<leader.tD"] = function()
     neotest.run.run_last({ strategy = "dap" })
   end,
-  ["<leader>na"] = neotest.run.attach,
-  ["<leader>no"] = function()
+  ["<leader.ta"] = neotest.run.attach,
+  ["<leader.to"] = function()
     neotest.output.open({ enter = true, last_run = true })
   end,
-  ["<leader>ni"] = function()
+  ["<leader.ti"] = function()
     neotest.output.open({ enter = true })
   end,
-  ["<leader>nO"] = function()
+  ["<leader.tO"] = function()
     neotest.output.open({ enter = true, short = true })
   end,
-  ["<leader>np"] = neotest.summary.toggle,
-  ["<leader>nm"] = neotest.summary.run_marked,
-  ["<leader>ne"] = neotest.output_panel.toggle,
+  ["<leader.tp"] = neotest.summary.toggle,
+  ["<leader.tm"] = neotest.summary.run_marked,
+  ["<leader.te"] = neotest.output_panel.toggle,
   ["[n"] = function()
     neotest.jump.prev({ status = "failed" })
   end,
@@ -511,7 +541,14 @@ require('hfcc').setup({
     suffix = "<fim_suffix>",
   },
 })
-vim.keymap.set("n", "<leader>ai", "<cmd>HFccSuggestion<CR>", {})
+
+-- normal mode binding
+vim.api.nvim_set_keymap("n", "<leader>ai", ":HFccSuggestion<CR>", {})
+-- insert mode binding
+
+
+
+
 
 -- keep this at the bottom
 -- enable for all filetypes
@@ -521,7 +558,7 @@ require("lsp-inlayhints").setup({
   inlay_hints = {
     parameter_hints = {
       show = true,
-      prefix = ": ",
+      prefix = "| ",
       separator = ", ",
       remove_colon_start = false,
       remove_colon_end = true,
@@ -529,7 +566,7 @@ require("lsp-inlayhints").setup({
     type_hints = {
       -- type and other hints
       show = true,
-      prefix = "",
+      prefix = ": ",
       separator = ", ",
       remove_colon_start = false,
       remove_colon_end = false,
@@ -539,9 +576,14 @@ require("lsp-inlayhints").setup({
     -- shown before parameter
     labels_separator = "  ",
     -- whether to align to the length of the longest line in the file
-    max_len_align = false,
+    -- max_len_align = true,
     -- padding from the left if max_len_align is true
-    max_len_align_padding = 1,
+    -- max_len_align_padding = 10,
+    -- experimental (from gupta)
+    position = {
+      align = "fixed_col",
+      padding = 100,
+    },
     -- highlight group
     highlight = "Comment",
     -- virt_text priority
