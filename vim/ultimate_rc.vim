@@ -40,13 +40,11 @@ Plug 'mattn/emmet-vim'
 Plug 'norcalli/nvim-colorizer.lua' 
 Plug 'chemzqm/macdown.vim'
 Plug 'gruvbox-community/gruvbox'
-Plug 'NLKNguyen/papercolor-theme'
 Plug 'junegunn/vim-easy-align'
 Plug 'f-person/git-blame.nvim'
 Plug 'fatih/molokai'
-Plug 'loctvl842/monokai-pro.nvim'
 Plug 'neovim/nvim-lspconfig'
-Plug 'lvimuser/lsp-inlayhints.nvim'
+Plug 'utkarshgupta137/lsp-inlayhints.nvim'
 Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'nvim-treesitter/nvim-treesitter-context'
 Plug 'glepnir/lspsaga.nvim'
@@ -59,8 +57,6 @@ Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'rafamadriz/friendly-snippets'
 Plug 'folke/lsp-colors.nvim'
-Plug 'navarasu/onedark.nvim'
-Plug 'tiagovla/tokyodark.nvim'
 Plug 'weirongxu/plantuml-previewer.vim'
 Plug 'tyru/open-browser.vim'
 Plug 'sbdchd/neoformat'
@@ -69,7 +65,7 @@ Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'nvim-neotest/neotest'
 Plug 'nvim-neotest/neotest-go'
 Plug 'huggingface/hfcc.nvim'
-
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npm install' }
 
 call plug#end()
 
@@ -171,39 +167,14 @@ syntax enable
 set termguicolors
 set t_Co=256
 " colorscheme simple-dark
-" colorscheme gruvbox
-" let g:gruvbox_contrast_dark='hard'
-" colorscheme PaperColor
+colorscheme gruvbox
+let g:gruvbox_contrast_dark='hard'
 set background=dark
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
-" let g:onedark_config = {
-"   \ 'style': 'dark',
-"   \ 'toggle_style_key': '<leader>ts',
-"   \ 'ending_tildes': v:true,
-"   \ 'diagnostics': {
-"     \ 'darker': v:false,
-"     \ 'background': v:false,
-"   \ },
-" \ }
-" colorscheme onedark
-
-
-
-" let g:tokyodark_transparent_background = 0
-" let g:tokyodark_enable_italic_comment = 1
-" let g:tokyodark_enable_italic = 1
-" let g:tokyodark_color_gamma = "1.0"
-" colorscheme tokyodark
-
-" let g:rehash256 = 1
-" let g:molokai_original = 1
-" colorscheme molokai
-
 " Toggle below two comments for transparency in nvim
-
-highlight Normal guibg=None
-highlight NonText guibg=None
+" highlight Normal guibg=None
+" highlight NonText guibg=None
 
 
 " Syntax Highlighting but in browser 
@@ -306,10 +277,10 @@ set wrap
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Visual mode * or # searches for current selection
-vnoremap <silent> * :<C-u>call VisualSelection(''.'')<CR>/<C-R>=@/<CR><CR>
-vnoremap <silent> # :<C-u>call VisualSelection(''.'')<CR>/<C-R>=@/<CR><CR>
+vnoremap <silent> * :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
+vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>/<C-R>=@/<CR><CR>
 
-vnoremap <silent> <leader>? :<C-u>call VisualSelection('replace')<CR>
+vnoremap <silent> <leader>r :<C-u>call VisualSelection('replace', '')<CR>
 
 " Disable highlight when <leader><cr> is pressed
 map <silent> <leader><cr> :noh<cr>
@@ -473,6 +444,11 @@ endfunction
 
 let g:python3_host_prog = '/usr/local/bin/python3'
 
+" Restart i3 on config update in linux
+if has('linux')
+  autocmd! bufwritepost ~/.i3/config :call system('i3-msg restart')
+endif
+
 
 
 
@@ -512,7 +488,7 @@ function! CmdLine(str)
     call feedkeys(":" . a:str)
 endfunction 
 
-function! VisualSelection(direction) range
+function! VisualSelection(direction, extra_filter) range
     let l:saved_reg = @"
     execute "normal! vgvy"
 

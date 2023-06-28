@@ -1,51 +1,15 @@
-require("monokai-pro").setup({
-  transparent_background = false,
-  terminal_colors = true,
-  devicons = true, -- highlight the icons of `nvim-web-devicons`
-  italic_comments = true,
-  filter = "pro",  -- classic | octagon | pro | machine | ristretto | spectrum
-  -- Enable this will disable filter option
-  day_night = {
-    enable = false,            -- turn off by default
-    day_filter = "pro",        -- classic | octagon | pro | machine | ristretto | spectrum
-    night_filter = "spectrum", -- classic | octagon | pro | machine | ristretto | spectrum
-  },
-  inc_search = "background",   -- underline | background
-  background_clear = {
-    "float_win",
-    "toggleterm",
-    "telescope",
-    "which-key",
-    "renamer"
-  }, -- "float_win", "toggleterm", "telescope", "which-key", "renamer", "neo-tree"
-  plugins = {
-    bufferline = {
-      underline_selected = false,
-      underline_visible = false,
-    },
-    indent_blankline = {
-      context_highlight = "default", -- default | pro
-      context_start_underline = false,
-    },
-  },
-  ---@param c Colorscheme
-  override = function(c)
-  end,
-})
-
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => Nvim Tree
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- local function open_nvim_tree()
-  --   -- open the tree
-  --   require("nvim-tree.api").tree.open()
-  -- end
+--   -- open the tree
+--   require("nvim-tree.api").tree.open()
+-- end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 -- -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
 require("nvim-tree").setup({
-  open_on_setup = false,
   sort_by = "case_sensitive",
   renderer = {
     group_empty = true,
@@ -56,6 +20,9 @@ require("nvim-tree").setup({
     enable = false,
     auto_open = false,
   },
+  update_focused_file = {
+    enable = true,
+  }
 })
 -- vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
 
@@ -112,7 +79,10 @@ local lga_actions = require("telescope-live-grep-args.actions")
 telescope.setup {
   defaults = {
     file_ignore_patterns = {
-      "node_modules"
+      "node_modules",
+      "webpack",
+      "build",
+      "**/package-lock.json"
     },
   },
   pickers = {
@@ -124,16 +94,17 @@ telescope.setup {
     live_grep_args = {
       auto_quoting = true, -- enable/disable auto-quoting
       -- define mappings, e.g.
-      mappings = { -- extend mappings
-      i = {
-        ["<C-k>"] = lga_actions.quote_prompt(),
-        ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+      mappings = {
+                           -- extend mappings
+        i = {
+          ["<C-k>"] = lga_actions.quote_prompt(),
+          ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+        },
       },
-    },
-    -- ... also accepts theme settings, for example:
-    -- theme = "dropdown", -- use dropdown theme
-    -- theme = { }, -- use own theme spec
-    -- layout_config = { mirror=true }, -- mirror preview pane
+      -- ... also accepts theme settings, for example:
+      -- theme = "dropdown", -- use dropdown theme
+      -- theme = { }, -- use own theme spec
+      -- layout_config = { mirror=true }, -- mirror preview pane
     }
   }
 }
@@ -272,9 +243,9 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
   --
   -- Set some keybinds conditional on server capabilities
-  if client.server_capabilities.document_formatting then
+  if client.server_capabilities.documentFormattingProvider then
     buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.format()<CR>", opts)
-  elseif client.server_capabilities.document_range_formatting then
+  elseif client.server_capabilities.documentRangeFormattingProvider then
     buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.range_formatting()<CR>", opts)
   end
   --
@@ -295,7 +266,7 @@ local on_attach = function(client, bufnr)
   require "lsp-inlayhints".on_attach(client, bufnr)
 end -- on_attach end
 
-nvim_lsp.tsserver.setup{
+nvim_lsp.tsserver.setup {
   cmd = { "typescript-language-server", "--stdio" },
   filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
   settings = {
@@ -402,7 +373,7 @@ nvim_lsp.lua_ls.setup {
 
 require 'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all"
-  ensure_installed = { "go", "typescript", "yaml", "json", "sql", "lua", "bash", "vim" },
+  ensure_installed = "all",
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
   -- List of parsers to ignore installing (for "all")
@@ -421,7 +392,7 @@ require 'nvim-treesitter.configs'.setup {
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
     -- Using this option may slow down your editor, and you may see some duplicate highlights.
     -- Instead of true it can also be a list of languages
-    additional_vim_regex_highlighting = false,
+    additional_vim_regex_highlighting = true,
   },
 }
 
@@ -492,40 +463,40 @@ neotest.setup({
   }
 })
 local mappings = {
-  ["<leader>nr"] = function()
+  ["<leader.tr"] = function()
     neotest.run.run({ vim.fn.expand("%:p"), env = get_env() })
   end,
-  ["<leader>ns"] = function()
+  ["<leader.ts"] = function()
     for _, adapter_id in ipairs(neotest.state.adapter_ids()) do
       neotest.run.run({ suite = true, adapter = adapter_id, env = get_env() })
     end
   end,
-  ["<leader>nx"] = function()
+  ["<leader.tx"] = function()
     neotest.run.stop()
   end,
-  ["<leader>nn"] = function()
+  ["<leader.tn"] = function()
     neotest.run.run({ env = get_env() })
   end,
-  ["<leader>nd"] = function()
+  ["<leader.td"] = function()
     neotest.run.run({ strategy = "dap", env = get_env() })
   end,
-  ["<leader>nl"] = neotest.run.run_last,
-  ["<leader>nD"] = function()
+  ["<leader.tl"] = neotest.run.run_last,
+  ["<leader.tD"] = function()
     neotest.run.run_last({ strategy = "dap" })
   end,
-  ["<leader>na"] = neotest.run.attach,
-  ["<leader>no"] = function()
+  ["<leader.ta"] = neotest.run.attach,
+  ["<leader.to"] = function()
     neotest.output.open({ enter = true, last_run = true })
   end,
-  ["<leader>ni"] = function()
+  ["<leader.ti"] = function()
     neotest.output.open({ enter = true })
   end,
-  ["<leader>nO"] = function()
+  ["<leader.tO"] = function()
     neotest.output.open({ enter = true, short = true })
   end,
-  ["<leader>np"] = neotest.summary.toggle,
-  ["<leader>nm"] = neotest.summary.run_marked,
-  ["<leader>ne"] = neotest.output_panel.toggle,
+  ["<leader.tp"] = neotest.summary.toggle,
+  ["<leader.tm"] = neotest.summary.run_marked,
+  ["<leader.te"] = neotest.output_panel.toggle,
   ["[n"] = function()
     neotest.jump.prev({ status = "failed" })
   end,
@@ -539,19 +510,18 @@ for keys, mapping in pairs(mappings) do
 end
 
 
--- hugging face code completion model 
+-- hugging face code completion model
 require('hfcc').setup({
   api_token = "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",
   model = "bigcode/starcoder"
 })
--- vim.keymap.set("i", "<leader>ai", require('hfcc').HFccSuggestion, {})
+-- normal mode binding
+vim.api.nvim_set_keymap("n", "<leader>ai", ":HFccSuggestion<CR>", {})
+-- insert mode binding
 
--- hugging face code completion model 
-require('hfcc').setup({
-  api_token = "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",
-  model = "bigcode/starcoder"
-})
--- vim.keymap.set("i", "<leader>ai", require('hfcc').HFccSuggestion, {})
+
+
+
 
 -- keep this at the bottom
 -- enable for all filetypes
@@ -561,7 +531,7 @@ require("lsp-inlayhints").setup({
   inlay_hints = {
     parameter_hints = {
       show = true,
-      prefix = ": ",
+      prefix = "| ",
       separator = ", ",
       remove_colon_start = false,
       remove_colon_end = true,
@@ -569,7 +539,7 @@ require("lsp-inlayhints").setup({
     type_hints = {
       -- type and other hints
       show = true,
-      prefix = "",
+      prefix = ": ",
       separator = ", ",
       remove_colon_start = false,
       remove_colon_end = false,
@@ -579,9 +549,14 @@ require("lsp-inlayhints").setup({
     -- shown before parameter
     labels_separator = "  ",
     -- whether to align to the length of the longest line in the file
-    max_len_align = true,
+    -- max_len_align = true,
     -- padding from the left if max_len_align is true
-    max_len_align_padding = 1,
+    -- max_len_align_padding = 10,
+    -- experimental (from gupta)
+    position = {
+      align = "fixed_col",
+      padding = 100,
+    },
     -- highlight group
     highlight = "Comment",
     -- virt_text priority
