@@ -1,3 +1,6 @@
+-- setup must be called before loading
+vim.cmd("colorscheme kanagawa-wave")
+
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => Nvim Tree
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -18,7 +21,7 @@ require("nvim-tree").setup({
   },
   hijack_directories = {
     enable = false,
-    auto_open = false,
+    auto_open = true,
   },
   update_focused_file = {
     enable = true,
@@ -95,7 +98,6 @@ telescope.setup {
       auto_quoting = true, -- enable/disable auto-quoting
       -- define mappings, e.g.
       mappings = {
-                           -- extend mappings
         i = {
           ["<C-k>"] = lga_actions.quote_prompt(),
           ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
@@ -247,23 +249,33 @@ local on_attach = function(client, bufnr)
     buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.format()<CR>", opts)
   elseif client.server_capabilities.documentRangeFormattingProvider then
     buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.range_formatting()<CR>", opts)
+  else
+    buf_set_keymap("n", "ff", '<cmd>lua print("formatting is not supported by this lsp server")<CR>', opts)
   end
   --
   -- Set autocommands conditional on server_capabilities
-  if client.server_capabilities.document_highlight then
-    vim.api.nvim_exec([[
-    hi LspReferenceRead cterm=bold ctermfg=Black ctermbg=LightYellow guibg=LightYellow
-    hi LspReferenceText cterm=bold ctermfg=Black ctermbg=LightYellow guibg=LightYellow
-    hi LspReferenceWrite cterm=bold ctermfg=Black ctermbg=LightYellow guibg=LightYellow
-    augroup lsp_document_highlight
-    autocmd! * <buffer>
-    autocmd CursorHold <buffer> lua vim.lsp.buf.document_highlight()
-    autocmd CursorMoved <buffer> lua vim.lsp.buf.clear_references()
-    augroup END
-    ]], false)
+  if client.server_capabilities.documentHighlightProvider then
+    local group = vim.api.nvim_create_augroup("LSPDocumentHighlight", {})
+
+    vim.opt.updatetime = 1000
+
+    vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+      buffer = bufnr,
+      group = group,
+      callback = function()
+        vim.lsp.buf.document_highlight()
+      end,
+    })
+    vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+      buffer = bufnr,
+      group = group,
+      callback = function()
+        vim.lsp.buf.clear_references()
+      end,
+    })
   end
 
-  require "lsp-inlayhints".on_attach(client, bufnr)
+  require "lsp-inlayhints".on_attach(client, bufnr, true)
 end -- on_attach end
 
 nvim_lsp.tsserver.setup {
@@ -299,6 +311,7 @@ nvim_lsp.tsserver.setup {
 }
 nvim_lsp.sqlls.setup {
   filetypes = { "sql" },
+  on_attach = on_attach
 }
 
 nvim_lsp.gopls.setup {
@@ -331,7 +344,7 @@ nvim_lsp.gopls.setup {
   on_attach = on_attach,
 }
 vim.api.nvim_create_autocmd('BufWritePre', {
-  pattern = { "*.go", ".tsx" },
+  pattern = { "*.go", "*.tsx", "*.lua" },
   callback = function()
     --    vim.lsp.buf.code_action({ context = { only = { 'source.organizeImports' } }, apply = true })
     vim.lsp.buf.format()
@@ -353,17 +366,16 @@ nvim_lsp.lua_ls.setup {
       workspace = {
         -- Make the server aware of Neovim runtime files
         library = vim.api.nvim_get_runtime_file("", true),
-        checkThirdParty = false,
+        checkThirdParty = true,
       },
       -- Do not send telemetry data containing a randomized but unique identifier
       telemetry = {
         enable = false,
       },
-      hints = {
-        enable = true,
-      },
-      inlayHints = {
-        enable = true,
+      -- inlay hints
+      hint = {
+        enabled = true,
+        setType = true,
       },
     },
   },
@@ -513,8 +525,23 @@ end
 -- hugging face code completion model
 require('hfcc').setup({
   api_token = "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",
-  model = "bigcode/starcoder"
+  model = "bigcode/starcoder",
+  -- parameters that are added to the request body
+  query_params = {
+    max_new_tokens = 60,
+    temperature = 0.2,
+    top_p = 0.95,
+    stop_token = "<|endoftext|>",
+  },
+  -- set this if the model supports fill in the middle
+  fim = {
+    enabled = true,
+    prefix = "<fim_prefix>",
+    middle = "<fim_middle>",
+    suffix = "<fim_suffix>",
+  },
 })
+
 -- normal mode binding
 vim.api.nvim_set_keymap("n", "<leader>ai", ":HFccSuggestion<CR>", {})
 -- insert mode binding
@@ -566,3 +593,5 @@ require("lsp-inlayhints").setup({
   debug_mode = false,
 }
 )
+
+require("debugprint").setup {}
