@@ -4,14 +4,28 @@ vim.cmd("colorscheme kanagawa-wave")
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => Nvim Tree
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
--- local function open_nvim_tree()
---   -- open the tree
---   require("nvim-tree.api").tree.open()
--- end
+local function open_nvim_tree()
+  -- open the tree
+  require("nvim-tree.api").tree.open()
+end
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 -- -- set termguicolors to enable highlight groups
 vim.opt.termguicolors = true
+local function my_on_attach(bufnr)
+  local api = require "nvim-tree.api"
+
+  local function opts(desc)
+    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+  end
+
+  -- default mappings
+  api.config.mappings.default_on_attach(bufnr)
+
+  -- custom mappings
+  vim.keymap.set('n', '<C-t>', api.tree.change_root_to_parent, opts('Up'))
+  vim.keymap.set('n', '?', api.tree.toggle_help, opts('Help'))
+end
 require("nvim-tree").setup({
   sort_by = "case_sensitive",
   renderer = {
@@ -25,9 +39,13 @@ require("nvim-tree").setup({
   },
   update_focused_file = {
     enable = true,
-  }
+  },
+  on_attach = my_on_attach,
 })
--- vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
+local diffmode = vim.api.nvim_win_get_option(0, 'diff')
+if not diffmode then
+  vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
+end
 
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => lualine
@@ -382,6 +400,29 @@ nvim_lsp.lua_ls.setup {
   on_attach = on_attach,
 }
 
+nvim_lsp.rust_analyzer.setup({
+  on_attach = on_attach,
+  settings = {
+    ["rust-analyzer"] = {
+      imports = {
+        granularity = {
+          group = "module",
+        },
+        prefix = "self",
+      },
+      cargo = {
+        buildScripts = {
+          enable = true,
+        },
+      },
+      procMacro = {
+        enable = true
+      },
+    }
+  }
+})
+
+
 
 require 'nvim-treesitter.configs'.setup {
   -- A list of parser names, or "all"
@@ -524,7 +565,7 @@ end
 
 -- hugging face code completion model
 require('hfcc').setup({
-  api_token = "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",
+  api_token = "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",
   model = "bigcode/starcoder",
   -- parameters that are added to the request body
   query_params = {
@@ -582,7 +623,7 @@ require("lsp-inlayhints").setup({
     -- experimental (from gupta)
     position = {
       align = "fixed_col",
-      padding = 100,
+      padding = 160,
     },
     -- highlight group
     highlight = "Comment",

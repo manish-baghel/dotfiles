@@ -66,6 +66,7 @@ Plug 'nvim-neotest/neotest-go'
 Plug 'huggingface/hfcc.nvim'
 Plug 'rebelot/kanagawa.nvim'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npm install' }
+Plug 'christoomey/vim-tmux-navigator'
 
 call plug#end()
 
