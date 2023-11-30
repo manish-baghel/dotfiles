@@ -44,7 +44,7 @@ require("nvim-tree").setup({
 })
 local diffmode = vim.api.nvim_win_get_option(0, 'diff')
 if not diffmode then
-  vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
+  -- vim.api.nvim_create_autocmd({ "VimEnter" }, { callback = open_nvim_tree })
 end
 
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -563,25 +563,80 @@ for keys, mapping in pairs(mappings) do
 end
 
 
--- hugging face code completion model
-require('hfcc').setup({
-  api_token = "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",
-  model = "bigcode/starcoder",
-  -- parameters that are added to the request body
-  query_params = {
-    max_new_tokens = 60,
-    temperature = 0.2,
-    top_p = 0.95,
-    stop_token = "<|endoftext|>",
-  },
-  -- set this if the model supports fill in the middle
-  fim = {
-    enabled = true,
-    prefix = "<fim_prefix>",
-    middle = "<fim_middle>",
-    suffix = "<fim_suffix>",
-  },
+local provider = require('llm.providers.openai')
+
+-- configure default model params here for the provider
+provider.initialize({
+  model = 'local-model',
+  max_tokens = -1,
+  temperature = 0.3,
 })
+
+local llm = require('llm')
+local llmutil = require('llm.util')
+
+
+llm.setup({
+  hl_group = 'Substitute',
+  prompts = {
+    ['commit message'] = {
+      provider = provider,
+      options = {
+        url = "http://localhost:1234/v1/"
+      },
+      mode = llm.mode.INSERT,
+      builder = function()
+        local git_diff = vim.fn.system { 'git', 'diff', '--staged' }
+        return {
+          messages = {
+            {
+              role = 'system',
+              content =
+                  'Write a short commit message according to the Conventional Commits specification for the following git diff: ```\n' ..
+                  git_diff .. '\n```'
+            }
+          }
+        }
+      end,
+    },
+    ['code'] = {
+      provider = provider,
+      options = {
+        url = "http://localhost:1234/v1/"
+      },
+      builder = function(input)
+        local messages = {
+          {
+            role = 'system',
+            content =
+            'You are a 10x super elite programmer. Continue only with code. Do not write tests, examples, or output of code unless explicitly asked for.',
+          },
+          {
+            role = 'user',
+            content = input
+          }
+        }
+        return {
+          messages = messages
+        }
+
+        -- return util.builder.user_prompt(function(user_input)
+        --   if #user_input > 0 then
+        --     table.insert(messages, {
+        --       role = 'user',
+        --       content = user_input
+        --     })
+        --   end
+
+        --   return {
+        --     messages = messages
+        --   }
+        -- end, input)
+      end
+    }
+  }
+})
+
 
 -- normal mode binding
 vim.api.nvim_set_keymap("n", "<leader>ai", ":HFccSuggestion<CR>", {})

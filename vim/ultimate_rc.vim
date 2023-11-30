@@ -63,7 +63,7 @@ Plug 'folke/neodev.nvim'
 Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'nvim-neotest/neotest'
 Plug 'nvim-neotest/neotest-go'
-Plug 'huggingface/hfcc.nvim'
+Plug 'gsuuon/llm.nvim'
 Plug 'rebelot/kanagawa.nvim'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npm install' }
 Plug 'christoomey/vim-tmux-navigator'
