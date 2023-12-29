@@ -1,9 +1,9 @@
-"  _   _                 _           
-" | \ | | ___  _____   _(_)_ __ ___  
-" |  \| |/ _ \/ _ \ \ / / | '_ ` _ \ 
+"  _   _                 _
+" | \ | | ___  _____   _(_)_ __ ___
+" |  \| |/ _ \/ _ \ \ / / | '_ ` _ \
 " | |\  |  __/ (_) \ V /| | | | | | |
 " |_| \_|\___|\___/ \_/ |_|_| |_| |_|
-                                   
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Author:
 "       Manish Baghel - @manish-baghel
@@ -14,8 +14,8 @@
 " Plugins
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" This is a life saver 
-" it should work but for some reason 
+" This is a life saver
+" it should work but for some reason
 " holding down arrow still act as inserting B in vim
 " Works fine in nvim [ but there are .1 or .2% cases where it fails]
 set nocompatible
@@ -37,14 +37,13 @@ Plug 'pangloss/vim-javascript'
 Plug 'leafgarland/typescript-vim'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'mattn/emmet-vim'
-Plug 'norcalli/nvim-colorizer.lua' 
+Plug 'norcalli/nvim-colorizer.lua'
 Plug 'chemzqm/macdown.vim'
-Plug 'gruvbox-community/gruvbox'
 Plug 'junegunn/vim-easy-align'
 Plug 'f-person/git-blame.nvim'
-Plug 'fatih/molokai'
 Plug 'neovim/nvim-lspconfig'
-Plug 'nvim-treesitter/nvim-treesitter' | Plug 'nvim-treesitter/nvim-treesitter-context' | Plug 'andrewferrier/debugprint.nvim'
+Plug 'nvim-treesitter/nvim-treesitter' | Plug 'nvim-treesitter/nvim-treesitter-context' | Plug 'nvim-treesitter/playground'
+Plug 'andrewferrier/debugprint.nvim'
 Plug 'utkarshgupta137/lsp-inlayhints.nvim'
 Plug 'glepnir/lspsaga.nvim'
 Plug 'hrsh7th/cmp-nvim-lsp'
@@ -55,19 +54,23 @@ Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'rafamadriz/friendly-snippets'
-Plug 'folke/lsp-colors.nvim'
 Plug 'weirongxu/plantuml-previewer.vim'
 Plug 'tyru/open-browser.vim'
-Plug 'sbdchd/neoformat'
 Plug 'folke/neodev.nvim'
 Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'nvim-neotest/neotest'
 Plug 'nvim-neotest/neotest-go'
-Plug 'gsuuon/llm.nvim'
-Plug 'rebelot/kanagawa.nvim'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npm install' }
 Plug 'christoomey/vim-tmux-navigator'
-
+Plug 'nvimtools/none-ls.nvim'
+Plug 'williamboman/mason.nvim'
+Plug 'sourcegraph/sg.nvim', { 'do': 'nvim -l build/init.lua' }
+Plug 'gbrlsnchs/telescope-lsp-handlers.nvim'
+Plug 'nvim-telescope/telescope-ui-select.nvim'
+Plug 'stevearc/dressing.nvim'
+Plug 'folke/tokyonight.nvim'
+Plug 'craftzdog/solarized-osaka.nvim'
+Plug 'sainnhe/everforest'
 call plug#end()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -90,7 +93,7 @@ set autoread
 au FocusGained,BufEnter * checktime
 
 " save configs
-"   - fast save 
+"   - fast save
 "   - :W sudo save
 nmap <leader>w :w!<cr>
 command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
@@ -103,10 +106,10 @@ command! -nargs=? Gst let @a='' | execute 'g/<args>/y A' | new | setlocal bt=nof
 
 " Fast editing and reloading of vimrc
 map <leader>e :e! ~/dotfiles/vim/ultimate_rc.vim<cr>
-map <leader>E :e! ~/dotfiles/vim/plugins_config.vim<cr>
+" map <leader>E :e! ~/dotfiles/vim/plugins_config.vim<cr>
 map <leader>E :e! ~/dotfiles/vim/plugins_config.lua<cr>
 autocmd! bufwritepost ~/dotfiles/vim/ultimate_rc.vim source ~/.vimrc
-autocmd! bufwritepost ~/dotfiles/vim/plugins_config.vim source ~/.vimrc
+" autocmd! bufwritepost ~/dotfiles/vim/plugins_config.vim source ~/.vimrc
 autocmd! bufwritepost ~/dotfiles/vim/plugins_config.lua source ~/.vimrc
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -153,9 +156,9 @@ set tm=500
 " relative numbering auto switch on insert mode
 set number relativenumber
 augroup numbertoggle
-    autocmd!
-    autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-    autocmd BufLeave,FocusLost,InsertEnter * set norelativenumber
+  autocmd!
+  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+  autocmd BufLeave,FocusLost,InsertEnter * set norelativenumber
 augroup END
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -165,33 +168,25 @@ augroup END
 " Syntax Highlighting
 syntax enable
 
-set termguicolors
-set t_Co=256
-" colorscheme simple-dark
-colorscheme gruvbox
-let g:gruvbox_contrast_dark='hard'
-set background=dark
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-
 " Toggle below two comments for transparency in nvim
 " highlight Normal guibg=None
 " highlight NonText guibg=None
 
 
-" Syntax Highlighting but in browser 
+" Syntax Highlighting but in browser
 augroup AWESOME
-    autocmd!
-    au BufEnter github.com_*.txt set filetype=markdown
-    au BufEnter txti.es_*.txt set filetype=typescript
+  autocmd!
+  au BufEnter github.com_*.txt set filetype=markdown
+  au BufEnter txti.es_*.txt set filetype=typescript
 augroup END
 
 
 
 " Colorizer in lua [ sets for filetype *]
-" lua require'colorizer'.setup() 
+" lua require'colorizer'.setup()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Files, backups and undo 
+" Files, backups and undo
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Prevent unloading a buffer when it is abandoned
@@ -200,16 +195,16 @@ set hidden
 " set nobackup
 set noswapfile
 set backupcopy=yes " this is a useful option while using watchers in js projects
-                   " for eg - parcel-bundler or webpack
-                   " it helps them detecting changes in files
+" for eg - parcel-bundler or webpack
+" it helps them detecting changes in files
 
 set encoding=UTF-8 " utf8 as standard encoding
 set fileformats=unix,dos,mac " unix as standard file type
 
 " persistent undo
 try
-    set undodir=~/.vim/temp_dirs/
-    set undofile
+  set undodir=~/.vim/temp_dirs/
+  set undofile
 catch
 endtry
 
@@ -239,20 +234,20 @@ command! MakeTags !ctags -R --exclude=.git --exclude=node_modules --exclude=dist
 " Mac -> base64 -b 0
 " Linux -> base64 -w 0
 function! Osc52Yank()
-    if has('mac')
-      let buffer=system("base64 -b 0", @0)
-    else
-      let buffer=system("base64 -w 0", @0)
-    endif
-    let buffer=substitute(buffer, "\n$", "", "")
-    let buffer='\e]52;c;'.buffer.'\x07'
-    silent exe "!echo -ne ".shellescape(buffer)." > ".shellescape(g:tty)
+  if has('mac')
+    let buffer=system("base64 -b 0", @0)
+  else
+    let buffer=system("base64 -w 0", @0)
+  endif
+  let buffer=substitute(buffer, "\n$", "", "")
+  let buffer='\e]52;c;'.buffer.'\x07'
+  silent exe "!echo -ne ".shellescape(buffer)." > ".shellescape(g:tty)
 endfunction
 command! Osc52CopyYank call Osc52Yank()
 
 augroup GlobalYank
-    autocmd!
-    autocmd TextYankPost * if v:event.operator ==# 'y' | call Osc52Yank() | endif
+  autocmd!
+  autocmd TextYankPost * if v:event.operator ==# 'y' | call Osc52Yank() | endif
 augroup END
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -274,7 +269,7 @@ set wrap
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Visual Mode Stuff 
+" Visual Mode Stuff
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " Visual mode * or # searches for current selection
@@ -288,7 +283,7 @@ map <silent> <leader><cr> :noh<cr>
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Tabs, windows and buffers 
+" Tabs, windows and buffers
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " remove <C-W> from moving between splits
@@ -332,7 +327,7 @@ map <leader>te :tabedit <C-r>=expand("%:p:h")<cr>/
 " useful with gf
 map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
-" Specify the behavior when switching between buffers 
+" Specify the behavior when switching between buffers
 try
   set switchbuf=useopen,usetab
   set showtabline=2
@@ -352,15 +347,15 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 
 " Delete trailing white space on save, useful for some filetypes ;)
 fun! CleanExtraSpaces()
-    let save_cursor = getpos(".")
-    let old_query = getreg('/')
-    silent! %s/\s\+$//e
-    call setpos('.', save_cursor)
-    call setreg('/', old_query)
+  let save_cursor = getpos(".")
+  let old_query = getreg('/')
+  silent! %s/\s\+$//e
+  call setpos('.', save_cursor)
+  call setreg('/', old_query)
 endfun
 
 if has("autocmd")
-    autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.go :call CleanExtraSpaces()
+  autocmd BufWritePre *.txt,*.js,*.py,*.wiki,*.sh,*.go :call CleanExtraSpaces()
 endif
 
 imap <C-u> <ESC>O<BS><TAB>
@@ -369,7 +364,7 @@ imap <C-u> <ESC>O<BS><TAB>
 " Custom commands
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" For sorting methods in golang 
+" For sorting methods in golang
 " set custom word ordering in <F2> map and revert the replace op in <F3> map
 "
 
@@ -404,14 +399,14 @@ au BufNewFile,BufRead *.mako set ft=mako
 
 " au FileType python map <buffer> F :set foldmethod=indent<cr>
 
-au FileType python inoremap <buffer> $r return 
-au FileType python inoremap <buffer> $i import 
-au FileType python inoremap <buffer> $p print 
+au FileType python inoremap <buffer> $r return
+au FileType python inoremap <buffer> $i import
+au FileType python inoremap <buffer> $p print
 au FileType python inoremap <buffer> $f # --- <esc>a
-au FileType python map <buffer> <leader>1 /class 
-au FileType python map <buffer> <leader>2 /def 
-au FileType python map <buffer> <leader>C ?class 
-au FileType python map <buffer> <leader>D ?def 
+au FileType python map <buffer> <leader>1 /class
+au FileType python map <buffer> <leader>2 /def
+au FileType python map <buffer> <leader>C ?class
+au FileType python map <buffer> <leader>D ?def
 
 
 " JavaScript section
@@ -425,18 +420,18 @@ au FileType javascript setl nocindent
 au FileType javascript imap <C-t> $log();<esc>hi
 au FileType javascript imap <C-a> alert();<esc>hi
 
-au FileType javascript inoremap <buffer> $r return 
+au FileType javascript inoremap <buffer> $r return
 au FileType javascript inoremap <buffer> $f // --- PH<esc>FP2xi
 
-function! JavaScriptFold() 
-    setl foldmethod=syntax
-    setl foldlevelstart=1
-    syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
+function! JavaScriptFold()
+  setl foldmethod=syntax
+  setl foldlevelstart=1
+  syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
 
-    function! FoldText()
-        return substitute(getline(v:foldstart), '{.*', '{...}', '')
-    endfunction
-    setl foldtext=FoldText()
+  function! FoldText()
+    return substitute(getline(v:foldstart), '{.*', '{...}', '')
+  endfunction
+  setl foldtext=FoldText()
 endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -458,52 +453,52 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " returns true when paste mode is on
 function! HasPaste()
-    if &paste
-        return 'PASTE MODE  '
-    endif
-    return ''
+  if &paste
+    return 'PASTE MODE  '
+  endif
+  return ''
 endfunction
 
 " Don't close window, when deleting a buffer
 command! Bclose call <SID>BufcloseCloseIt()
 function! <SID>BufcloseCloseIt()
-    let l:currentBufNum = bufnr("%")
-    let l:alternateBufNum = bufnr("#")
+  let l:currentBufNum = bufnr("%")
+  let l:alternateBufNum = bufnr("#")
 
-    if buflisted(l:alternateBufNum)
-        buffer #
-    else
-        bnext
-    endif
+  if buflisted(l:alternateBufNum)
+    buffer #
+  else
+    bnext
+  endif
 
-    if bufnr("%") == l:currentBufNum
-        new
-    endif
+  if bufnr("%") == l:currentBufNum
+    new
+  endif
 
-    if buflisted(l:currentBufNum)
-        execute("bdelete! ".l:currentBufNum)
-    endif
+  if buflisted(l:currentBufNum)
+    execute("bdelete! ".l:currentBufNum)
+  endif
 endfunction
 
 function! CmdLine(str)
-    call feedkeys(":" . a:str)
-endfunction 
+  call feedkeys(":" . a:str)
+endfunction
 
 function! VisualSelection(direction, extra_filter) range
-    let l:saved_reg = @"
-    execute "normal! vgvy"
+  let l:saved_reg = @"
+  execute "normal! vgvy"
 
-    let l:pattern = escape(@", "\\/.*'$^~[]")
-    let l:pattern = substitute(l:pattern, "\n$", "", "")
+  let l:pattern = escape(@", "\\/.*'$^~[]")
+  let l:pattern = substitute(l:pattern, "\n$", "", "")
 
-    if a:direction == 'gv'
-        call CmdLine("Ack '" . l:pattern . "' " )
-    elseif a:direction == 'replace'
-        call CmdLine("%s" . '/'. l:pattern . '/')
-    endif
+  if a:direction == 'gv'
+    call CmdLine("Ack '" . l:pattern . "' " )
+  elseif a:direction == 'replace'
+    call CmdLine("%s" . '/'. l:pattern . '/')
+  endif
 
-    let @/ = l:pattern
-    let @" = l:saved_reg
+  let @/ = l:pattern
+  let @" = l:saved_reg
 endfunction
 
 
@@ -522,9 +517,9 @@ function! s:CopyMatches(line1, line2, reg)
     while idx >= 0
       let end = matchend(txt, @/, idx)
       if end > idx
-	call add(hits, strpart(txt, idx, end-idx))
+        call add(hits, strpart(txt, idx, end-idx))
       else
-	let end += 1
+        let end += 1
       endif
       if @/[0] == '^'
         break  " to avoid false hits
