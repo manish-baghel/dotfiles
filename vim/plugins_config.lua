@@ -110,6 +110,12 @@ end
 
 vim.opt.termguicolors = true
 vim.cmd([[colorscheme tokyonight-storm]])
+vim.cmd([[
+highlight Normal guibg=none
+highlight NonText guibg=none
+highlight Normal ctermbg=none
+highlight NonText ctermbg=none
+]])
 
 require("mason").setup()
 local null_ls = require("null-ls")
@@ -199,7 +205,7 @@ require("lualine").setup({
   },
   sections = {
     lualine_a = { "mode" },
-    lualine_b = { "branch", "diff", "diagnostics" },
+    lualine_b = { "diff", "diagnostics" },
     lualine_c = { "filename" },
     lualine_x = { "encoding", "fileformat", "filetype" },
     lualine_y = { "progress" },
@@ -213,7 +219,14 @@ require("lualine").setup({
     lualine_y = {},
     lualine_z = {},
   },
-  tabline = {},
+  tabline = {
+    lualine_a = { "buffers" },
+    lualine_b = { "branch" },
+    lualine_c = { "filename" },
+    lualine_x = {},
+    lualine_y = {},
+    lualine_z = {},
+  },
   winbar = {},
   inactive_winbar = {},
   extensions = {},
@@ -244,18 +257,13 @@ telescope.setup({
   },
   extensions = {
     live_grep_args = {
-      auto_quoting = true, -- enable/disable auto-quoting
-      -- define mappings, e.g.
+      auto_quoting = true,
       mappings = {
         i = {
           ["<C-k>"] = lga_actions.quote_prompt(),
           ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
         },
       },
-      -- ... also accepts theme settings, for example:
-      -- theme = "dropdown", -- use dropdown theme
-      -- theme = { }, -- use own theme spec
-      -- layout_config = { mirror=true }, -- mirror preview pane
     },
     lsp_handlers = {
       code_action = {
@@ -418,8 +426,6 @@ local on_attach = function(client, bufnr)
   if client.server_capabilities.documentHighlightProvider then
     local group = vim.api.nvim_create_augroup("LSPDocumentHighlight", {})
 
-    vim.opt.updatetime = 1000
-
     vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
       buffer = bufnr,
       group = group,
@@ -455,6 +461,15 @@ vim.keymap.set("n", "<space>cc", function()
   require("sg.cody.commands").toggle()
 end)
 
+vim.keymap.set("v", "<space>ca", function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local start_row = vim.fn.getpos("v")[2] - 1
+  local end_row = vim.fn.getpos(".")[2]
+  vim.ui.input({ prompt = "Ask: " }, function(input)
+    require("sg.cody.commands").ask_range(bufnr, start_row, end_row, input)
+  end)
+end)
+
 -- Cody text highlights for cmp
 vim.api.nvim_set_hl(0, "CmpItemKindCody", { fg = "Red" })
 
@@ -478,7 +493,6 @@ require("sg").setup({
   on_attach = on_attach,
   enable_cody = true,
   node_executable = node_executable,
-  filetypes = { "lua" },
 })
 
 nvim_lsp.tsserver.setup({
@@ -572,8 +586,11 @@ nvim_lsp.lua_ls.setup({
         enable = false,
       },
       -- inlay hints
-      hint = {
+      hints = {
         enabled = true,
+        method = true,
+        field = true,
+        variable = true,
         setType = true,
       },
     },
@@ -676,6 +693,7 @@ local get_env = function()
     return {}
   end
 
+  ---@diagnostic disable-next-line: param-type-mismatch
   for _, line in ipairs(vim.fn.readfile(file)) do
     for name, value in string.gmatch(line, "(%S+)=['\"]?(.*)['\"]?") do
       local str_end = string.sub(value, -1, -1)
@@ -792,7 +810,7 @@ require("lsp-inlayhints").setup({
     -- experimental (from gupta)
     position = {
       align = "fixed_col",
-      padding = 160,
+      padding = 100,
     },
     -- highlight group
     highlight = "Comment",
