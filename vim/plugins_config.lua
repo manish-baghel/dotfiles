@@ -109,13 +109,14 @@ end
 ]])
 
 vim.opt.termguicolors = true
-vim.cmd([[colorscheme tokyonight-storm]])
-vim.cmd([[
-highlight Normal guibg=none
-highlight NonText guibg=none
-highlight Normal ctermbg=none
-highlight NonText ctermbg=none
-]])
+vim.cmd([[colorscheme catppuccin]])
+-- Translucent background
+-- vim.cmd([[
+-- highlight Normal guibg=none
+-- highlight NonText guibg=none
+-- highlight Normal ctermbg=none
+-- highlight NonText ctermbg=none
+-- ]])
 
 require("mason").setup()
 local null_ls = require("null-ls")
@@ -125,7 +126,7 @@ null_ls.setup({
     null_ls.builtins.formatting.stylua,
     null_ls.builtins.formatting.prettierd,
     null_ls.builtins.formatting.gofmt,
-    null_ls.builtins.formatting.golines,
+    -- null_ls.builtins.formatting.golines,
     null_ls.builtins.formatting.goimports,
     null_ls.builtins.formatting.goimports_reviser,
     null_ls.builtins.diagnostics.eslint_d,
@@ -143,47 +144,11 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 })
 
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
--- " => Nvim Tree
--- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-local function my_on_attach(bufnr)
-  local api = require("nvim-tree.api")
-
-  local function opts(desc)
-    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-  end
-
-  -- default mappings
-  api.config.mappings.default_on_attach(bufnr)
-
-  -- custom mappings
-  vim.keymap.set("n", "<C-t>", api.tree.change_root_to_parent, opts("Up"))
-  vim.keymap.set("n", "?", api.tree.toggle_help, opts("Help"))
-end
-
-require("nvim-tree").setup({
-  sort_by = "case_sensitive",
-  renderer = {
-    group_empty = true,
-    highlight_git = true,
-    highlight_modified = "icon",
-  },
-  hijack_directories = {
-    enable = false,
-    auto_open = true,
-  },
-  update_focused_file = {
-    enable = true,
-  },
-  on_attach = my_on_attach,
-})
-local diffmode = vim.api.nvim_win_get_option(0, "diff")
-vim.keymap.set("n", "<leader>nn", "<CMD>:NvimTreeToggle<CR>", {})
-
--- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => lualine
 -- """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+local function filepath()
+  return vim.fn.expand("%:p:h")
+end
 require("lualine").setup({
   options = {
     icons_enabled = true,
@@ -220,8 +185,8 @@ require("lualine").setup({
     lualine_z = {},
   },
   tabline = {
-    lualine_a = { "buffers" },
-    lualine_b = { "branch" },
+    lualine_a = { "branch" },
+    lualine_b = { filepath },
     lualine_c = { "filename" },
     lualine_x = {},
     lualine_y = {},
@@ -240,9 +205,15 @@ telescope.load_extension("live_grep_args")
 -- handlers for using telescope for various windows like reference window, code action, etc.
 telescope.load_extension("lsp_handlers")
 telescope.load_extension("ui-select")
+telescope.load_extension("file_browser")
 local lga_actions = require("telescope-live-grep-args.actions")
+local trouble_ts_provider = require("trouble.providers.telescope")
 telescope.setup({
   defaults = {
+    mappings = {
+      i = { ["<c-t>"] = trouble_ts_provider.open_with_trouble },
+      n = { ["<c-t>"] = trouble_ts_provider.open_with_trouble },
+    },
     file_ignore_patterns = {
       "node_modules",
       "webpack",
@@ -273,6 +244,10 @@ telescope.setup({
     ["ui-select"] = {
       require("telescope.themes").get_dropdown({}),
     },
+    file_browser = {
+      hijack_netrw = true,
+      auto_depth = true,
+    },
   },
 })
 
@@ -285,6 +260,18 @@ vim.keymap.set("n", "<leader>o", builtin.buffers, {})
 vim.keymap.set("n", "<leader>h", builtin.help_tags, {})
 vim.api.nvim_set_var("telescope#buffer#open_file_in_current_window", true)
 vim.api.nvim_set_var("telescope#live_grep#open_file_in_current_window", true)
+vim.api.nvim_set_keymap(
+  "n",
+  "<leader>nn",
+  ":Telescope file_browser path=%:p:h select_buffer=true<CR>",
+  { noremap = true }
+)
+
+local trouble = require("trouble")
+trouble.setup({})
+vim.keymap.set("n", "<leader>xx", function()
+  require("trouble").toggle()
+end)
 
 -- """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => LSP
@@ -569,11 +556,9 @@ nvim_lsp.lua_ls.setup({
   settings = {
     Lua = {
       runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
         version = "LuaJIT",
       },
       diagnostics = {
-        -- Get the language server to recognize the `vim` global
         globals = { "vim" },
       },
       workspace = {
@@ -584,14 +569,6 @@ nvim_lsp.lua_ls.setup({
       -- Do not send telemetry data containing a randomized but unique identifier
       telemetry = {
         enable = false,
-      },
-      -- inlay hints
-      hints = {
-        enabled = true,
-        method = true,
-        field = true,
-        variable = true,
-        setType = true,
       },
     },
   },
@@ -822,6 +799,49 @@ require("lsp-inlayhints").setup({
 })
 
 require("debugprint").setup({})
+
+require("nvim-web-devicons").setup({
+  -- your personnal icons can go here (to override)
+  -- you can specify color or cterm_color instead of specifying both of them
+  -- DevIcon will be appended to `name`
+  override = {
+    zsh = {
+      icon = "",
+      color = "#428850",
+      cterm_color = "65",
+      name = "Zsh",
+    },
+  },
+  -- globally enable different highlight colors per icon (default to true)
+  -- if set to false all icons will have the default icon's color
+  color_icons = true,
+  -- globally enable default icons (default to false)
+  -- will get overriden by `get_icons` option
+  default = true,
+  -- globally enable "strict" selection of icons - icon will be looked up in
+  -- different tables, first by filename, and if not found by extension; this
+  -- prevents cases when file doesn't have any extension but still gets some icon
+  -- because its name happened to match some extension (default to false)
+  strict = true,
+  -- same as `override` but specifically for overrides by filename
+  -- takes effect when `strict` is true
+  override_by_filename = {
+    [".gitignore"] = {
+      icon = "",
+      color = "#f1502f",
+      name = "Gitignore",
+    },
+  },
+  -- same as `override` but specifically for overrides by extension
+  -- takes effect when `strict` is true
+  override_by_extension = {
+    ["log"] = {
+      icon = "",
+      color = "#81e043",
+      name = "Log",
+    },
+  },
+})
 
 -- keep this at the bottom
 -- enable for all filetypes
