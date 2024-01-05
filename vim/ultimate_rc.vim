@@ -22,7 +22,6 @@ set nocompatible
 
 call plug#begin('~/.vim/plugged')
 Plug 'airblade/vim-gitgutter'
-Plug 'andrewferrier/debugprint.nvim'
 Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'chemzqm/macdown.vim'
@@ -31,6 +30,7 @@ Plug 'craftzdog/solarized-osaka.nvim'
 Plug 'folke/neodev.nvim'
 Plug 'folke/tokyonight.nvim'
 Plug 'folke/trouble.nvim'
+Plug 'folke/noice.nvim' | Plug 'MunifTanjim/nui.nvim' | Plug 'rcarriga/nvim-notify'
 Plug 'f-person/git-blame.nvim'
 Plug 'gbrlsnchs/telescope-lsp-handlers.nvim'
 Plug 'glepnir/lspsaga.nvim'
@@ -107,10 +107,9 @@ command! -nargs=? Gst let @a='' | execute 'g/<args>/y A' | new | setlocal bt=nof
 
 " Fast editing and reloading of vimrc
 map <leader>e :e! ~/dotfiles/vim/ultimate_rc.vim<cr>
-" map <leader>E :e! ~/dotfiles/vim/plugins_config.vim<cr>
 map <leader>E :e! ~/dotfiles/vim/plugins_config.lua<cr>
 autocmd! bufwritepost ~/dotfiles/vim/ultimate_rc.vim source ~/.vimrc
-" autocmd! bufwritepost ~/dotfiles/vim/plugins_config.vim source ~/.vimrc
+autocmd! bufwritepost ~/dotfiles/vim/lsp.lua source ~/.vimrc
 autocmd! bufwritepost ~/dotfiles/vim/plugins_config.lua source ~/.vimrc
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
