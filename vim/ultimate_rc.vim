@@ -27,6 +27,7 @@ Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'chemzqm/macdown.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'craftzdog/solarized-osaka.nvim'
+Plug 'ellisonleao/gruvbox.nvim'
 Plug 'folke/neodev.nvim'
 Plug 'folke/tokyonight.nvim'
 Plug 'folke/trouble.nvim'
@@ -69,7 +70,7 @@ Plug 'stevearc/dressing.nvim'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 Plug 'tyru/open-browser.vim'
-Plug 'utkarshgupta137/lsp-inlayhints.nvim'
+Plug 'lvimuser/lsp-inlayhints.nvim'
 Plug 'weirongxu/plantuml-previewer.vim'
 Plug 'williamboman/mason.nvim'
 call plug#end()
@@ -122,7 +123,7 @@ set wildignore+=*.o,*~,*pyc,*/.DS_Store,*/.git,**/node_modules/**
 
 " Current position, cmd bar height, statusline
 set ruler
-set colorcolumn=100
+set colorcolumn=80
 set cmdheight=1
 set laststatus=2
 " set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
@@ -138,9 +139,6 @@ set smartcase
 set hlsearch
 set incsearch
 
-" Avoid redraw while executing macros [ performance boost ]
-set lazyredraw
-
 " Matching brackets
 set showmatch
 set mat=2
@@ -150,7 +148,6 @@ set magic " Regex magic
 "disabling annoying sounds on error
 set noerrorbells
 set novisualbell
-set t_vb=
 set tm=500
 
 " relative numbering auto switch on insert mode
@@ -168,22 +165,12 @@ augroup END
 " Syntax Highlighting
 syntax enable
 
-" Toggle below two comments for transparency in nvim
-" highlight Normal guibg=None
-" highlight NonText guibg=None
-
-
 " Syntax Highlighting but in browser
 augroup AWESOME
   autocmd!
   au BufEnter github.com_*.txt set filetype=markdown
   au BufEnter txti.es_*.txt set filetype=typescript
 augroup END
-
-
-
-" Colorizer in lua [ sets for filetype *]
-" lua require'colorizer'.setup()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Files, backups and undo
@@ -196,7 +183,7 @@ set hidden
 set noswapfile
 set backupcopy=yes " this is a useful option while using watchers in js projects
 " for eg - parcel-bundler or webpack
-" it helps them detecting changes in files
+" it helps them detect changes in files
 
 set encoding=UTF-8 " utf8 as standard encoding
 set fileformats=unix,dos,mac " unix as standard file type
@@ -218,9 +205,13 @@ command! -bang WA wa<bang>
 command! -bang Q q<bang>
 command! -bang QA qa<bang>
 command! -bang Qa qa<bang>
+command! -bang Wqa wqa<bang>
+command! -bang WQa wqa<bang>
+command! -bang WqA wqa<bang>
+command! -bang WQA wqa<bang>
 vnoremap <S-Down> <Nop>
 
-" find on steroids [ this is a crazy option]
+" find on steroids
 set path+=**
 
 " c++ header
@@ -341,10 +332,6 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 " Editing Config
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-" Remap 0 to first non-blank character
-" map 0 ^
-
-
 " Delete trailing white space on save, useful for some filetypes ;)
 fun! CleanExtraSpaces()
   let save_cursor = getpos(".")
@@ -359,7 +346,6 @@ if has("autocmd")
 endif
 
 imap <C-u> <ESC>O<BS><TAB>
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Custom commands
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -385,54 +371,6 @@ imap <C-u> <ESC>O<BS><TAB>
 " This pusshes the comments back to original position i.e above the functions/methods
 " nnoremap<F4> :silent!g/^func.*\n\/\// normal ddp<cr>
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Filetype stuff
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-" Python section
-let python_highlight_all = 1
-au FileType python syn keyword pythonDecorator True None False self
-
-au BufNewFile,BufRead *.jinja set syntax=htmljinja
-au BufNewFile,BufRead *.mako set ft=mako
-
-" au FileType python map <buffer> F :set foldmethod=indent<cr>
-
-au FileType python inoremap <buffer> $r return
-au FileType python inoremap <buffer> $i import
-au FileType python inoremap <buffer> $p print
-au FileType python inoremap <buffer> $f # --- <esc>a
-au FileType python map <buffer> <leader>1 /class
-au FileType python map <buffer> <leader>2 /def
-au FileType python map <buffer> <leader>C ?class
-au FileType python map <buffer> <leader>D ?def
-
-
-" JavaScript section
-" au BufNewFile,BufRead *.js set syntax=javascriptreact
-au BufNewFile,BufRead *.js set filetype=javascriptreact
-
-au FileType javascript map <leader>k :call JavaScriptFold()<CR>
-au FileType javascript setl fen
-au FileType javascript setl nocindent
-
-au FileType javascript imap <C-t> $log();<esc>hi
-au FileType javascript imap <C-a> alert();<esc>hi
-
-au FileType javascript inoremap <buffer> $r return
-au FileType javascript inoremap <buffer> $f // --- PH<esc>FP2xi
-
-function! JavaScriptFold()
-  setl foldmethod=syntax
-  setl foldlevelstart=1
-  syn region foldBraces start=/{/ end=/}/ transparent fold keepend extend
-
-  function! FoldText()
-    return substitute(getline(v:foldstart), '{.*', '{...}', '')
-  endfunction
-  setl foldtext=FoldText()
-endfunction
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Nvim providers
@@ -534,5 +472,3 @@ function! s:CopyMatches(line1, line2, reg)
     echo 'No hits'
   endif
 endfunction
-
-nnoremap <leader>ai :HFccSuggestion<cr>

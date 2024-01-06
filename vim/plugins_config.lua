@@ -80,7 +80,7 @@ set updatetime=300
 set shortmess+=c
 
 " Always show the signcolumn, otherwise it would shift the text each time
-" diagnostics appear/become resolved.
+" diagnostics appear.
 if has('nvim')
     set signcolumn=auto:1
 else
@@ -89,9 +89,28 @@ end
 
 ]])
 
+vim.api.nvim_set_keymap("n", "<leader>lg", ":terminal lazygit<CR>", { noremap = true })
+
+require("catppuccin").setup({
+  flavour = "mocha",            -- latte, frappe, macchiato, mocha
+  transparent_background = true, -- disables setting the background color.
+  show_end_of_buffer = false,   -- shows the '~' characters after the end of buffers
+  color_overrides = {},
+  custom_highlights = {},
+  integrations = {
+    cmp = true,
+    gitsigns = true,
+    treesitter = true,
+    notify = true,
+    mini = {
+      enabled = true,
+      indentscope_color = "",
+    },
+  },
+})
 vim.opt.termguicolors = true
 vim.cmd([[colorscheme catppuccin]])
--- Translucent background
+-- Transparent background
 -- vim.cmd([[
 -- highlight Normal guibg=none
 -- highlight NonText guibg=none
@@ -252,9 +271,11 @@ vim.api.nvim_set_keymap(
 
 local trouble = require("trouble")
 trouble.setup({})
-vim.keymap.set("n", "<leader>xx", function()
-  require("trouble").toggle()
-end)
+function toggle_trouble()
+  trouble.toggle()
+end
+
+vim.keymap.set("n", "<leader>xx", toggle_trouble)
 
 require("dressing").setup({}) -- better ui
 
@@ -401,7 +422,7 @@ require("lsp-inlayhints").setup({
   inlay_hints = {
     parameter_hints = {
       show = true,
-      prefix = "| ",
+      prefix = "<- ",
       separator = ", ",
       remove_colon_start = false,
       remove_colon_end = true,
@@ -409,7 +430,7 @@ require("lsp-inlayhints").setup({
     type_hints = {
       -- type and other hints
       show = true,
-      prefix = ": ",
+      prefix = "",
       separator = ", ",
       remove_colon_start = false,
       remove_colon_end = false,
@@ -419,16 +440,16 @@ require("lsp-inlayhints").setup({
     -- shown before parameter
     labels_separator = "  ",
     -- whether to align to the length of the longest line in the file
-    -- max_len_align = true,
+    max_len_align = false,
     -- padding from the left if max_len_align is true
-    -- max_len_align_padding = 10,
+    max_len_align_padding = 1,
     -- experimental (from gupta)
-    position = {
-      align = "fixed_col",
-      padding = 100,
-    },
+    -- position = {
+    --   align = "fixed_col",
+    --   padding = 80,
+    -- },
     -- highlight group
-    highlight = "Comment",
+    highlight = "LspInlayHint",
     -- virt_text priority
     priority = 0,
   },
