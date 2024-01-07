@@ -4,8 +4,25 @@
 
 -- Setup nvim-cmp.
 local cmp = require("cmp")
-
+local lspkind = require("lspkind") -- fancy icons in the completion menu
 cmp.setup({
+  formatting = {
+    format = lspkind.cmp_format({
+      mode = "symbol", -- show only symbol annotations
+      maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+      -- can also be a function to dynamically calculate max width such as
+      -- maxwidth = function() return math.floor(0.45 * vim.o.columns) end,
+      ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
+      menu = {
+        ["cody"] = "🤖[AI]",
+        buffer = "[Buffer]",
+        nvim_lsp = "[LSP]",
+        luasnip = "[LuaSnip]",
+        nvim_lua = "[Lua]",
+        latex_symbols = "[Latex]",
+      },
+    }),
+  },
   snippet = {
     -- REQUIRED - you must specify a snippet engine
     expand = function(args)
