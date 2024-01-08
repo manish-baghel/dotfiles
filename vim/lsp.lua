@@ -1,5 +1,23 @@
 -- Providers
 require("mason").setup()
+require("mason-lspconfig").setup({
+  ensure_installed = {
+    "cssls",
+    "docker_compose_language_service",
+    "dockerls",
+    "emmet_ls",
+    "gopls",
+    "html",
+    "htmx",
+    "jqls",
+    "lua_ls",
+    "rust_analyzer",
+    "sqlls",
+    "tailwindcss",
+    "tsserver",
+    "vimls",
+  },
+})
 
 local null_ls = require("null-ls")
 
@@ -166,7 +184,7 @@ local on_attach = function(client, bufnr)
     vim.api.nvim_create_autocmd("BufWritePre", {
       pattern = { "*" },
       callback = function()
-        vim.lsp.buf.format()
+        vim.lsp.buf.format({ timeout_ms = 2000 })
       end,
     })
   elseif client.server_capabilities.documentRangeFormattingProvider then
@@ -369,6 +387,16 @@ nvim_lsp.rust_analyzer.setup({
   },
   on_attach = on_attach,
 })
+
+nvim_lsp.cssls.setup({})
+nvim_lsp.docker_compose_language_service.setup({})
+nvim_lsp.dockerls.setup({})
+nvim_lsp.emmet_ls.setup({})
+nvim_lsp.html.setup({})
+nvim_lsp.htmx.setup({})
+nvim_lsp.jqls.setup({})
+nvim_lsp.nginx_language_server.setup({})
+nvim_lsp.tailwindcss.setup({})
 
 if vim.g.dbs == nil then
   vim.g.dbs = vim.empty_dict()

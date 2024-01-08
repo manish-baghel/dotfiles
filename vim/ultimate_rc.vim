@@ -75,6 +75,7 @@ Plug 'tyru/open-browser.vim'
 Plug 'voldikss/vim-floaterm'
 Plug 'weirongxu/plantuml-previewer.vim'
 Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
 call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
