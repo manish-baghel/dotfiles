@@ -89,7 +89,7 @@ end
 
 ]])
 
-vim.api.nvim_set_keymap("n", "<leader>lg", ":FloatermNew lazygit<CR>", { noremap = true })
+vim.api.nvim_set_keymap("n", "<leader>lg", ":FloatermNew --height=0.9 --width=0.9 lazygit<CR>", { noremap = true })
 
 require("catppuccin").setup({
   flavour = "mocha",            -- latte, frappe, macchiato, mocha
