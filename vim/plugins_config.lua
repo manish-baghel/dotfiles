@@ -81,6 +81,33 @@ else
     set signcolumn=number
 end
 
+
+" hrsh7th/vsnip keymaps
+" Expand
+imap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+smap <expr> <C-j>   vsnip#expandable()  ? '<Plug>(vsnip-expand)'         : '<C-j>'
+
+" Expand or jump
+imap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+smap <expr> <C-l>   vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'
+
+" Jump forward or backward
+imap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+smap <expr> <Tab>   vsnip#jumpable(1)   ? '<Plug>(vsnip-jump-next)'      : '<Tab>'
+imap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+smap <expr> <S-Tab> vsnip#jumpable(-1)  ? '<Plug>(vsnip-jump-prev)'      : '<S-Tab>'
+
+" Select or cut text to use as $TM_SELECTED_TEXT in the next snippet.
+" See https://github.com/hrsh7th/vim-vsnip/pull/50
+nmap        s   <Plug>(vsnip-select-text)
+xmap        s   <Plug>(vsnip-select-text)
+nmap        S   <Plug>(vsnip-cut-text)
+xmap        S   <Plug>(vsnip-cut-text)
+
+" If you want to use snippet for multiple filetypes, you can `g:vsnip_filetypes` for it.
+let g:vsnip_filetypes = {}
+let g:vsnip_filetypes.javascriptreact = ['javascript']
+let g:vsnip_filetypes.typescriptreact = ['typescript']
 ]])
 
 vim.api.nvim_set_keymap("n", "<leader>lg", ":FloatermNew --height=0.9 --width=0.9 lazygit<CR>", { noremap = true })
@@ -170,6 +197,30 @@ require("lualine").setup({
 })
 
 -- """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+-- " => yanky.nvim
+-- """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+require("yanky").setup()
+vim.keymap.set({ "n", "x" }, "y", "<Plug>(YankyYank)")
+vim.keymap.set({ "n", "x" }, "p", "<Plug>(YankyPutAfter)")
+vim.keymap.set({ "n", "x" }, "P", "<Plug>(YankyPutBefore)")
+vim.keymap.set({ "n", "x" }, "gp", "<Plug>(YankyGPutAfter)")
+vim.keymap.set({ "n", "x" }, "gP", "<Plug>(YankyGPutBefore)")
+vim.keymap.set("n", "<c-p>", "<Plug>(YankyPreviousEntry)")
+vim.keymap.set("n", "<c-n>", "<Plug>(YankyNextEntry)")
+
+-- tpope/vim-unimpaired style maps
+vim.keymap.set("n", "]p", "<Plug>(YankyPutIndentAfterLinewise)")
+vim.keymap.set("n", "[p", "<Plug>(YankyPutIndentBeforeLinewise)")
+vim.keymap.set("n", "]P", "<Plug>(YankyPutIndentAfterLinewise)")
+vim.keymap.set("n", "[P", "<Plug>(YankyPutIndentBeforeLinewise)")
+vim.keymap.set("n", ">p", "<Plug>(YankyPutIndentAfterShiftRight)")
+vim.keymap.set("n", "<p", "<Plug>(YankyPutIndentAfterShiftLeft)")
+vim.keymap.set("n", ">P", "<Plug>(YankyPutIndentBeforeShiftRight)")
+vim.keymap.set("n", "<P", "<Plug>(YankyPutIndentBeforeShiftLeft)")
+vim.keymap.set("n", "=p", "<Plug>(YankyPutAfterFilter)")
+vim.keymap.set("n", "=P", "<Plug>(YankyPutBeforeFilter)")
+
+-- """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => telescope
 -- """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 local telescope = require("telescope")
@@ -178,6 +229,7 @@ telescope.load_extension("live_grep_args")
 telescope.load_extension("lsp_handlers")
 telescope.load_extension("ui-select")
 telescope.load_extension("file_browser")
+telescope.load_extension("yank_history") -- yanky.nvim
 local lga_actions = require("telescope-live-grep-args.actions")
 local trouble_ts_provider = require("trouble.providers.telescope")
 telescope.setup({

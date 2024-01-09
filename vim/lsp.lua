@@ -84,11 +84,10 @@ cmp.setup({
     ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
   }),
   sources = cmp.config.sources({
-    { name = "cody" },
     { name = "nvim_lsp" },
+    { name = "cody" },    -- sg.nvim
     { name = "vsnip" },
-    -- { name = 'luasnip' }, -- For luasnip users.
-  }, {
+    { name = "cmp_yanky" }, -- yanky.nvim
     { name = "buffer" },
   }),
 })
@@ -130,7 +129,6 @@ require("lspsaga").setup({})
 -- Setup lspconfig.
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 local nvim_lsp = require("lspconfig")
-local util = require("lspconfig/util")
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 --
 local on_attach = function(client, bufnr)
@@ -166,8 +164,11 @@ local on_attach = function(client, bufnr)
   buf_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts)
   buf_set_keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts)
   buf_set_keymap("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
-  buf_set_keymap("n", "ga", "<Cmd>lua vim.lsp.buf.code_action()<CR>", opts)
-  buf_set_keymap("n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts)
+  -- buf_set_keymap("n", "ga", "<Cmd>lua vim.lsp.buf.code_action()<CR>", opts) -- moved to Lspsaga
+  -- buf_set_keymap("n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts) -- moved to Lspsaga
+  buf_set_keymap("n", "ga", ":Lspsaga code_action<CR>", opts)
+  buf_set_keymap("n", "K", ":Lspsaga hover_doc<CR>", opts)
+
   buf_set_keymap("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
   buf_set_keymap("n", "<leader>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>", opts)
   buf_set_keymap("n", "<leader>wr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>", opts)

@@ -21,50 +21,68 @@
 set nocompatible
 
 call plug#begin('~/.vim/plugged')
-Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'chemzqm/macdown.vim'
 Plug 'christoomey/vim-tmux-navigator'
+Plug 'f-person/git-blame.nvim'
+
+" PlugThemes
+Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'craftzdog/solarized-osaka.nvim'
 Plug 'ellisonleao/gruvbox.nvim'
-Plug 'folke/neodev.nvim'
 Plug 'folke/tokyonight.nvim'
+Plug 'sainnhe/everforest'
+
+Plug 'folke/neodev.nvim'
 Plug 'folke/trouble.nvim'
 Plug 'folke/noice.nvim' | Plug 'MunifTanjim/nui.nvim' | Plug 'rcarriga/nvim-notify'
-Plug 'f-person/git-blame.nvim'
-Plug 'gbrlsnchs/telescope-lsp-handlers.nvim'
+
+Plug 'gbprod/yanky.nvim'
+
+" PlugTelescope
+Plug 'nvim-lua/plenary.nvim' " dependency for telescope - libraray with async methods
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-live-grep-args.nvim'
+Plug 'nvim-telescope/telescope-file-browser.nvim'
+Plug 'nvim-telescope/telescope-ui-select.nvim'
+
+" PlugLsp - LSP
 Plug 'nvimdev/lspsaga.nvim'
+Plug 'neovim/nvim-lspconfig'
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
+Plug 'nvimtools/none-ls.nvim'
+Plug 'lvimuser/lsp-inlayhints.nvim'
+Plug 'onsails/lspkind.nvim'
+Plug 'gbrlsnchs/telescope-lsp-handlers.nvim'
+
+" PlugCmp - Completion
+Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-path'
-Plug 'hrsh7th/cmp-vsnip'
-Plug 'hrsh7th/nvim-cmp'
+Plug 'chrisgrieser/cmp_yanky' " for yanky.nvim
+
+" PlugSnip - Snippets
 Plug 'hrsh7th/vim-vsnip'
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && npm install' }
+Plug 'hrsh7th/vim-vsnip-integ'
+Plug 'hrsh7th/cmp-vsnip'
+Plug 'rafamadriz/friendly-snippets'
+
+" PlugTreesitter
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'nvim-treesitter/nvim-treesitter-context'
+Plug 'nvim-treesitter/nvim-treesitter-textobjects'
+Plug 'nvim-treesitter/playground'
+
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/vim-easy-align'
 Plug 'kyazdani42/nvim-web-devicons'
-Plug 'leafgarland/typescript-vim'
-Plug 'lvimuser/lsp-inlayhints.nvim'
-Plug 'mattn/emmet-vim'
-Plug 'maxbrunsfeld/vim-yankstack'
-Plug 'maxmellon/vim-jsx-pretty'
-Plug 'mileszs/ack.vim'
-Plug 'neovim/nvim-lspconfig'
 Plug 'norcalli/nvim-colorizer.lua'
 Plug 'nvim-lualine/lualine.nvim'
-Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-neotest/neotest'
 Plug 'nvim-neotest/neotest-go'
-Plug 'nvim-telescope/telescope-file-browser.nvim'
-Plug 'nvim-telescope/telescope.nvim' | Plug 'nvim-telescope/telescope-live-grep-args.nvim'
-Plug 'nvim-telescope/telescope-ui-select.nvim'
-Plug 'nvimtools/none-ls.nvim'
-Plug 'nvim-treesitter/nvim-treesitter' | Plug 'nvim-treesitter/nvim-treesitter-context' | Plug 'nvim-treesitter/playground'
-Plug 'onsails/lspkind.nvim'
 Plug 'pangloss/vim-javascript'
-Plug 'rafamadriz/friendly-snippets'
-Plug 'sainnhe/everforest'
 Plug 'sourcegraph/sg.nvim', { 'do': 'nvim -l build/init.lua' }
 Plug 'stevearc/dressing.nvim'
 Plug 'tpope/vim-commentary'
@@ -72,8 +90,6 @@ Plug 'tpope/vim-surround'
 Plug 'tyru/open-browser.vim'
 Plug 'voldikss/vim-floaterm'
 Plug 'weirongxu/plantuml-previewer.vim'
-Plug 'williamboman/mason.nvim'
-Plug 'williamboman/mason-lspconfig.nvim'
 call plug#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
