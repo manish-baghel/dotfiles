@@ -52,11 +52,10 @@ cmp.setup({
       -- maxwidth = function() return math.floor(0.45 * vim.o.columns) end,
       ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
       menu = {
-        ["cody"] = "🤖[AI]",
+        cody = "🤖[AI]",
         buffer = "[Buffer]",
         nvim_lsp = "[LSP]",
-        luasnip = "[LuaSnip]",
-        nvim_lua = "[Lua]",
+        vsnip = "[VSnip]",
         latex_symbols = "[Latex]",
       },
     }),

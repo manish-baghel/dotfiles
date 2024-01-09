@@ -9,23 +9,6 @@ xmap <leader>al <Plug>(EasyAlign)
 "    For eg. <leader>al<space>
 nmap <leader>al <Plug>(EasyAlign)
 
-""""""""""""""""""""""""""""""
-" => YankStack
-""""""""""""""""""""""""""""""
-let g:yankstack_yank_keys = ['y', 'd']
-
-
-nmap <C-p> <Plug>yankstack_substitute_older_paste
-nmap <C-n> <Plug>yankstack_substitute_newer_paste
-
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => surround.vim config
-" Annotate strings with gettext
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-vmap Si S(i_<esc>f)
-au FileType mako vmap Si S"i${ _(<esc>2f"a) }<esc>
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Vimroom
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -34,22 +17,6 @@ let g:goyo_margin_top = 2
 let g:goyo_margin_bottom = 2
 nnoremap <silent> <leader>z :Goyo<cr>
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Emmet
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-let g:user_emmet_mode='a'    "enable all function in all mode
-let g:user_emmet_settings = {
-\  'html': {
-\    'snippets': {
-\      'html:5': '!!!+html>(head>(meta[charset=${charset}]+meta[name="viewport" content="width=device-width,initial-scale=1.0"]+meta[http-equiv="X-UA-Compatible" content="ie=edge"]+title +body'
-            \}
- \},
-\  'javascript' : {
-\      'extends' : 'jsx',
-\  },
-\}
 
 vnoremap <silent> gv :call VisualSelection('gv', '')<CR>
 vnoremap <silent> <leader>r :call VisualSelection('replace', '')<CR>
@@ -61,14 +28,6 @@ map <leader>p :cp<cr>
 
 " Make sure that enter is never overriden in the quickfix window
 autocmd BufReadPost quickfix nnoremap <buffer> <CR> <CR>
-
-
-" Give more space for displaying messages.
-set cmdheight=1
-
-" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience.
-set updatetime=300
 
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
@@ -105,11 +64,12 @@ nmap        S   <Plug>(vsnip-cut-text)
 xmap        S   <Plug>(vsnip-cut-text)
 
 " If you want to use snippet for multiple filetypes, you can `g:vsnip_filetypes` for it.
-let g:vsnip_filetypes = {}
 let g:vsnip_filetypes.javascriptreact = ['javascript']
 let g:vsnip_filetypes.typescriptreact = ['typescript']
 ]])
 
+vim.cmd([[ tnoremap <silent> <leader>f <C-\><C-n>:FloatermToggle<CR> ]])
+vim.api.nvim_set_keymap("n", "<leader>f", ":FloatermToggle --height=0.9 --width=0.9 lazygit<CR>", { noremap = true })
 vim.api.nvim_set_keymap("n", "<leader>lg", ":FloatermNew --height=0.9 --width=0.9 lazygit<CR>", { noremap = true })
 
 require("catppuccin").setup({
@@ -320,6 +280,34 @@ require("nvim-treesitter.configs").setup({
   },
   indent = {
     enable = true,
+  },
+  textobjects = {
+    lsp_interop = {
+      enable = true,
+      border = "none",
+      floating_preview_opts = {},
+      peek_definition_code = {
+        ["<leader>df"] = "@function.outer",
+        ["<leader>dF"] = "@class.outer",
+      },
+    },
+    select = {
+      enable = true,
+      lookahead = true,
+      keymaps = {
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["ac"] = "@class.outer",
+        ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
+        ["as"] = { query = "@scope", query_group = "locals", desc = "Select language scope" },
+      },
+      selection_modes = {
+        ["@parameter.outer"] = "v", -- charwise
+        ["@function.outer"] = "V", -- linewise
+        ["@class.outer"] = "<c-v>", -- blockwise
+      },
+      include_surrounding_whitespace = true,
+    },
   },
   playground = {
     enable = true,

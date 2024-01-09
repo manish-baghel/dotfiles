@@ -21,16 +21,18 @@
 set nocompatible
 
 call plug#begin('~/.vim/plugged')
-Plug 'chemzqm/macdown.vim'
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'f-person/git-blame.nvim'
-
 " PlugThemes
 Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'craftzdog/solarized-osaka.nvim'
 Plug 'ellisonleao/gruvbox.nvim'
 Plug 'folke/tokyonight.nvim'
 Plug 'sainnhe/everforest'
+
+" PlugUI
+Plug 'norcalli/nvim-colorizer.lua'
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'stevearc/dressing.nvim' " Improves several in-build ui elements like select, input, etc.
 
 Plug 'folke/neodev.nvim'
 Plug 'folke/trouble.nvim'
@@ -55,6 +57,9 @@ Plug 'lvimuser/lsp-inlayhints.nvim'
 Plug 'onsails/lspkind.nvim'
 Plug 'gbrlsnchs/telescope-lsp-handlers.nvim'
 
+" PlugAI
+Plug 'sourcegraph/sg.nvim', { 'do': 'nvim -l build/init.lua' }
+
 " PlugCmp - Completion
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-buffer'
@@ -75,23 +80,26 @@ Plug 'nvim-treesitter/nvim-treesitter-context'
 Plug 'nvim-treesitter/nvim-treesitter-textobjects'
 Plug 'nvim-treesitter/playground'
 
-Plug 'junegunn/goyo.vim'
-Plug 'junegunn/vim-easy-align'
-Plug 'kyazdani42/nvim-web-devicons'
-Plug 'norcalli/nvim-colorizer.lua'
-Plug 'nvim-lualine/lualine.nvim'
+" PlugTest
 Plug 'nvim-neotest/neotest'
 Plug 'nvim-neotest/neotest-go'
-Plug 'pangloss/vim-javascript'
-Plug 'sourcegraph/sg.nvim', { 'do': 'nvim -l build/init.lua' }
-Plug 'stevearc/dressing.nvim'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-surround'
-Plug 'tyru/open-browser.vim'
+
+" PlugPreview - Markdown, PlantUML, Terminal
+Plug 'chemzqm/macdown.vim'
 Plug 'voldikss/vim-floaterm'
 Plug 'weirongxu/plantuml-previewer.vim'
-call plug#end()
 
+" Plug3rdParty
+Plug 'tyru/open-browser.vim'
+Plug 'christoomey/vim-tmux-navigator'
+
+" PlugMiscellaneous
+Plug 'junegunn/goyo.vim'
+Plug 'junegunn/vim-easy-align'
+Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
+Plug 'f-person/git-blame.nvim'
+call plug#end()
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " General Config
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
