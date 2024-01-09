@@ -21,7 +21,6 @@
 set nocompatible
 
 call plug#begin('~/.vim/plugged')
-Plug 'airblade/vim-gitgutter'
 Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'chemzqm/macdown.vim'

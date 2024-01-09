@@ -36,12 +36,6 @@ nnoremap <silent> <leader>z :Goyo<cr>
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => Git gutter (Git diff)
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:gitgutter_enabled=0
-nnoremap <silent> <leader>d :GitGutterToggle<cr>
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Emmet
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -451,6 +445,7 @@ require("noice").setup({
     lsp_doc_border = false,     -- add a border to hover docs and signature help
   },
 })
+vim.api.nvim_set_keymap("n", "<leader>d", ":Noice dismiss<CR>", { noremap = true })
 
 -- keep this at the bottom
 -- enable for all filetypes
