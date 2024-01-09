@@ -21,7 +21,6 @@
 set nocompatible
 
 call plug#begin('~/.vim/plugged')
-Plug 'antoinemadec/FixCursorHold.nvim'
 Plug 'catppuccin/nvim', { 'as': 'catppuccin' }
 Plug 'chemzqm/macdown.vim'
 Plug 'christoomey/vim-tmux-navigator'
@@ -33,7 +32,7 @@ Plug 'folke/trouble.nvim'
 Plug 'folke/noice.nvim' | Plug 'MunifTanjim/nui.nvim' | Plug 'rcarriga/nvim-notify'
 Plug 'f-person/git-blame.nvim'
 Plug 'gbrlsnchs/telescope-lsp-handlers.nvim'
-Plug 'glepnir/lspsaga.nvim'
+Plug 'nvimdev/lspsaga.nvim'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'hrsh7th/cmp-nvim-lsp'
