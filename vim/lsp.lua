@@ -241,6 +241,12 @@ vim.keymap.set("v", "<space>ca", function()
   local bufnr = vim.api.nvim_get_current_buf()
   local start_row = vim.fn.getpos("v")[2] - 1
   local end_row = vim.fn.getpos(".")[2]
+  -- non brainer just consider smaller one as start row
+  if start_row > end_row then
+    local tmp = start_row
+    start_row = end_row
+    end_row = tmp
+  end
   vim.ui.input({ prompt = "Ask: " }, function(input)
     require("sg.cody.commands").ask_range(bufnr, start_row, end_row, input)
   end)
