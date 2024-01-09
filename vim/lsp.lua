@@ -25,14 +25,14 @@ null_ls.setup({
   sources = {
     null_ls.builtins.formatting.stylua,
     null_ls.builtins.formatting.prettierd,
-    null_ls.builtins.formatting.gofmt,
-    -- null_ls.builtins.formatting.golines,
-    null_ls.builtins.formatting.goimports,
-    null_ls.builtins.formatting.goimports_reviser,
     null_ls.builtins.diagnostics.eslint_d,
     null_ls.builtins.code_actions.eslint_d,
     null_ls.builtins.completion.spell,
+    null_ls.builtins.formatting.gofumpt,
+    null_ls.builtins.formatting.goimports,
+    null_ls.builtins.formatting.goimports_reviser,
     null_ls.builtins.code_actions.gomodifytags,
+    null_ls.builtins.completion.vsnip,
   },
 })
 
@@ -178,14 +178,14 @@ local on_attach = function(client, bufnr)
   buf_set_keymap("n", "<leader>rn", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
   buf_set_keymap("n", "gr", "<Cmd>lua vim.lsp.buf.references()<CR>", opts)
   buf_set_keymap("n", "<space>e", "<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>", opts)
-  -- buf_set_keymap("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", opts) -- moved to Lspsaga
-  -- buf_set_keymap("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts) -- moved to Lspsaga
+  buf_set_keymap("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", opts)
+  buf_set_keymap("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts)
   buf_set_keymap("n", "<space>q", "<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>", opts)
   -- Lspsaga keybindings
   buf_set_keymap("n", "ga", ":Lspsaga code_action<CR>", opts)
   buf_set_keymap("n", "K", ":Lspsaga hover_doc<CR>", opts)
-  buf_set_keymap("n", "[d", ":Lspsaga diagnostic_jump_prev ++unfocus<CR>", opts)
-  buf_set_keymap("n", "]d", ":Lspsaga diagnostic_jump_next ++unfocus<CR>", opts)
+  -- buf_set_keymap("n", "[d", ":Lspsaga diagnostic_jump_prev<CR>", opts) -- some bug causes floating window to stuck
+  -- buf_set_keymap("n", "]d", ":Lspsaga diagnostic_jump_next<CR>", opts)
   --
   -- Set some keybinds conditional on server capabilities
   if client.server_capabilities.documentFormattingProvider then
@@ -224,6 +224,7 @@ local on_attach = function(client, bufnr)
 
   require("lsp-inlayhints").on_attach(client, bufnr, true)
 
+  -- missing semantic tokens support for gopls
   if client.name == "gopls" and not client.server_capabilities.semanticTokensProvider then
     local semantic = client.config.capabilities.textDocument.semanticTokens
     client.server_capabilities.semanticTokensProvider = {
@@ -327,6 +328,7 @@ nvim_lsp.sqlls.setup({
 nvim_lsp.gopls.setup({
   settings = {
     gopls = {
+      gofumpt = true,
       semanticTokens = true,
       experimentalPostfixCompletions = true,
       analyses = {
