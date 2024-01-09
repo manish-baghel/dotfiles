@@ -124,9 +124,16 @@ require("neodev").setup({
 })
 
 -- Lspsaga improves neovim lsp with a bunch of features
-require("lspsaga").setup({
+local lspsaga = require("lspsaga")
+lspsaga.setup({
   lightbulb = {
     sign = false,
+  },
+  diagnostic = {
+    extend_relatedInformation = true,
+    keys = {
+      quit = { "q", "<ESC>" },
+    },
   },
 })
 -- Setup lspconfig.
@@ -145,20 +152,14 @@ local on_attach = function(client, bufnr)
   buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
 
   vim.o.updatetime = 250
-  vim.cmd([[autocmd! CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]])
-  vim.cmd([[autocmd! CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false, scope="cursor"})]])
   vim.api.nvim_create_autocmd("CursorHold", {
     buffer = bufnr,
     callback = function()
-      local opts = {
-        focusable = false,
-        close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-        border = "rounded",
-        source = "always",
-        prefix = " ",
-        scope = "cursor",
-      }
-      vim.diagnostic.open_float(nil, opts)
+      local diag = require("lspsaga.diagnostic")
+      local entries = diag:get_diagnostic({ cursor = true })
+      if #entries > 0 then
+        diag:render_diagnostic_window(entries[1], {})
+      end
     end,
   })
   --
@@ -169,9 +170,6 @@ local on_attach = function(client, bufnr)
   buf_set_keymap("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
   -- buf_set_keymap("n", "ga", "<Cmd>lua vim.lsp.buf.code_action()<CR>", opts) -- moved to Lspsaga
   -- buf_set_keymap("n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts) -- moved to Lspsaga
-  buf_set_keymap("n", "ga", ":Lspsaga code_action<CR>", opts)
-  buf_set_keymap("n", "K", ":Lspsaga hover_doc<CR>", opts)
-
   buf_set_keymap("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
   buf_set_keymap("n", "<leader>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>", opts)
   buf_set_keymap("n", "<leader>wr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>", opts)
@@ -180,9 +178,14 @@ local on_attach = function(client, bufnr)
   buf_set_keymap("n", "<leader>rn", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
   buf_set_keymap("n", "gr", "<Cmd>lua vim.lsp.buf.references()<CR>", opts)
   buf_set_keymap("n", "<space>e", "<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>", opts)
-  buf_set_keymap("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", opts)
-  buf_set_keymap("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts)
+  -- buf_set_keymap("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", opts) -- moved to Lspsaga
+  -- buf_set_keymap("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts) -- moved to Lspsaga
   buf_set_keymap("n", "<space>q", "<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>", opts)
+  -- Lspsaga keybindings
+  buf_set_keymap("n", "ga", ":Lspsaga code_action<CR>", opts)
+  buf_set_keymap("n", "K", ":Lspsaga hover_doc<CR>", opts)
+  buf_set_keymap("n", "[d", ":Lspsaga diagnostic_jump_prev ++unfocus<CR>", opts)
+  buf_set_keymap("n", "]d", ":Lspsaga diagnostic_jump_next ++unfocus<CR>", opts)
   --
   -- Set some keybinds conditional on server capabilities
   if client.server_capabilities.documentFormattingProvider then
