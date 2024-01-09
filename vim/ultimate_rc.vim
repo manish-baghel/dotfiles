@@ -151,7 +151,6 @@ set ruler
 set colorcolumn=80
 set cmdheight=1
 set laststatus=2
-" set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ %l\ \ Column:\ %c
 
 " backspace config as it should be
 set backspace=eol,start,indent
