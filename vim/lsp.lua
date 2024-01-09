@@ -159,7 +159,7 @@ local on_attach = function(client, bufnr)
     end,
   })
   --
-  --  -- Mappings.
+  -- LSP Mappings.
   local opts = { noremap = true, silent = true }
   buf_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts)
   buf_set_keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts)

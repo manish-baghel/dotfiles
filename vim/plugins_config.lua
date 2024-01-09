@@ -120,6 +120,7 @@ require("nvim-web-devicons").setup({})
 local function filepath()
   return vim.fn.expand("%:p:h")
 end
+---@diagnostic disable-next-line: undefined-field
 require("lualine").setup({
   options = {
     icons_enabled = true,
@@ -240,7 +241,7 @@ vim.api.nvim_set_keymap(
 
 local trouble = require("trouble")
 trouble.setup({})
-function toggle_trouble()
+local function toggle_trouble()
   trouble.toggle()
 end
 
