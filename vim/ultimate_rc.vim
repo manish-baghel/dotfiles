@@ -33,6 +33,7 @@ Plug 'norcalli/nvim-colorizer.lua'
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'stevearc/dressing.nvim' " Improves several in-build ui elements like select, input, etc.
+Plug 'goolord/alpha-nvim'
 
 Plug 'folke/neodev.nvim'
 Plug 'folke/trouble.nvim'
@@ -243,27 +244,6 @@ set path+=/usr/local/include
 
 " ctags if needed
 command! MakeTags !ctags -R --exclude=.git --exclude=node_modules --exclude=dist
-
-" Crazy OSC52 escape sequence for yanking directly to system clipboard
-" This even works through ssh and stuff
-" Mac -> base64 -b 0
-" Linux -> base64 -w 0
-function! Osc52Yank()
-  if has('mac')
-    let buffer=system("base64 -b 0", @0)
-  else
-    let buffer=system("base64 -w 0", @0)
-  endif
-  let buffer=substitute(buffer, "\n$", "", "")
-  let buffer='\e]52;c;'.buffer.'\x07'
-  silent exe "!echo -ne ".shellescape(buffer)." > ".shellescape(g:tty)
-endfunction
-command! Osc52CopyYank call Osc52Yank()
-
-augroup GlobalYank
-  autocmd!
-  autocmd TextYankPost * if v:event.operator ==# 'y' | call Osc52Yank() | endif
-augroup END
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Text indentation

@@ -124,7 +124,11 @@ require("neodev").setup({
 })
 
 -- Lspsaga improves neovim lsp with a bunch of features
-require("lspsaga").setup({})
+require("lspsaga").setup({
+  lightbulb = {
+    sign = false,
+  },
+})
 -- Setup lspconfig.
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 local nvim_lsp = require("lspconfig")
