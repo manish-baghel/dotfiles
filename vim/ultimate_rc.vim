@@ -34,12 +34,8 @@ Plug 'nvim-lualine/lualine.nvim'
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'stevearc/dressing.nvim' " Improves several in-build ui elements like select, input, etc.
 Plug 'goolord/alpha-nvim'
-
-Plug 'folke/neodev.nvim'
 Plug 'folke/trouble.nvim'
 Plug 'folke/noice.nvim' | Plug 'MunifTanjim/nui.nvim' | Plug 'rcarriga/nvim-notify'
-
-Plug 'gbprod/yanky.nvim'
 
 " PlugTelescope
 Plug 'nvim-lua/plenary.nvim' " dependency for telescope - libraray with async methods
@@ -95,6 +91,8 @@ Plug 'tyru/open-browser.vim'
 Plug 'christoomey/vim-tmux-navigator'
 
 " PlugMiscellaneous
+Plug 'folke/neodev.nvim'
+Plug 'gbprod/yanky.nvim'
 Plug 'junegunn/goyo.vim'
 Plug 'junegunn/vim-easy-align'
 Plug 'tpope/vim-commentary'

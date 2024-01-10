@@ -37,34 +37,30 @@ null_ls.setup({
 })
 
 -- """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
--- " => LSP
+-- " => Completion
 -- """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
 -- Setup nvim-cmp.
 local cmp = require("cmp")
 local lspkind = require("lspkind") -- fancy icons in the completion menu
 cmp.setup({
   formatting = {
     format = lspkind.cmp_format({
-      mode = "symbol", -- show only symbol annotations
-      maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
-      -- can also be a function to dynamically calculate max width such as
-      -- maxwidth = function() return math.floor(0.45 * vim.o.columns) end,
-      ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
+      mode = "symbol_text",
+      maxwidth = 50,
+      ellipsis_char = "...",
       menu = {
-        cody = "🤖[AI]",
+        cody = "[AI]",
         buffer = "[Buffer]",
         nvim_lsp = "[LSP]",
         vsnip = "[VSnip]",
         latex_symbols = "[Latex]",
+        cmp_yanky = "[Yanky]",
       },
     }),
   },
   snippet = {
-    -- REQUIRED - you must specify a snippet engine
     expand = function(args)
       vim.fn["vsnip#anonymous"](args.body)
-      -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
     end,
   },
   window = {
@@ -87,29 +83,22 @@ cmp.setup({
     { name = "cody" },    -- sg.nvim
     { name = "vsnip" },
     { name = "cmp_yanky" }, -- yanky.nvim
-    { name = "buffer" },
-  }),
-})
-
--- Set configuration for specific filetype.
-cmp.setup.filetype("gitcommit", {
-  sources = cmp.config.sources({
-    { name = "cmp_git" }, -- You can specify the `cmp_git` source if you were installed it.
-  }, {
-    { name = "buffer" },
+    {
+      { name = "buffer" },
+    },
   }),
 })
 
 -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
-cmp.setup.cmdline({ "/" }, {
+cmp.setup.cmdline({ "/", "?" }, {
   mapping = cmp.mapping.preset.cmdline(),
   sources = {
-    { name = "path" },
+    { name = "buffer" },
   },
 })
 
 -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
-cmp.setup.cmdline({ ":", "~", "/" }, {
+cmp.setup.cmdline({ ":" }, {
   mapping = cmp.mapping.preset.cmdline(),
   sources = cmp.config.sources({
     { name = "path" },
@@ -277,6 +266,7 @@ require("sg").setup({
 })
 
 nvim_lsp.tsserver.setup({
+  capabilities = capabilities,
   cmd = { "typescript-language-server", "--stdio" },
   filetypes = {
     "javascript",
@@ -341,6 +331,7 @@ nvim_lsp.gopls.setup({
 })
 
 nvim_lsp.lua_ls.setup({
+  capabilities = capabilities,
   on_init = function(client)
     local path = client.workspace_folders[1].name
     if not vim.loop.fs_stat(path .. "/.luarc.json") and not vim.loop.fs_stat(path .. "/.luarc.jsonc") then
@@ -368,15 +359,39 @@ nvim_lsp.lua_ls.setup({
   end,
 })
 
-nvim_lsp.sqlls.setup({})
-nvim_lsp.vimls.setup({})
-nvim_lsp.rust_analyzer.setup({})
-nvim_lsp.cssls.setup({})
-nvim_lsp.docker_compose_language_service.setup({})
-nvim_lsp.dockerls.setup({})
-nvim_lsp.emmet_ls.setup({})
-nvim_lsp.html.setup({})
-nvim_lsp.htmx.setup({})
-nvim_lsp.jqls.setup({})
-nvim_lsp.nginx_language_server.setup({})
-nvim_lsp.tailwindcss.setup({})
+nvim_lsp.sqlls.setup({
+  capabilities = capabilities,
+})
+nvim_lsp.vimls.setup({
+  capabilities = capabilities,
+})
+nvim_lsp.rust_analyzer.setup({
+  capabilities = capabilities,
+})
+nvim_lsp.cssls.setup({
+  capabilities = capabilities,
+})
+nvim_lsp.docker_compose_language_service.setup({
+  capabilities = capabilities,
+})
+nvim_lsp.dockerls.setup({
+  capabilities = capabilities,
+})
+nvim_lsp.emmet_ls.setup({
+  capabilities = capabilities,
+})
+nvim_lsp.html.setup({
+  capabilities = capabilities,
+})
+nvim_lsp.htmx.setup({
+  capabilities = capabilities,
+})
+nvim_lsp.jqls.setup({
+  capabilities = capabilities,
+})
+nvim_lsp.nginx_language_server.setup({
+  capabilities = capabilities,
+})
+nvim_lsp.tailwindcss.setup({
+  bilities = capabilities,
+})
