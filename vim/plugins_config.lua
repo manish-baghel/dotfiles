@@ -194,18 +194,6 @@ vim.keymap.set({ "n", "x" }, "gP", "<Plug>(YankyGPutBefore)")
 vim.keymap.set("n", "<c-p>", "<Plug>(YankyPreviousEntry)")
 vim.keymap.set("n", "<c-n>", "<Plug>(YankyNextEntry)")
 
--- tpope/vim-unimpaired style maps
-vim.keymap.set("n", "]p", "<Plug>(YankyPutIndentAfterLinewise)")
-vim.keymap.set("n", "[p", "<Plug>(YankyPutIndentBeforeLinewise)")
-vim.keymap.set("n", "]P", "<Plug>(YankyPutIndentAfterLinewise)")
-vim.keymap.set("n", "[P", "<Plug>(YankyPutIndentBeforeLinewise)")
-vim.keymap.set("n", ">p", "<Plug>(YankyPutIndentAfterShiftRight)")
-vim.keymap.set("n", "<p", "<Plug>(YankyPutIndentAfterShiftLeft)")
-vim.keymap.set("n", ">P", "<Plug>(YankyPutIndentBeforeShiftRight)")
-vim.keymap.set("n", "<P", "<Plug>(YankyPutIndentBeforeShiftLeft)")
-vim.keymap.set("n", "=p", "<Plug>(YankyPutAfterFilter)")
-vim.keymap.set("n", "=P", "<Plug>(YankyPutBeforeFilter)")
-
 -- """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 -- " => telescope
 -- """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -270,12 +258,7 @@ vim.keymap.set("n", "<leader>o", builtin.buffers, {})
 vim.keymap.set("n", "<leader>h", builtin.help_tags, {})
 vim.api.nvim_set_var("telescope#buffer#open_file_in_current_window", true)
 vim.api.nvim_set_var("telescope#live_grep#open_file_in_current_window", true)
-vim.api.nvim_set_keymap(
-  "n",
-  "<leader>nn",
-  ":Telescope file_browser path=%:p:h select_buffer=true<CR>",
-  { noremap = true }
-)
+vim.keymap.set("n", "<leader>nn", ":Telescope file_browser path=%:p:h select_buffer=true<CR>", { noremap = true })
 
 local trouble = require("trouble")
 trouble.setup({})
@@ -335,40 +318,10 @@ require("nvim-treesitter.configs").setup({
       include_surrounding_whitespace = true,
     },
   },
-  playground = {
-    enable = true,
-    disable = {},
-    updatetime = 25,       -- Debounced time for highlighting nodes in the playground from source code
-    persist_queries = false, -- Whether the query persists across vim sessions
-    keybindings = {
-      toggle_query_editor = "o",
-      toggle_hl_groups = "i",
-      toggle_injected_languages = "t",
-      toggle_anonymous_nodes = "a",
-      toggle_language_display = "I",
-      focus_language = "f",
-      unfocus_language = "F",
-      update = "R",
-      goto_node = "<cr>",
-      show_help = "?",
-    },
-  },
+  playground = {},
 })
 
-require("treesitter-context").setup({
-  enable = true,           -- Enable this plugin (Can be enabled/disabled later via commands)
-  max_lines = 0,           -- How many lines the window should span. Values <= 0 mean no limit.
-  min_window_height = 0,   -- Minimum editor window height to enable context. Values <= 0 mean no limit.
-  line_numbers = true,
-  multiline_threshold = 20, -- Maximum number of lines to show for a single context
-  trim_scope = "outer",    -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
-  mode = "cursor",         -- Line used to calculate context. Choices: 'cursor', 'topline'
-  -- Separator between context and content. Should be a single character string, like '-'.
-  -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
-  separator = nil,
-  zindex = 20,    -- The Z-index of the context window
-  on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
-})
+require("treesitter-context").setup()
 
 vim.keymap.set("n", "[c", function()
   require("treesitter-context").go_to_context(vim.v.count1)
@@ -456,37 +409,8 @@ end
 
 require("lsp-inlayhints").setup({
   inlay_hints = {
-    parameter_hints = {
-      show = true,
-      prefix = "<- ",
-      separator = ", ",
-      remove_colon_start = false,
-      remove_colon_end = true,
-    },
-    type_hints = {
-      -- type and other hints
-      show = true,
-      prefix = "",
-      separator = ", ",
-      remove_colon_start = false,
-      remove_colon_end = false,
-    },
-    only_current_line = false,
-    -- separator between types and parameter hints. Note that type hints are
-    -- shown before parameter
-    labels_separator = "  ",
-    -- whether to align to the length of the longest line in the file
-    max_len_align = false,
-    -- padding from the left if max_len_align is true
     max_len_align_padding = 1,
-    -- experimental (from gupta)
-    -- position = {
-    --   align = "fixed_col",
-    --   padding = 80,
-    -- },
-    -- highlight group
     highlight = "LspInlayHint",
-    -- virt_text priority
     priority = 0,
   },
   enabled_at_startup = true,
