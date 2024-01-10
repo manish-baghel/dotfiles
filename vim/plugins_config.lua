@@ -407,16 +407,6 @@ for keys, mapping in pairs(mappings) do
   vim.api.nvim_set_keymap("n", keys, "", { callback = mapping, noremap = true })
 end
 
-require("lsp-inlayhints").setup({
-  inlay_hints = {
-    max_len_align_padding = 1,
-    highlight = "LspInlayHint",
-    priority = 0,
-  },
-  enabled_at_startup = true,
-  debug_mode = false,
-})
-
 -- this modifies UI of cmdline, messages, notify and popupmenu
 require("noice").setup({
   lsp = {

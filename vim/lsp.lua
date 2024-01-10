@@ -56,6 +56,9 @@ cmp.setup({
         latex_symbols = "[Latex]",
         cmp_yanky = "[Yanky]",
       },
+      symbol_map = {
+        Cody = "🧠",
+      },
     }),
   },
   snippet = {
@@ -127,8 +130,18 @@ lspsaga.setup({
 })
 -- Setup lspconfig.
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
-local nvim_lsp = require("lspconfig")
 capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+local nvim_lsp = require("lspconfig")
+require("lsp-inlayhints").setup({
+  inlay_hints = {
+    max_len_align_padding = 1,
+    highlight = "LspInlayHint",
+    priority = 0,
+  },
+  enabled_at_startup = true,
+  debug_mode = false,
+})
 
 -- Global mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
@@ -172,7 +185,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
     if client.server_capabilities.documentFormattingProvider then
       local function format_fn()
-        vim.lsp.buf.format({ async = true })
+        vim.lsp.buf.format()
       end
       vim.keymap.set("n", "<leader>ff", format_fn, opts)
       vim.api.nvim_create_autocmd("BufWritePre", {
@@ -200,7 +213,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
       })
     end
 
-    require("lsp-inlayhints").on_attach(client, bufnr, true)
+    require("lsp-inlayhints").on_attach(client, bufnr)
 
     -- missing semantic tokens support for gopls
     if client.name == "gopls" and not client.server_capabilities.semanticTokensProvider then
@@ -393,5 +406,5 @@ nvim_lsp.nginx_language_server.setup({
   capabilities = capabilities,
 })
 nvim_lsp.tailwindcss.setup({
-  bilities = capabilities,
+  capabilities = capabilities,
 })
