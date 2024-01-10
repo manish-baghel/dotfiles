@@ -319,6 +319,12 @@ nvim_lsp.gopls.setup({
     gopls = {
       gofumpt = true,
       semanticTokens = true,
+      experimentalPostfixCompletions = true,
+      analyses = {
+        unusedparams = true,
+        shadow = true,
+      },
+      staticcheck = true,
       hints = {
         assignVariableTypes = true,
         compositeLiteralFields = true,
