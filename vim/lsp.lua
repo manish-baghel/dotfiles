@@ -140,100 +140,90 @@ lspsaga.setup({
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 local nvim_lsp = require("lspconfig")
 capabilities.textDocument.completion.completionItem.snippetSupport = true
---
-local on_attach = function(client, bufnr)
-  local function buf_set_keymap(...)
-    vim.api.nvim_buf_set_keymap(bufnr, ...)
-  end
-  local function buf_set_option(...)
-    vim.api.nvim_buf_set_option(bufnr, ...)
-  end
-  --
-  buf_set_option("omnifunc", "v:lua.vim.lsp.omnifunc")
 
-  vim.o.updatetime = 250
-  vim.api.nvim_create_autocmd("CursorHold", {
-    buffer = bufnr,
-    callback = function()
-      local diag = require("lspsaga.diagnostic")
-      local entries = diag:get_diagnostic({ cursor = true })
-      if #entries > 0 then
-        diag:render_diagnostic_window(entries[1], {})
+-- Global mappings.
+-- See `:help vim.diagnostic.*` for documentation on any of the below functions
+vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
+vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist)
+
+-- Use LspAttach autocommand to only map the following keys
+-- after the language server attaches to the current buffer
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+  callback = function(ev)
+    local bufnr = ev.buf
+    if not (ev.data and ev.data.client_id) then
+      return
+    end
+
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    if not client then
+      return
+    end
+
+    if client.server_capabilities.completionProvider then
+      vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
+    end
+    if client.server_capabilities.definitionProvider then
+      vim.bo[bufnr].tagfunc = "v:lua.vim.lsp.tagfunc"
+    end
+
+    local opts = { buffer = ev.buf }
+    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+    vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+    vim.keymap.set({ "n", "v" }, "ga", ":Lspsaga code_action<CR>", opts)
+    vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+    vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
+    vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, opts)
+    vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+
+    if client.server_capabilities.documentFormattingProvider then
+      local function format_fn()
+        vim.lsp.buf.format({ async = true })
       end
-    end,
-  })
-  --
-  -- LSP Mappings.
-  local opts = { noremap = true, silent = true }
-  buf_set_keymap("n", "gD", "<Cmd>lua vim.lsp.buf.declaration()<CR>", opts)
-  buf_set_keymap("n", "gd", "<Cmd>lua vim.lsp.buf.definition()<CR>", opts)
-  buf_set_keymap("n", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", opts)
-  -- buf_set_keymap("n", "ga", "<Cmd>lua vim.lsp.buf.code_action()<CR>", opts) -- moved to Lspsaga
-  -- buf_set_keymap("n", "K", "<Cmd>lua vim.lsp.buf.hover()<CR>", opts) -- moved to Lspsaga
-  buf_set_keymap("n", "<C-k>", "<cmd>lua vim.lsp.buf.signature_help()<CR>", opts)
-  buf_set_keymap("n", "<leader>wa", "<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>", opts)
-  buf_set_keymap("n", "<leader>wr", "<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>", opts)
-  buf_set_keymap("n", "<leader>wl", "<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>", opts)
-  buf_set_keymap("n", "<leader>D", "<cmd>lua vim.lsp.buf.type_definition()<CR>", opts)
-  buf_set_keymap("n", "<leader>rn", "<cmd>lua vim.lsp.buf.rename()<CR>", opts)
-  buf_set_keymap("n", "gr", "<Cmd>lua vim.lsp.buf.references()<CR>", opts)
-  buf_set_keymap("n", "<space>e", "<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>", opts)
-  buf_set_keymap("n", "[d", "<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>", opts)
-  buf_set_keymap("n", "]d", "<cmd>lua vim.lsp.diagnostic.goto_next()<CR>", opts)
-  buf_set_keymap("n", "<space>q", "<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>", opts)
-  -- Lspsaga keybindings
-  buf_set_keymap("n", "ga", ":Lspsaga code_action<CR>", opts)
-  buf_set_keymap("n", "K", ":Lspsaga hover_doc<CR>", opts)
-  -- buf_set_keymap("n", "[d", ":Lspsaga diagnostic_jump_prev<CR>", opts) -- some bug causes floating window to stuck
-  -- buf_set_keymap("n", "]d", ":Lspsaga diagnostic_jump_next<CR>", opts)
-  --
-  -- Set some keybinds conditional on server capabilities
-  if client.server_capabilities.documentFormattingProvider then
-    buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.format()<CR>", opts)
-    vim.api.nvim_create_autocmd("BufWritePre", {
-      pattern = { "*" },
-      callback = function()
-        vim.lsp.buf.format({ timeout_ms = 2000 })
-      end,
-    })
-  elseif client.server_capabilities.documentRangeFormattingProvider then
-    buf_set_keymap("n", "ff", "<cmd>lua vim.lsp.buf.range_formatting()<CR>", opts)
-  else
-    buf_set_keymap("n", "ff", '<cmd>lua print("formatting is not supported by this lsp server")<CR>', opts)
-  end
-  --
-  -- Set autocommands conditional on server_capabilities
-  if client.server_capabilities.documentHighlightProvider then
-    local group = vim.api.nvim_create_augroup("LSPDocumentHighlight", {})
+      vim.keymap.set("n", "<leader>ff", format_fn, opts)
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = { "*" },
+        callback = format_fn,
+      })
+    else
+      vim.keymap.set("n", "ff", '<cmd>lua print("formatting is not supported by this lsp server")<CR>', opts)
+    end
+    --
+    -- Set autocommands conditional on server_capabilities
+    if client.server_capabilities.documentHighlightProvider then
+      local group = vim.api.nvim_create_augroup("LSPDocumentHighlight", {})
 
-    vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-      buffer = bufnr,
-      group = group,
-      callback = function()
-        vim.lsp.buf.document_highlight()
-      end,
-    })
-    vim.api.nvim_create_autocmd({ "CursorMoved" }, {
-      buffer = bufnr,
-      group = group,
-      callback = function()
-        vim.lsp.buf.clear_references()
-      end,
-    })
-  end
+      vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+        buffer = bufnr,
+        group = group,
+        callback = vim.lsp.buf.document_highlight,
+      })
 
-  require("lsp-inlayhints").on_attach(client, bufnr, true)
+      vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+        buffer = bufnr,
+        group = group,
+        callback = vim.lsp.buf.clear_references,
+      })
+    end
 
-  -- missing semantic tokens support for gopls
-  if client.name == "gopls" and not client.server_capabilities.semanticTokensProvider then
-    local semantic = client.config.capabilities.textDocument.semanticTokens
-    client.server_capabilities.semanticTokensProvider = {
-      full = true,
-      legend = { tokenModifiers = semantic.tokenModifiers, tokenTypes = semantic.tokenTypes },
-      range = true,
-    }
-  end
-end -- on_attach end
+    require("lsp-inlayhints").on_attach(client, bufnr, true)
+
+    -- missing semantic tokens support for gopls
+    if client.name == "gopls" and not client.server_capabilities.semanticTokensProvider then
+      local semantic = client.config.capabilities.textDocument.semanticTokens
+      client.server_capabilities.semanticTokensProvider = {
+        full = true,
+        legend = { tokenModifiers = semantic.tokenModifiers, tokenTypes = semantic.tokenTypes },
+        range = true,
+      }
+    end
+  end,
+})
 
 -- Sourcegraph configuration. All keys are optional
 -- Toggle cody chat
@@ -241,8 +231,7 @@ vim.keymap.set("n", "<space>cc", function()
   require("sg.cody.commands").toggle()
 end)
 
-vim.keymap.set("v", "<space>ca", function()
-  local bufnr = vim.api.nvim_get_current_buf()
+local function get_current_visual_selection_rows()
   local start_row = vim.fn.getpos("v")[2] - 1
   local end_row = vim.fn.getpos(".")[2]
   -- non brainer just consider smaller one as start row
@@ -251,8 +240,15 @@ vim.keymap.set("v", "<space>ca", function()
     start_row = end_row
     end_row = tmp
   end
+  return start_row, end_row
+end
+
+vim.keymap.set("v", "<space>ca", function()
+  local buf = vim.api.nvim_get_current_buf()
+  local start_row, end_row = get_current_visual_selection_rows()
+
   vim.ui.input({ prompt = "Ask: " }, function(input)
-    require("sg.cody.commands").ask_range(bufnr, start_row, end_row, input)
+    require("sg.cody.commands").ask_range(buf, start_row, end_row, input)
   end)
 end)
 
@@ -276,7 +272,6 @@ end
 
 local node_executable = vim.fn.expand("/home/manish/.nvm/versions/node/v19.6.1/bin/node")
 require("sg").setup({
-  on_attach = on_attach,
   enable_cody = true,
   node_executable = node_executable,
 })
@@ -317,12 +312,6 @@ nvim_lsp.tsserver.setup({
       },
     },
   },
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-nvim_lsp.sqlls.setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
 })
 
 nvim_lsp.gopls.setup({
@@ -330,12 +319,6 @@ nvim_lsp.gopls.setup({
     gopls = {
       gofumpt = true,
       semanticTokens = true,
-      experimentalPostfixCompletions = true,
-      analyses = {
-        unusedparams = true,
-        shadow = true,
-      },
-      staticcheck = true,
       hints = {
         assignVariableTypes = true,
         compositeLiteralFields = true,
@@ -349,13 +332,6 @@ nvim_lsp.gopls.setup({
   init_options = {
     usePlaceholders = true,
   },
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
-nvim_lsp.vimls.setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
 })
 
 nvim_lsp.lua_ls.setup({
@@ -364,13 +340,10 @@ nvim_lsp.lua_ls.setup({
     if not vim.loop.fs_stat(path .. "/.luarc.json") and not vim.loop.fs_stat(path .. "/.luarc.jsonc") then
       client.config.settings = vim.tbl_deep_extend("force", client.config.settings, {
         Lua = {
-
           completion = {
             callSnippet = "Replace",
           },
           runtime = {
-            -- Tell the language server which version of Lua you're using
-            -- (most likely LuaJIT in the case of Neovim)
             version = "LuaJIT",
           },
           -- Make the server aware of Neovim runtime files
@@ -378,11 +351,7 @@ nvim_lsp.lua_ls.setup({
             checkThirdParty = false,
             library = {
               vim.env.VIMRUNTIME,
-              -- "${3rd}/luv/library"
-              -- "${3rd}/busted/library",
             },
-            -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
-            -- library = vim.api.nvim_get_runtime_file("", true)
           },
         },
       })
@@ -391,33 +360,11 @@ nvim_lsp.lua_ls.setup({
     end
     return true
   end,
-  capabilities = capabilities,
-  on_attach = on_attach,
 })
 
-nvim_lsp.rust_analyzer.setup({
-  settings = {
-    ["rust-analyzer"] = {
-      imports = {
-        granularity = {
-          group = "module",
-        },
-        prefix = "self",
-      },
-      cargo = {
-        buildScripts = {
-          enable = true,
-        },
-      },
-      procMacro = {
-        enable = true,
-      },
-    },
-  },
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
+nvim_lsp.sqlls.setup({})
+nvim_lsp.vimls.setup({})
+nvim_lsp.rust_analyzer.setup({})
 nvim_lsp.cssls.setup({})
 nvim_lsp.docker_compose_language_service.setup({})
 nvim_lsp.dockerls.setup({})
@@ -427,7 +374,3 @@ nvim_lsp.htmx.setup({})
 nvim_lsp.jqls.setup({})
 nvim_lsp.nginx_language_server.setup({})
 nvim_lsp.tailwindcss.setup({})
-
-if vim.g.dbs == nil then
-  vim.g.dbs = vim.empty_dict()
-end
