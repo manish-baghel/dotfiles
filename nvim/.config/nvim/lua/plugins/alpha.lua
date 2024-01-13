@@ -16,7 +16,7 @@ return {
 ]]
 		alpha_dashboard_theme.section.header.val = vim.split(logo, "\n")
 		alpha_dashboard_theme.section.buttons.val = {
-			alpha_dashboard_theme.button("f", " " .. " Find file", ":Telescope find_files<CR>"),
+			alpha_dashboard_theme.button("s", " " .. " Search/Find file", ":Telescope find_files<CR>"),
 			alpha_dashboard_theme.button("r", " " .. " Recent files", ":Telescope oldfiles <CR>"),
 			alpha_dashboard_theme.button("g", " " .. " Find text", ":norm% ,g<CR>i"),
 			alpha_dashboard_theme.button(
