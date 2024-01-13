@@ -21,10 +21,10 @@ return {
 			alpha_dashboard_theme.button("g", " " .. " Find text", ":norm% ,g<CR>i"),
 			alpha_dashboard_theme.button(
 				"c",
-				"⚙" .. " Config",
+				"⚙" .. "  Config",
 				":e ~/dotfiles/nvim/.config/nvim/init.lua<CR> :cd %:p:h<CR>"
 			),
-			alpha_dashboard_theme.button("l", "" .. " LazyGit", ":norm% ,lg<CR>"),
+			alpha_dashboard_theme.button("l", "" .. "  LazyGit", ":norm% ,lg<CR>"),
 			alpha_dashboard_theme.button("q", " " .. " Quit", ":qa<CR>"),
 		}
 		alpha_dashboard_theme.section.header.opts.hl = "AlphaHeader"
