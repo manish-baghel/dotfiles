@@ -6,7 +6,13 @@ return {
     "hrsh7th/cmp-nvim-lsp",
     "hrsh7th/cmp-path",
     "chrisgrieser/cmp_yanky",
+
+    'hrsh7th/vim-vsnip',
+    'hrsh7th/vim-vsnip-integ',
+    'hrsh7th/cmp-vsnip',
+    'rafamadriz/friendly-snippets',
   },
+  event = "InsertEnter",
   config = function()
     local cmp = require("cmp")
     local lspkind = require("lspkind") -- fancy icons in the completion menu
@@ -51,7 +57,7 @@ return {
       }),
       sources = cmp.config.sources({
         { name = "nvim_lsp" },
-        { name = "cody" },  -- sg.nvim
+        { name = "cody" },      -- sg.nvim
         { name = "vsnip" },
         { name = "cmp_yanky" }, -- yanky.nvim
         {

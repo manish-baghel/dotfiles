@@ -83,7 +83,7 @@ cmp.setup({
   }),
   sources = cmp.config.sources({
     { name = "nvim_lsp" },
-    { name = "cody" },    -- sg.nvim
+    { name = "cody" },      -- sg.nvim
     { name = "vsnip" },
     { name = "cmp_yanky" }, -- yanky.nvim
     {
@@ -255,7 +255,8 @@ vim.keymap.set("v", "<space>ca", function()
 end)
 
 -- Cody text highlights for cmp
-vim.api.nvim_set_hl(0, "CmpItemKindCody", { fg = "Red" })
+-- local mocha = require("catppuccin.palettes").get_palette "mocha"
+-- vim.api.nvim_set_hl(0, "CmpItemKindCody", { fg = mocha.red })
 
 vim.keymap.set("n", "<space>cn", function()
   local name = vim.fn.input("chat name: ")

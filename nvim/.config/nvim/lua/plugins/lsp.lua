@@ -341,7 +341,7 @@ return {
       end)
 
       -- Cody text highlights for cmp
-      vim.api.nvim_set_hl(0, "CmpItemKindCody", { fg = "Red" })
+      vim.api.nvim_set_hl(0, "CmpItemKindCody", { fg = vim.g.color_palette.red })
 
       vim.keymap.set("n", "<space>cn", function()
         local name = vim.fn.input("chat name: ")
