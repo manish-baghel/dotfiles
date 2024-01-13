@@ -323,7 +323,7 @@ return {
 			local node_executable = vim.fn.system("which node")
 			require("sg").setup({
 				enable_cody = true,
-				node_executable = node_executable or "",
+				-- node_executable = node_executable .. "" or "",
 			})
 		end,
 	},

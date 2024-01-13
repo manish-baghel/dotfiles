@@ -24,6 +24,8 @@ return {
 				"webpack",
 				"build",
 				"**/package-lock.json",
+				".git",
+				".DS_Store",
 			},
 		},
 		pickers = {
