@@ -218,6 +218,8 @@ endtry
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Editing Config
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+  " return to last edit position after opening a file
+autocmd BufReadPost * if line("'\"") >= 1 && line("'\"") <= line("$") && &ft !~# 'commit' | exe "normal! g`\"" | endif
 
 imap <C-u> <ESC>O<BS><TAB>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""

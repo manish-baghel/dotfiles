@@ -184,7 +184,7 @@ return {
 				vim.lsp.protocol.make_client_capabilities(),
 				has_cmp and cmp_nvim_lsp.default_capabilities() or {},
 				opts.capabilities or {}
-			)
+			) or {}
 			if capabilities then
 				capabilities.textDocument.completion.completionItem.snippetSupport = true
 			end
