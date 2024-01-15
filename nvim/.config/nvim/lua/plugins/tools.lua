@@ -42,4 +42,15 @@ return {
 			vim.g.goyo_margin_bottom = 2
 		end,
 	},
+	{
+		"danymat/neogen",
+		dependencies = "nvim-treesitter/nvim-treesitter",
+		event = { "InsertEnter" },
+		opts = {
+			{
+				snippet_engine = "vsnip",
+			},
+		},
+		config = true,
+	},
 }

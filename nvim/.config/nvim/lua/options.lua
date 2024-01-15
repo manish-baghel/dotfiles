@@ -1,7 +1,7 @@
 local M = {}
 
 M.setup = function()
-  vim.cmd([[
+	vim.cmd([[
 set clipboard=unnamedplus
 set history=500
 
@@ -24,13 +24,6 @@ command! Y execute 'yy'
 " g command output to new scratch buffer
 command! -nargs=? Gst let @a='' | execute 'g/<args>/y A' | new | setlocal bt=nofile | put! a
 
-
-" Fast editing and reloading of vimrc
-" map <leader>e :e! ~/dotfiles/vim/ultimate_rc.vim<cr>
-" map <leader>E :e! ~/dotfiles/vim/plugins_config.lua<cr>
-" autocmd! bufwritepost ~/dotfiles/vim/ultimate_rc.vim source ~/.vimrc
-" autocmd! bufwritepost ~/dotfiles/vim/lsp.lua source ~/.vimrc
-" autocmd! bufwritepost ~/dotfiles/vim/plugins_config.lua source ~/.vimrc
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " VIM UI Config
@@ -376,5 +369,7 @@ let g:vsnip_filetypes.javascriptreact = ['javascript']
 let g:vsnip_filetypes.typescriptreact = ['typescript']
 ]])
 end
+
+vim.keymap.set("n", "<leader>e", "<CMD>e ~/dotfiles/nvim/.config/nvim/init.lua<CR> :cd %:p:h<CR>", { silent = true })
 
 return M

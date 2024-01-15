@@ -15,7 +15,7 @@ return {
 		{ "<leader>rs", "<CMD>Telescope resume<CR>" },
 		{ "<leader>o", "<CMD>Telescope buffers<CR>" },
 		{ "<leader>h", "<CMD>Telescope help_tags<CR>" },
-		{ "<leader>nn", "<CMD>Telescope file_browser path=%:p:h select_buffer=true<CR>" },
+		{ "<leader>nn", "<CMD>Telescope file_browser path=%:p:h select_buffer=true initial_mode=normal<CR>" },
 	},
 	opts = {
 		defaults = {
@@ -23,6 +23,7 @@ return {
 				"node_modules",
 				"webpack",
 				"build",
+				"dist",
 				"**/package-lock.json",
 				".git",
 				".DS_Store",

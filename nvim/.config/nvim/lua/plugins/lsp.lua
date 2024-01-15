@@ -164,7 +164,17 @@ return {
 				htmx = {},
 				jqls = {},
 				nginx_language_server = {},
-				tailwindcss = {},
+				tailwindcss = {
+					filetypes = {
+						"html",
+						"vue",
+						"jsx",
+						"typescriptreact",
+						"typescript",
+						"javascriptreact",
+						"javascript",
+					},
+				},
 			},
 		},
 		config = function(_, opts)
@@ -262,7 +272,8 @@ return {
 					local keymap_opts = { buffer = ev.buf }
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, keymap_opts)
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, keymap_opts)
-					vim.keymap.set("n", "K", vim.lsp.buf.hover, keymap_opts)
+					-- vim.keymap.set("n", "K", vim.lsp.buf.hover, keymap_opts)
+					vim.keymap.set("n", "K", ":Lspsaga hover_doc<CR>", keymap_opts)
 					vim.keymap.set({ "n", "v" }, "ga", ":Lspsaga code_action<CR>", keymap_opts)
 					vim.keymap.set("n", "gr", vim.lsp.buf.references, keymap_opts)
 					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, keymap_opts)
