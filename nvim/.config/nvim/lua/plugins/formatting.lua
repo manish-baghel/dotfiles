@@ -20,9 +20,10 @@ return {
 			lua = { "stylua" },
 			go = { "goimports", "goimports-reviser", { "gofumpt", "gofmt" } },
 			python = { "isort", "black" },
-			javascript = { { "prettierd", "prettier" } },
+			javascript = { "eslint_d", { "prettierd", "prettier" } },
 			sh = { "shfmt" },
 			json = { "jq" },
+			markdown = { "markdownlint" },
 		},
 
 		format_on_save = {

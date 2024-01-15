@@ -164,17 +164,7 @@ return {
 				htmx = {},
 				jqls = {},
 				nginx_language_server = {},
-				tailwindcss = {
-					filetypes = {
-						"html",
-						"vue",
-						"jsx",
-						"typescriptreact",
-						"typescript",
-						"javascriptreact",
-						"javascript",
-					},
-				},
+				tailwindcss = {},
 			},
 		},
 		config = function(_, opts)
