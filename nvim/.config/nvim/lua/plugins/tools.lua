@@ -1,7 +1,7 @@
 return {
 	{
 		"norcalli/nvim-colorizer.lua",
-		event = "VeryLazy",
+		event = "BufReadPost",
 	},
 	{
 		"chemzqm/macdown.vim",
@@ -17,19 +17,19 @@ return {
 	},
 	{
 		"christoomey/vim-tmux-navigator",
-		event = "VeryLazy",
+		event = "BufReadPost",
 	},
 	{
 		"tpope/vim-commentary",
-		event = { "BufReadPost" },
+		event = "BufReadPost",
 	},
 	{
 		"tpope/vim-surround",
-		event = { "BufReadPost" },
+		event = "BufReadPost",
 	},
 	{
 		"f-person/git-blame.nvim",
-		event = { "BufReadPost" },
+		event = "BufReadPost",
 	},
 	{
 		"junegunn/goyo.vim",
@@ -44,13 +44,11 @@ return {
 	},
 	{
 		"danymat/neogen",
-		dependencies = "nvim-treesitter/nvim-treesitter",
-		event = { "InsertEnter" },
 		opts = {
 			{
 				snippet_engine = "vsnip",
 			},
 		},
-		config = true,
+		cmd = "Neogen",
 	},
 }

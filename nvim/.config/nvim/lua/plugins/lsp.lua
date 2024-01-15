@@ -165,6 +165,7 @@ return {
 				jqls = {},
 				nginx_language_server = {},
 				tailwindcss = {},
+				bashls = {},
 			},
 		},
 		config = function(_, opts)
@@ -263,8 +264,8 @@ return {
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, keymap_opts)
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, keymap_opts)
 					-- vim.keymap.set("n", "K", vim.lsp.buf.hover, keymap_opts)
-					vim.keymap.set("n", "K", ":Lspsaga hover_doc<CR>", keymap_opts)
-					vim.keymap.set({ "n", "v" }, "ga", ":Lspsaga code_action<CR>", keymap_opts)
+					vim.keymap.set("n", "K", "<CMD>Lspsaga hover_doc<CR>", keymap_opts)
+					vim.keymap.set({ "n", "v" }, "ga", "<CMD>Lspsaga code_action<CR>", keymap_opts)
 					vim.keymap.set("n", "gr", vim.lsp.buf.references, keymap_opts)
 					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, keymap_opts)
 					vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, keymap_opts)
@@ -280,7 +281,7 @@ return {
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 		config = function()
 			-- Cody text highlights for cmp
-			vim.api.nvim_set_hl(0, "CmpItemKindCody", { fg = vim.g.color_palette.red })
+			vim.api.nvim_set_hl(0, "CmpItemKindCody", { fg = vim.g.color_palette.peach })
 			vim.keymap.set("n", "<space>cc", function()
 				require("sg.cody.commands").toggle()
 			end)
@@ -315,21 +316,9 @@ return {
 				require("sg.extensions.telescope").fuzzy_search_results()
 			end)
 
-			local ok, msg = pcall(require, "sg")
-			if not ok then
-				print("sg failed to load with:", msg)
-				return
-			end
-
-			local node_executable = vim.fn.system("which node")
 			require("sg").setup({
 				enable_cody = true,
-				-- node_executable = node_executable .. "" or "",
 			})
 		end,
-	},
-	{
-		"onsails/lspkind.nvim",
-		event = "InsertEnter",
 	},
 }

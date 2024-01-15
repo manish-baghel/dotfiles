@@ -1,6 +1,9 @@
 return {
 	"folke/noice.nvim",
-	event = "VeryLazy",
+	event = {
+		"CmdlineEnter",
+		"BufReadPost",
+	},
 	opts = {
 		commands = {
 			history = {

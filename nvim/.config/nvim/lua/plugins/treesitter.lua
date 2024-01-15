@@ -1,10 +1,8 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter-textobjects",
-		},
-		build = ":TSUpdate",
+		build = "<CMD>TSUpdate<CR>",
+		event = "BufReadPost",
 		config = function()
 			---@diagnostic disable-next-line: missing-fields
 			require("nvim-treesitter.configs").setup({
@@ -89,6 +87,10 @@ return {
 	},
 	{
 		"nvim-treesitter/nvim-treesitter-context",
+		event = "BufReadPost",
+	},
+	{
+		"nvim-treesitter/nvim-treesitter-textobjects",
 		event = "BufReadPost",
 	},
 	{

@@ -372,6 +372,6 @@ let g:vsnip_filetypes.typescriptreact = ['typescript']
 ]])
 end
 
-vim.keymap.set("n", "<leader>e", "<CMD>e ~/dotfiles/nvim/.config/nvim/init.lua<CR> :cd %:p:h<CR>", { silent = true })
+vim.keymap.set("n", "<leader>e", "<CMD>e ~/dotfiles/nvim/.config/nvim/init.lua<CR><CMD>cd %:p:h<CR>", { silent = true })
 
 return M
