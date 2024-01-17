@@ -263,8 +263,8 @@ return {
 					local keymap_opts = { buffer = ev.buf }
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, keymap_opts)
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, keymap_opts)
-					-- vim.keymap.set("n", "K", vim.lsp.buf.hover, keymap_opts)
-					vim.keymap.set("n", "K", "<CMD>Lspsaga hover_doc<CR>", keymap_opts)
+					vim.keymap.set("n", "K", vim.lsp.buf.hover, keymap_opts)
+					-- vim.keymap.set("n", "K", "<CMD>Lspsaga hover_doc<CR>", keymap_opts)
 					vim.keymap.set({ "n", "v" }, "ga", "<CMD>Lspsaga code_action<CR>", keymap_opts)
 					vim.keymap.set("n", "gr", vim.lsp.buf.references, keymap_opts)
 					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, keymap_opts)
