@@ -29,6 +29,9 @@ After opening, neovim Lazy should start automatically downloading all the necess
 Should look something like this:
 ![Neovim Welcome Screen](./neovim-welcome-screen.png)
 
+Pretty fast startup time: 12-20ms
+![Neovim Lazy Profiler](./neovim-lazy-profiler.png)
+
 ## Random Stuff
 
 ### Git Config for diff
