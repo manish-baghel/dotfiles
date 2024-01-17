@@ -4,16 +4,16 @@ return {
 		event = "BufReadPost",
 	},
 	{
-		"chemzqm/macdown.vim",
-		ft = "markdown",
+		"iamcco/markdown-preview.nvim",
+		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+		ft = { "markdown" },
+		build = function()
+			vim.fn["mkdp#util#install"]()
+		end,
 	},
 	{
 		"weirongxu/plantuml-previewer.vim",
 		ft = "plantuml",
-	},
-	{
-		"tyru/open-browser.vim",
-		lazy = true,
 	},
 	{
 		"christoomey/vim-tmux-navigator",

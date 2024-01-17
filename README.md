@@ -1,29 +1,33 @@
 # My Dotfiles
 
-## Vim
+## Pre-requisite
 
-Put below content in `~/.vimrc`
+`gnu stow` - <https://www.gnu.org/software/stow/>
 
-Note: There are some Compatibility issues with vim, but works fine with neovim 
-
-```vim
-source ~/dotfiles/vim/ultimate_rc.vim
-lua require('plugins_config')
-source ~/dotfiles/vim/plugins_config.vim
-```
-And follow below steps to transfer the necessary file to `.config/nvim/lua` directory
-```bash
-mkdir -p ~/.config/nvim/lua
-cp ~/dotfiles/vim/plugins_config.lua ~/.config/nvim/lua/
-```
-
-## ZSH
-
-Put below content in `~/.zshrc` or `~/.zprofile`
+On Arch
 
 ```
-source Path/to/dotfiles/zsh/themes/powerlevel9k/powerlevel9k.zsh-theme
+sudo pacman -Sy stow
 ```
+
+On Ubuntu
+
+```
+apt-get install stow
+```
+
+## Neovim
+
+This will install the neovim config
+
+```
+stow nvim
+```
+
+After opening, neovim Lazy should start automatically downloading all the necessary plugins, let it finish first and restart neovim and it should be ready to go.
+
+Should look something like this:
+![Neovim Welcome Screen](./neovim-welcome-screen.png)
 
 ## Random Stuff
 
