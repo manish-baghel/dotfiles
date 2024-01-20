@@ -286,6 +286,9 @@ return {
 				require("sg.cody.commands").toggle()
 			end)
 
+			--- get current visual selection rows
+			--- @return integer start_row beginning of visual selection
+			--- @return integer end_row end of visual selection
 			local function get_current_visual_selection_rows()
 				local start_row = vim.fn.getpos("v")[2] - 1
 				local end_row = vim.fn.getpos(".")[2]
