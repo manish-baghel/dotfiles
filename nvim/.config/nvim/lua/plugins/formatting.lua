@@ -24,6 +24,8 @@ return {
 			sh = { "shfmt" },
 			json = { "jq" },
 			markdown = { "markdownlint" },
+			tex = { "latexindent" },
+			xml = { "xmlformat" },
 		},
 
 		format_on_save = {

@@ -166,6 +166,7 @@ return {
 				nginx_language_server = {},
 				tailwindcss = {},
 				bashls = {},
+				texlab = {},
 			},
 		},
 		config = function(_, opts)
