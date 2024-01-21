@@ -169,6 +169,7 @@ return {
 				nginx_language_server = {},
 				tailwindcss = {},
 				bashls = {},
+				marksman = {},
 				texlab = {},
 			},
 		},
