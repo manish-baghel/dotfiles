@@ -7,7 +7,7 @@ return {
 			config = true,
 		},
 	},
-	event = "LspAttach",
+	event = "BufReadPost",
 	opts = {
 		ensure_installed = {
 			"cssls",
