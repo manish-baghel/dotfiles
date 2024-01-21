@@ -1,15 +1,20 @@
 return {
 	{
 		"nvim-neotest/neotest-go",
-		lazy = true,
+		ft = "go",
 	},
 	{
 		"nvim-neotest/neotest",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-treesitter/nvim-treesitter",
+		},
+		cmd = { "Neotest" },
 		keys = {
 			{
 				"<leader>tr",
 				function()
-					require("neotest").run.run({ vim.fn.expand("%:p") })
+					require("neotest").run.run()
 				end,
 			},
 			{
@@ -46,9 +51,15 @@ return {
 			},
 		},
 		config = function()
+			---@diagnostic disable-next-line: missing-fields
 			require("neotest").setup({
 				adapters = {
-					require("neotest-go"),
+					require("neotest-go")({
+						experimental = {
+							test_table = true,
+						},
+						args = { "-count=1", "-timeout=60s" },
+					}),
 				},
 			})
 		end,

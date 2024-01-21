@@ -1,40 +1,18 @@
 return {
 	"hrsh7th/nvim-cmp",
 	dependencies = {
-		{
-			"hrsh7th/cmp-buffer",
-			event = "BufReadPost",
-		},
-		{
-			"hrsh7th/cmp-cmdline",
-		},
-		{
-			"hrsh7th/cmp-nvim-lsp",
-		},
-		{
-			"hrsh7th/cmp-path",
-		},
-		{
-			"chrisgrieser/cmp_yanky",
-		},
-		{
-			"hrsh7th/vim-vsnip",
-		},
-		{
-			"hrsh7th/vim-vsnip-integ",
-		},
-		{
-			"hrsh7th/cmp-vsnip",
-		},
-		{
-			"rafamadriz/friendly-snippets",
-		},
-		{
-			"onsails/lspkind.nvim",
-			event = "InsertEnter",
-		},
+		"hrsh7th/cmp-buffer",
+		"hrsh7th/cmp-cmdline",
+		"hrsh7th/cmp-nvim-lsp",
+		"hrsh7th/cmp-path",
+		"chrisgrieser/cmp_yanky",
+		"hrsh7th/vim-vsnip",
+		"hrsh7th/vim-vsnip-integ",
+		"hrsh7th/cmp-vsnip",
+		"rafamadriz/friendly-snippets",
+		"onsails/lspkind.nvim",
 	},
-	event = "BufReadPost",
+	event = "InsertEnter",
 	config = function()
 		local cmp = require("cmp")
 		local lspkind = require("lspkind") -- fancy icons in the completion menu
