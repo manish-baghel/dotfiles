@@ -284,45 +284,66 @@ return {
 		"sourcegraph/sg.nvim",
 		build = "nvim -l build/init.lua",
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
-		config = function()
-			-- Cody text highlights for cmp
-			vim.api.nvim_set_hl(0, "CmpItemKindCody", { fg = vim.g.color_palette.peach })
-			vim.keymap.set("n", "<space>cc", function()
-				require("sg.cody.commands").toggle()
-			end)
+		keys = {
+			{
+				"<space>cc",
+				function()
+					require("sg.cody.commands").toggle()
+				end,
+			},
+			{
+				"<space>cn",
+				function()
+					local name = vim.fn.input("chat name: ")
+					require("sg.cody.commands").chat(name)
+				end,
+			},
+			{
+				"<space>ss",
+				function()
+					require("sg.extensions.telescope").fuzzy_search_results()
+				end,
+			},
+			{
+				"<space>ca",
+				function()
+					--- get current visual selection rows
+					--- @return integer start_row beginning of visual selection
+					--- @return integer end_row end of visual selection
+					local function get_current_visual_selection_rows()
+						local start_row = vim.fn.getpos("v")[2] - 1
+						local end_row = vim.fn.getpos(".")[2]
+						-- non brainer just consider smaller one as start row
+						if start_row > end_row then
+							local tmp = start_row
+							start_row = end_row
+							end_row = tmp
+						end
+						return start_row, end_row
+					end
 
-			--- get current visual selection rows
-			--- @return integer start_row beginning of visual selection
-			--- @return integer end_row end of visual selection
-			local function get_current_visual_selection_rows()
-				local start_row = vim.fn.getpos("v")[2] - 1
-				local end_row = vim.fn.getpos(".")[2]
-				-- non brainer just consider smaller one as start row
-				if start_row > end_row then
-					local tmp = start_row
-					start_row = end_row
-					end_row = tmp
+					local buf = vim.api.nvim_get_current_buf()
+					local start_row, end_row = get_current_visual_selection_rows()
+
+					vim.ui.input({ prompt = "Ask: " }, function(input)
+						require("sg.cody.commands").ask_range(buf, start_row, end_row, input)
+					end)
+				end,
+			},
+		},
+		config = function()
+			-- Do not load on .env, credentials files
+			local exclusionList = { ".env", "credentials", "secret" }
+			local filename = vim.fn.expand("%:t"):lower()
+			for _, excluded in ipairs(exclusionList) do
+				if string.find(filename, excluded) then
+					vim.notify("sg.nvim: Skipping loading on " .. filename)
+					return
 				end
-				return start_row, end_row
 			end
 
-			vim.keymap.set("v", "<space>ca", function()
-				local buf = vim.api.nvim_get_current_buf()
-				local start_row, end_row = get_current_visual_selection_rows()
-
-				vim.ui.input({ prompt = "Ask: " }, function(input)
-					require("sg.cody.commands").ask_range(buf, start_row, end_row, input)
-				end)
-			end)
-
-			vim.keymap.set("n", "<space>cn", function()
-				local name = vim.fn.input("chat name: ")
-				require("sg.cody.commands").chat(name)
-			end)
-
-			vim.keymap.set("n", "<space>ss", function()
-				require("sg.extensions.telescope").fuzzy_search_results()
-			end)
+			-- Cody text highlights for cmp
+			vim.api.nvim_set_hl(0, "CmpItemKindCody", { fg = vim.g.color_palette.peach })
 
 			require("sg").setup({
 				enable_cody = true,
