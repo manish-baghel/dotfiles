@@ -329,6 +329,7 @@ return {
 						require("sg.cody.commands").ask_range(buf, start_row, end_row, input)
 					end)
 				end,
+				mode = "v",
 			},
 		},
 		config = function()
