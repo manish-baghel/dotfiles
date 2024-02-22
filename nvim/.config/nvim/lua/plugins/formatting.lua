@@ -18,7 +18,7 @@ return {
 	opts = {
 		formatters_by_ft = {
 			lua = { "stylua" },
-			go = { "goimports", "goimports-reviser", { "gofumpt", "gofmt" } },
+			go = { "golines", "goimports", "goimports-reviser", { "gofumpt", "gofmt" } },
 			python = { "isort", "black" },
 			javascript = { "eslint_d", { "prettierd", "prettier" } },
 			sh = { "shfmt" },

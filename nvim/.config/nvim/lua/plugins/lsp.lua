@@ -1,20 +1,5 @@
 return {
 	{
-		"nvimdev/lspsaga.nvim",
-		opts = {
-			lightbulb = {
-				sign = false,
-			},
-			diagnostic = {
-				extend_relatedInformation = true,
-				keys = {
-					quit = { "q", "<ESC>" },
-				},
-			},
-		},
-		event = "LspAttach",
-	},
-	{
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 		dependencies = {
@@ -101,25 +86,38 @@ return {
 					settings = {
 						gopls = {
 							gofumpt = true,
-							semanticTokens = true,
-							experimentalPostfixCompletions = true,
 							analyses = {
+								fieldalignment = true,
+								nilness = true,
+								unusedwrite = true,
+								useany = true,
 								unusedparams = true,
 								shadow = true,
 							},
-							staticcheck = true,
+							codelenses = {
+								gc_details = false,
+								generate = true,
+								regenerate_cgo = true,
+								run_govulncheck = true,
+								test = true,
+								tidy = true,
+								upgrade_dependency = true,
+								vendor = true,
+							},
 							hints = {
 								assignVariableTypes = true,
 								compositeLiteralFields = true,
+								compositeLiteralTypes = true,
 								constantValues = true,
 								functionTypeParameters = true,
 								parameterNames = true,
 								rangeVariableTypes = true,
 							},
+							staticcheck = true,
+							semanticTokens = true,
+							usePlaceholders = true,
+							completeUnimported = true,
 						},
-					},
-					init_options = {
-						usePlaceholders = true,
 					},
 				},
 				lua_ls = {
@@ -269,8 +267,7 @@ return {
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, keymap_opts)
 					vim.keymap.set("n", "gd", vim.lsp.buf.definition, keymap_opts)
 					vim.keymap.set("n", "K", vim.lsp.buf.hover, keymap_opts)
-					-- vim.keymap.set("n", "K", "<CMD>Lspsaga hover_doc<CR>", keymap_opts)
-					vim.keymap.set({ "n", "v" }, "ga", "<CMD>Lspsaga code_action<CR>", keymap_opts)
+					vim.keymap.set({ "n", "v" }, "ga", vim.lsp.buf.code_action, keymap_opts)
 					vim.keymap.set("n", "gr", vim.lsp.buf.references, keymap_opts)
 					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, keymap_opts)
 					vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, keymap_opts)

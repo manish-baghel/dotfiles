@@ -1,6 +1,6 @@
 return {
 	{
-		"norcalli/nvim-colorizer.lua",
+		"NvChad/nvim-colorizer.lua",
 		event = "BufReadPost",
 	},
 	{
@@ -26,6 +26,9 @@ return {
 	{
 		"tpope/vim-surround",
 		event = "BufReadPost",
+	},
+	{
+		"tpope/vim-sleuth", -- detect tabstop and shiftwitdh automatically
 	},
 	{
 		"f-person/git-blame.nvim",

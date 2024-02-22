@@ -50,13 +50,13 @@ return {
 				border = "rounded",
 			},
 			mapping = cmp.mapping.preset.insert({
-				["<Tab>"] = cmp.mapping.select_next_item(),
-				["<S-Tab>"] = cmp.mapping.select_prev_item(),
+				["<C-n>"] = cmp.mapping.select_next_item(),
+				["<C-p>"] = cmp.mapping.select_prev_item(),
 				["<C-b>"] = cmp.mapping.scroll_docs(-4),
 				["<C-f>"] = cmp.mapping.scroll_docs(4),
 				["<C-Space>"] = cmp.mapping.complete(),
+				["<C-y>"] = cmp.mapping.confirm({ select = true }),
 				["<C-e>"] = cmp.mapping.abort(),
-				["<CR>"] = cmp.mapping.confirm({ select = true }),
 				-- ["<CR>"] = cmp.mapping(function(fallback)
 				-- 	if cmp.visible() and cmp.get_active_entry() then
 				-- 		cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
