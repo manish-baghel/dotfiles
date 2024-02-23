@@ -24,10 +24,6 @@ return {
 		event = "BufReadPost",
 	},
 	{
-		"tpope/vim-surround",
-		event = "BufReadPost",
-	},
-	{
 		"tpope/vim-sleuth", -- detect tabstop and shiftwitdh automatically
 	},
 	{

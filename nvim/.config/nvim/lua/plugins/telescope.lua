@@ -6,6 +6,13 @@ return {
 		"nvim-telescope/telescope-file-browser.nvim",
 		"gbrlsnchs/telescope-lsp-handlers.nvim",
 		"nvim-telescope/telescope-ui-select.nvim",
+		{
+			"nvim-telescope/telescope-fzf-native.nvim",
+			build = "make",
+			cond = function()
+				return vim.fn.executable("make") == 1
+			end,
+		},
 	},
 	cmd = "Telescope",
 	keys = {
@@ -16,14 +23,20 @@ return {
 		{ "<leader>o", "<CMD>Telescope buffers<CR>" },
 		{ "<leader>h", "<CMD>Telescope help_tags<CR>" },
 		{ "<leader>nn", "<CMD>Telescope file_browser path=%:p:h select_buffer=true initial_mode=normal<CR>" },
+		{
+			"<leader>/",
+			function()
+				require("telescope.builtin").current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
+					winblend = 10,
+					previewer = false,
+				}))
+			end,
+		},
 	},
 	opts = {
 		defaults = {
 			file_ignore_patterns = {
 				"node_modules",
-				"webpack",
-				"build",
-				"dist",
 				"**/package-lock.json",
 				".git",
 				".DS_Store",
@@ -38,6 +51,10 @@ return {
 			},
 		},
 		extensions = {
+			fuzzy = true,
+			override_generic_sorter = true,
+			override_file_sorter = true,
+			case_mode = "smart_case",
 			live_grep_args = {
 				auto_quoting = true,
 			},
@@ -49,6 +66,7 @@ return {
 	},
 	config = function(_, opts)
 		local telescope = require("telescope")
+		telescope.load_extension("fzf")
 		telescope.load_extension("live_grep_args")
 		telescope.load_extension("lsp_handlers")
 		telescope.load_extension("ui-select")
