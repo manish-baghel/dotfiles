@@ -2,6 +2,7 @@ return {
 	{
 		"nvim-neotest/neotest-go",
 		ft = "go",
+		event = "BufReadPost",
 	},
 	{
 		"nvim-neotest/neotest",
@@ -10,6 +11,7 @@ return {
 			"nvim-treesitter/nvim-treesitter",
 		},
 		cmd = { "Neotest" },
+		event = "BufReadPost",
 		keys = {
 			{
 				"<leader>tr",
