@@ -4,6 +4,18 @@ return {
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 		dependencies = {
 			{
+				"folke/neodev.nvim",
+				opts = {
+					library = {
+						plugins = {
+							"neotest",
+						},
+						types = true,
+					},
+				},
+				ft = "lua",
+			},
+			{
 				"lvimuser/lsp-inlayhints.nvim",
 				event = "LspAttach",
 				opts = {
@@ -15,18 +27,6 @@ return {
 					enabled_at_startup = true,
 					debug_mode = false,
 				},
-			},
-			{
-				"folke/neodev.nvim",
-				opts = {
-					library = {
-						plugins = {
-							"neotest",
-						},
-						types = true,
-					},
-				},
-				ft = "lua",
 			},
 		},
 		opts = {
@@ -204,17 +204,11 @@ return {
 			end
 			vim.diagnostic.config(vim.deepcopy(opts.diagnostic))
 
-			-- Global mappings.
-			-- See `:help vim.diagnostic.*` for documentation on any of the below functions
-			vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
-			vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
-			vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
-			vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist)
-
 			-- Use LspAttach autocommand to only map the following keys
 			-- after the language server attaches to the current buffer
+			local userLspGroup = vim.api.nvim_create_augroup("UserLspConfig", {})
 			vim.api.nvim_create_autocmd("LspAttach", {
-				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+				group = userLspGroup,
 				callback = function(ev)
 					local bufnr = ev.buf
 					if not (ev.data and ev.data.client_id) then

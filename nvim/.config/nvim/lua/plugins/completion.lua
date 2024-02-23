@@ -6,16 +6,26 @@ return {
 		"hrsh7th/cmp-nvim-lsp",
 		"hrsh7th/cmp-path",
 		"chrisgrieser/cmp_yanky",
-		"hrsh7th/vim-vsnip",
-		"hrsh7th/vim-vsnip-integ",
-		"hrsh7th/cmp-vsnip",
-		"rafamadriz/friendly-snippets",
 		"onsails/lspkind.nvim",
+		{
+			"L3MON4D3/LuaSnip",
+			build = (function()
+				if vim.fn.has("win32") == 1 then
+					return
+				end
+				return "make install_jsregexp"
+			end)(),
+		},
+		"saadparwaiz1/cmp_luasnip",
+		"rafamadriz/friendly-snippets",
 	},
 	event = "InsertEnter",
 	config = function()
 		local cmp = require("cmp")
 		local lspkind = require("lspkind") -- fancy icons in the completion menu
+		local luasnip = require("luasnip")
+		require("luasnip.loaders.from_vscode").lazy_load()
+		luasnip.config.setup({})
 		cmp.setup({
 			---@diagnostic disable-next-line: missing-fields
 			formatting = {
@@ -38,7 +48,7 @@ return {
 			},
 			snippet = {
 				expand = function(args)
-					vim.fn["vsnip#anonymous"](args.body)
+					luasnip.lsp_expand(args.body)
 				end,
 			},
 			window = {
@@ -58,19 +68,32 @@ return {
 				["<C-f>"] = cmp.mapping.scroll_docs(4),
 				["<C-Space>"] = cmp.mapping.complete(),
 				["<C-e>"] = cmp.mapping.abort(),
-				-- ["<CR>"] = cmp.mapping(function(fallback)
-				-- 	if cmp.visible() and cmp.get_active_entry() then
-				-- 		cmp.confirm({ behavior = cmp.ConfirmBehavior.Replace, select = false })
-				-- 	else
-				-- 		fallback()
-				-- 	end
-				-- end, { "i", "s", "c" }),
+				["<C-l>"] = cmp.mapping(function()
+					if luasnip.expand_or_locally_jumpable() then
+						luasnip.expand_or_jump()
+					end
+				end, { "i", "s" }),
+				["<C-k>"] = cmp.mapping(function()
+					if luasnip.expand_or_locally_jumpable() then
+						luasnip.expand_or_jump()
+					end
+				end, { "i", "s" }),
+				["<C-h>"] = cmp.mapping(function()
+					if luasnip.locally_jumpable(-1) then
+						luasnip.jump(-1)
+					end
+				end, { "i", "s" }),
+				["<C-j>"] = cmp.mapping(function()
+					if luasnip.locally_jumpable(-1) then
+						luasnip.jump(-1)
+					end
+				end, { "i", "s" }),
 			}),
 			sources = cmp.config.sources({
 				{ name = "nvim_lsp" },
 				{ name = "path" },
 				{ name = "cody" }, -- sg.nvim
-				{ name = "vsnip" },
+				{ name = "luasnip" },
 				{ name = "cmp_yanky" }, -- yanky.nvim
 				{
 					{ name = "buffer" },
