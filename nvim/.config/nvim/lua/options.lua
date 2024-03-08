@@ -113,7 +113,7 @@ M.setup = function()
 		endfunction
 		" Restart i3 on config update in linux
 		if has('linux')
-		  autocmd! bufwritepost ~/.i3/config :call system('i3-msg restart')
+		  autocmd! bufwritepost ~/.config/i3/config :call system('i3-msg restart')
 		endif
 
 
