@@ -3,8 +3,8 @@ source ~/.config/fish/alias.fish
 # Configure Jump
 status --is-interactive; and source (jump shell fish | psub)
 
-# Load all saved ssh keys
-/usr/bin/ssh-add -A ^/dev/null
+# disable greeting, by default it's set to a welcome message
+set -U fish_greeting # -U means universal, across restarts, sessions, etc.
 
 # Fish syntax highlighting
 set -g fish_color_autosuggestion '555'  'brblack'
