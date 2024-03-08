@@ -1,3 +1,4 @@
+local utils = require("utils")
 local M = {}
 
 M.setup = function()
@@ -33,6 +34,8 @@ M.setup = function()
 	vim.keymap.set("n", "<leader>q", "<CMD>e ~/buffer<CR>")
 
 	vim.keymap.set("i", "<C-u>", "<ESC>O<BS><TAB>")
+
+	vim.keymap.set("n", "<leader>cp", utils.toggle_color_palette)
 end
 
 return M

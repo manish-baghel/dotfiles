@@ -128,7 +128,7 @@ return {
 								checkThirdParty = false,
 								library = {
 									"${3rd}/luv/library",
-									vim.fn.expand("~/dotfiles/lua/types"),
+									vim.fn.expand("~/dotfiles/lua/types"), -- custom user-defined types
 									unpack(vim.api.nvim_get_runtime_file("", true)),
 								},
 							},
