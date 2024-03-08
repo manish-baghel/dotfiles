@@ -32,6 +32,24 @@ Should look something like this:
 Pretty fast startup time: 12-20ms
 ![Neovim Lazy Profiler](./neovim-lazy-profiler.png)
 
+## Fish
+
+```
+stow fish
+```
+
+## Wezterm
+
+```
+stow wezterm
+```
+
+## Starship
+
+```
+stow starship
+```
+
 ## Random Stuff
 
 ### Git Config for diff
