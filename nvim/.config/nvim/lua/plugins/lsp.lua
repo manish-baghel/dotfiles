@@ -3,18 +3,18 @@ return {
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 		dependencies = {
-			{
-				"folke/neodev.nvim",
-				opts = {
-					library = {
-						plugins = {
-							"neotest",
-						},
-						types = true,
-					},
-				},
-				ft = "lua",
-			},
+			-- {
+			-- 	"folke/neodev.nvim",
+			-- 	opts = {
+			-- 		library = {
+			-- 			plugins = {
+			-- 				"neotest",
+			-- 			},
+			-- 			types = true,
+			-- 		},
+			-- 	},
+			-- 	ft = "lua",
+			-- },
 			{
 				"lvimuser/lsp-inlayhints.nvim",
 				event = "LspAttach",
@@ -121,38 +121,25 @@ return {
 					},
 				},
 				lua_ls = {
-					on_init = function(client)
-						local path = client.workspace_folders[1].name
-						if
-							not vim.loop.fs_stat(path .. "/.luarc.json")
-							and not vim.loop.fs_stat(path .. "/.luarc.jsonc")
-						then
-							client.config.settings = vim.tbl_deep_extend("force", client.config.settings, {
-								Lua = {
-									completion = {
-										callSnippet = "Replace",
-									},
-									runtime = {
-										version = "LuaJIT",
-									},
-									-- Make the server aware of Neovim runtime files
-									workspace = {
-										checkThirdParty = false,
-										library = {
-											vim.env.VIMRUNTIME,
-										},
-									},
-
-									telemetry = {
-										enable = false,
-									},
+					settings = {
+						Lua = {
+							runtime = { version = "LuaJIT" },
+							workspace = {
+								checkThirdParty = false,
+								library = {
+									"${3rd}/luv/library",
+									vim.fn.expand("~/dotfiles/lua/types"),
+									unpack(vim.api.nvim_get_runtime_file("", true)),
 								},
-							})
-
-							client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
-						end
-						return true
-					end,
+							},
+							completion = {
+								callSnippet = "Replace",
+							},
+							hint = {
+								enable = true,
+							},
+						},
+					},
 				},
 				sqlls = {},
 				vimls = {},
