@@ -17,8 +17,8 @@ M.setup = function()
 
 	vim.wo.signcolumn = "yes"
 	vim.o.colorcolumn = "80"
-	vim.opt.list = true
-	vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+	-- vim.opt.list = true
+	-- vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 	vim.opt.inccommand = "split"
 
 	vim.o.updatetime = 250

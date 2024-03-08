@@ -59,6 +59,7 @@ return {
 				auto_quoting = true,
 			},
 			file_browser = {
+				theme = "ivy",
 				hijack_netrw = false,
 				auto_depth = true,
 			},

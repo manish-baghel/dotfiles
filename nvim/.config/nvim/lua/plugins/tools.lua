@@ -2,6 +2,7 @@ return {
 	{
 		"NvChad/nvim-colorizer.lua",
 		event = "BufReadPost",
+		config = true,
 	},
 	{
 		"iamcco/markdown-preview.nvim",

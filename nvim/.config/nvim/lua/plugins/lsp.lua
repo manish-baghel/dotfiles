@@ -169,6 +169,7 @@ return {
 				bashls = {},
 				marksman = {},
 				texlab = {},
+				pyright = {},
 			},
 		},
 		config = function(_, opts)
