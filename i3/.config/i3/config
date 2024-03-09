@@ -219,7 +219,7 @@ exec --no-startup-id pamac-tray
 exec --no-startup-id clipit
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
-exec_always --no-startup-id $HOME/.config/polybar/i3wmthemer_bar_launch.sh
+exec_always --no-startup-id $HOME/.config/polybar/start.sh
 
 # Theme colors
 client.focused #c6c6c6 #1f1f1f #c6c6c6 #8abeb7 #8abeb7
