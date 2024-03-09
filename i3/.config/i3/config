@@ -231,8 +231,9 @@ client.placeholder #c6c6c6 #1f1f1f #c6c6c6 #8abeb7 #8abeb7
 client.background #1f1f1f
 
 # Gaps
-gaps inner 8
-gaps outer 24
+gaps inner 4
+gaps outer 4
+gaps top 24
 
 # use gaps only if more than one container on the workspace
 smart_gaps off
