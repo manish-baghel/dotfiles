@@ -222,18 +222,18 @@ exec_always --no-startup-id fix_xcursor
 exec_always --no-startup-id $HOME/.config/polybar/start.sh
 
 # Theme colors
-client.focused #c6c6c6 #1f1f1f #c6c6c6 #8abeb7 #8abeb7
-client.focused_inactive #c6c6c6 #1f1f1f #c6c6c6 #8abeb7 #8abeb7
-client.unfocused #c6c6c6 #1f1f1f #c6c6c6 #8abeb7 #8abeb7
-client.urgent #c6c6c6 #1f1f1f #c6c6c6 #8abeb7 #8abeb7
-client.placeholder #c6c6c6 #1f1f1f #c6c6c6 #8abeb7 #8abeb7
+client.focused #bdc4df #1e1e20 #bdc4df #bdc4df #bdc4df
+client.focused_inactive #bdc4df #1e1e20 #bdc4df #9198c3 #9198c3
+client.unfocused #bdc4df #1e1e20 #bdc4df #9198c3 #9198c3
+client.urgent #bdc4df #1e1e20 #bdc4df #9198c3 #9198c3
+client.placeholder #bdc4df #1e1e20 #bdc4df #9198c3 #9198c3
 
-client.background #1f1f1f
+client.background #1e1e20
 
 # Gaps
-gaps inner 4
-gaps outer 4
-gaps top 24
+gaps inner 0
+gaps outer 60
+gaps bottom 40
 
 # use gaps only if more than one container on the workspace
 smart_gaps off
