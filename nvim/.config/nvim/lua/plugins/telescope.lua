@@ -6,6 +6,7 @@ return {
 		"nvim-telescope/telescope-file-browser.nvim",
 		"gbrlsnchs/telescope-lsp-handlers.nvim",
 		"nvim-telescope/telescope-ui-select.nvim",
+		"nvim-telescope/telescope-media-files.nvim",
 		{
 			"nvim-telescope/telescope-fzf-native.nvim",
 			build = "make",
@@ -73,6 +74,7 @@ return {
 		telescope.load_extension("ui-select")
 		telescope.load_extension("file_browser")
 		telescope.load_extension("yank_history") -- yanky.nvim
+		telescope.load_extension("media_files")
 		vim.api.nvim_set_var("telescope#buffer#open_file_in_current_window", true)
 		vim.api.nvim_set_var("telescope#live_grep#open_file_in_current_window", true)
 
@@ -101,6 +103,13 @@ return {
 				},
 				["ui-select"] = {
 					require("telescope.themes").get_dropdown({}),
+				},
+				media_files = {
+					-- filetypes whitelist
+					-- defaults to {"png", "jpg", "mp4", "webm", "pdf"}
+					filetypes = { "png", "webp", "jpg", "jpeg" },
+					-- find command (defaults to `fd`)
+					find_cmd = "rg",
 				},
 			},
 		}
