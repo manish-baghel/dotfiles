@@ -1,5 +1,14 @@
 local M = {}
 
+--- get current visual selection rows
+--- @return integer start_row beginning of visual selection
+--- @return integer end_row end of visual selection
+M.get_visual_selection_rows = function()
+	local start_row = math.min(vim.fn.getpos("v")[2], vim.fn.getpos(".")[2])
+	local end_row = math.max(vim.fn.getpos("v")[2], vim.fn.getpos(".")[2])
+	return start_row, end_row
+end
+
 ---@param name string
 ---@return integer
 M.find_buffer_by_name = function(name)

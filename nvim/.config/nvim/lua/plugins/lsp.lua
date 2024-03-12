@@ -1,3 +1,4 @@
+local utils = require("utils")
 return {
 	{
 		"neovim/nvim-lspconfig",
@@ -261,6 +262,7 @@ return {
 	},
 	{
 		"sourcegraph/sg.nvim",
+		branch = "update-cody-agent-03-12",
 		build = "nvim -l build/init.lua",
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 		keys = {
@@ -274,7 +276,7 @@ return {
 				"<space>cn",
 				function()
 					local name = vim.fn.input("chat name: ")
-					require("sg.cody.commands").chat(name)
+					require("sg.cody.commands").chat(name, {})
 				end,
 			},
 			{
@@ -286,26 +288,14 @@ return {
 			{
 				"<space>ca",
 				function()
-					--- get current visual selection rows
-					--- @return integer start_row beginning of visual selection
-					--- @return integer end_row end of visual selection
-					local function get_current_visual_selection_rows()
-						local start_row = vim.fn.getpos("v")[2] - 1
-						local end_row = vim.fn.getpos(".")[2]
-						-- non brainer just consider smaller one as start row
-						if start_row > end_row then
-							local tmp = start_row
-							start_row = end_row
-							end_row = tmp
-						end
-						return start_row, end_row
-					end
-
 					local buf = vim.api.nvim_get_current_buf()
-					local start_row, end_row = get_current_visual_selection_rows()
+					local start_row, end_row = utils.get_visual_selection_rows()
 
-					vim.ui.input({ prompt = "Ask: " }, function(input)
-						require("sg.cody.commands").ask_range(buf, start_row, end_row, input)
+					vim.ui.input({ prompt = "Task/Ask: " }, function(input)
+						if input == nil or input == "" then
+							return
+						end
+						require("sg.cody.commands").do_task(buf, start_row, end_row, input)
 					end)
 				end,
 				mode = "v",

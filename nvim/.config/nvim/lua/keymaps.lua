@@ -16,9 +16,6 @@ M.setup = function()
 	vim.keymap.set("n", "<space>e", vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
 	vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
 
-	-- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
-	-- for people to discover. Otherwise, you normally need to press <c-\><c-n>, which
-	-- is not what someone will guess without a bit more experience.
 	vim.keymap.set("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Escape Escape exits terminal mode" })
 
 	vim.keymap.set(
