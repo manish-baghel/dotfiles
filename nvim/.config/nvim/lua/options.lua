@@ -97,26 +97,22 @@ M.setup = function()
 	})
 
 	vim.keymap.set("v", "<leader>r", function()
-		-- local saved_reg = vim.v.register
 		local start_row = vim.fn.getpos("v")[2]
 		local start_col = vim.fn.getpos("v")[3]
 		local end_row = vim.fn.getpos(".")[2]
 		local end_col = vim.fn.getpos(".")[3]
 
 		local bufnr = vim.api.nvim_get_current_buf()
-		local text = table.concat(vim.api.nvim_buf_get_text(bufnr, start_row, start_col, end_row, end_col, {}), "")
-
-		vim.notify("SR: " .. start_row .. " SC: " .. start_col .. " ER: " .. end_row .. " EC: " .. end_col)
-		vim.notify(text)
+		local text =
+			table.concat(vim.api.nvim_buf_get_text(bufnr, start_row - 1, start_col - 1, end_row - 1, end_col, {}), "")
 
 		local pattern = vim.fn.escape(text, "\\/.*'$^~[]")
 		pattern = vim.fn.substitute(pattern, "\n$", "", "")
 
 		local replace_with = vim.fn.input("Replace with: ")
-		-- vim.cmd("%s/" .. pattern .. "/" .. replace_with .. "/g")
-		vim.notify("Pattern: " .. pattern .. " Replace with: " .. replace_with, vim.log.levels.ERROR)
-
-		-- vim.v.register = saved_reg
+		vim.cmd("%s/" .. pattern .. "/" .. replace_with .. "/g")
+		vim.api.nvim_win_set_cursor(0, { end_row, end_col })
+		vim.api.nvim_input("<Esc>")
 	end, { noremap = true, desc = "Replace visual selection" })
 
 	vim.cmd([[
