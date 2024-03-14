@@ -96,21 +96,30 @@ M.setup = function()
 		end,
 	})
 
+	vim.keymap.set("v", "<leader>r", function()
+		-- local saved_reg = vim.v.register
+		local start_row = vim.fn.getpos("v")[2]
+		local start_col = vim.fn.getpos("v")[3]
+		local end_row = vim.fn.getpos(".")[2]
+		local end_col = vim.fn.getpos(".")[3]
+
+		local bufnr = vim.api.nvim_get_current_buf()
+		local text = table.concat(vim.api.nvim_buf_get_text(bufnr, start_row, start_col, end_row, end_col, {}), "")
+
+		vim.notify("SR: " .. start_row .. " SC: " .. start_col .. " ER: " .. end_row .. " EC: " .. end_col)
+		vim.notify(text)
+
+		local pattern = vim.fn.escape(text, "\\/.*'$^~[]")
+		pattern = vim.fn.substitute(pattern, "\n$", "", "")
+
+		local replace_with = vim.fn.input("Replace with: ")
+		-- vim.cmd("%s/" .. pattern .. "/" .. replace_with .. "/g")
+		vim.notify("Pattern: " .. pattern .. " Replace with: " .. replace_with, vim.log.levels.ERROR)
+
+		-- vim.v.register = saved_reg
+	end, { noremap = true, desc = "Replace visual selection" })
+
 	vim.cmd([[
-		vnoremap <silent> <leader>r :<C-u>call ReplaceVisualSelection()<CR>
-
-		function! ReplaceVisualSelection() range
-		  let l:saved_reg = @"
-		  execute "normal! vgvy"
-
-		  let l:pattern = escape(@", "\\/.*'$^~[]")
-		  let l:pattern = substitute(l:pattern, "\n$", "", "")
-
-		  call CmdLine("%s" . '/'. l:pattern . '/')
-
-		  let @/ = l:pattern
-		  let @" = l:saved_reg
-		endfunction
 		" Restart i3 on config update in linux
 		if has('linux')
 		  autocmd! bufwritepost ~/.config/i3/config :call system('i3-msg restart')
