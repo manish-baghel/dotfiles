@@ -6,7 +6,7 @@ local M = {}
 M.get_visual_selection_rows = function()
 	local start_row = math.min(vim.fn.getpos("v")[2], vim.fn.getpos(".")[2])
 	local end_row = math.max(vim.fn.getpos("v")[2], vim.fn.getpos(".")[2])
-	return start_row, end_row
+	return start_row, end_row + 1
 end
 
 ---@param name string
