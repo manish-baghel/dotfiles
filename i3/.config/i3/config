@@ -232,8 +232,10 @@ client.background #1e1e20
 
 # Gaps
 gaps inner 0
-gaps outer 60
-gaps bottom 40
+gaps top 40
+gaps left 20
+gaps right 20
+gaps bottom 20
 
 # use gaps only if more than one container on the workspace
 smart_gaps off
