@@ -16,12 +16,12 @@ return {
 	},
 	cmd = "Telescope",
 	keys = {
-		{ "<leader>s",  "<CMD>Telescope find_files<CR>" },
-		{ "<leader>g",  "<CMD>Telescope live_grep_args<CR>" },
+		{ "<leader>s", "<CMD>Telescope find_files<CR>" },
+		{ "<leader>g", "<CMD>Telescope live_grep_args<CR>" },
 		{ "<leader>gs", "<CMD>Telescope grep_string<CR>" },
 		{ "<leader>rs", "<CMD>Telescope resume<CR>" },
-		{ "<leader>o",  "<CMD>Telescope buffers<CR>" },
-		{ "<leader>h",  "<CMD>Telescope help_tags<CR>" },
+		{ "<leader>o", "<CMD>Telescope buffers<CR>" },
+		{ "<leader>h", "<CMD>Telescope help_tags<CR>" },
 		{ "<leader>nn", "<CMD>Telescope file_browser path=%:p:h select_buffer=true initial_mode=normal<CR>" },
 		{
 			"<leader>/",
@@ -37,7 +37,7 @@ return {
 		defaults = {
 			file_ignore_patterns = {
 				"node_modules",
-				".git",
+				"^.git/",
 				".DS_Store",
 			},
 			preview = {

@@ -177,20 +177,20 @@ return {
 			local lspconfig = require("lspconfig")
 			for server, server_opts in pairs(servers) do
 				local server_opts_with_capabilities =
-						vim.tbl_deep_extend("force", { capabilities = vim.deepcopy(capabilities) }, server_opts)
+					vim.tbl_deep_extend("force", { capabilities = vim.deepcopy(capabilities) }, server_opts)
 				lspconfig[server].setup(server_opts_with_capabilities)
 			end
 
 			if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
 				opts.diagnostics.virtual_text.prefix = vim.fn.has("nvim-0.10.0") == 0 and "●"
-						or function(diagnostic)
-							local icons = require("lazyvim.config").icons.diagnostics
-							for d, icon in pairs(icons) do
-								if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
-									return icon
-								end
+					or function(diagnostic)
+						local icons = require("lazyvim.config").icons.diagnostics
+						for d, icon in pairs(icons) do
+							if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
+								return icon
 							end
 						end
+					end
 			end
 			vim.diagnostic.config(vim.deepcopy(opts.diagnostic))
 
@@ -263,7 +263,7 @@ return {
 	},
 	{
 		"sourcegraph/sg.nvim",
-		branch = "update-cody-agent-03-12",
+		-- branch = "update-cody-agent-03-12",
 		build = "nvim -l build/init.lua",
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 		keys = {
