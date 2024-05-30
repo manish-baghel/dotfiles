@@ -10,3 +10,5 @@ set -g fish_greeting
 starship init fish | source
 
 set -g EDITOR /usr/bin/vim
+
+eval "$(ssh-agent -c)"

@@ -1,0 +1,80 @@
+# Time format, see https://man7.org/linux/man-pages/man1/date.1.html for details.
+time-format: '%b %d %T.%3N'
+
+# Time zone name, see column "TZ identifier" at
+# https://en.wikipedia.org/wiki/List_of_tz_database_time_zones page.
+time-zone: UTC
+
+# Settings for fields processing.
+fields:
+  # Configuration of the predefined set of fields.
+  predefined:
+    time:
+      show: auto
+      names:
+        [
+          ts,
+          TS,
+          time,
+          TIME,
+          Time,
+          Timestamp,
+          _SOURCE_REALTIME_TIMESTAMP,
+          __REALTIME_TIMESTAMP,
+        ]
+    logger:
+      names: [logger, LOGGER, Logger]
+    level:
+      show: auto
+      variants:
+        - names: [level, LEVEL, Level]
+          values:
+            debug: [debug, Debug]
+            info: [info, information, Information]
+            warning: [warning, Warning, warn]
+            error: [error, Error, err, fatal, critical, panic]
+        - names: [PRIORITY]
+          values:
+            debug: [7]
+            info: [6]
+            warning: [5, 4]
+            error: [3, 2, 1]
+    message:
+      names: [msg, message, MESSAGE, Message]
+    caller:
+      names: [caller, CALLER, Caller]
+    caller-file:
+      names: []
+    caller-line:
+      names: []
+  # List of wildcard field names to ignore.
+  ignore: ['_*']
+  # List of exact field names to hide.
+  hide: []
+
+# Formatting settings.
+formatting:
+  flatten: always
+  punctuation:
+    logger-name-separator: ':'
+    field-key-value-separator: '='
+    string-opening-quote: "'"
+    string-closing-quote: "'"
+    source-location-separator: '→ '
+    hidden-fields-indicator: ' ...'
+    level-left-separator: '│'
+    level-right-separator: '│'
+    input-number-prefix: '#'
+    input-number-left-separator: ''
+    input-number-right-separator: ' │ '
+    input-name-left-separator: ''
+    input-name-right-separator: ' │ '
+    input-name-clipping: '··'
+    input-name-common-part: '··'
+    array-separator: ' '
+
+# Number of processing threads, configured automatically based on CPU count if not specified.
+concurrency: ~
+
+# Currently selected theme.
+theme: universal
