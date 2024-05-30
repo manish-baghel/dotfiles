@@ -29,10 +29,10 @@ fields:
       variants:
         - names: [level, LEVEL, Level]
           values:
-            debug: [debug, Debug]
-            info: [info, information, Information]
-            warning: [warning, Warning, warn]
-            error: [error, Error, err, fatal, critical, panic]
+            debug: [debug, Debug, DEBUG]
+            info: [info, information, Information, INFO]
+            warning: [warning, Warning, warn, WARN]
+            error: [error, Error, err, fatal, critical, panic, PANIC, ERROR, FATAL]
         - names: [PRIORITY]
           values:
             debug: [7]
@@ -77,4 +77,4 @@ formatting:
 concurrency: ~
 
 # Currently selected theme.
-theme: universal
+theme: classic-plus
