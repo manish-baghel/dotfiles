@@ -16,12 +16,12 @@ return {
 	},
 	cmd = "Telescope",
 	keys = {
-		{ "<leader>s", "<CMD>Telescope find_files<CR>" },
-		{ "<leader>g", "<CMD>Telescope live_grep_args<CR>" },
+		{ "<leader>s",  "<CMD>Telescope find_files<CR>" },
+		{ "<leader>g",  "<CMD>Telescope live_grep_args<CR>" },
 		{ "<leader>gs", "<CMD>Telescope grep_string<CR>" },
 		{ "<leader>rs", "<CMD>Telescope resume<CR>" },
-		{ "<leader>o", "<CMD>Telescope buffers<CR>" },
-		{ "<leader>h", "<CMD>Telescope help_tags<CR>" },
+		{ "<leader>o",  "<CMD>Telescope buffers<CR>" },
+		{ "<leader>h",  "<CMD>Telescope help_tags<CR>" },
 		{ "<leader>nn", "<CMD>Telescope file_browser path=%:p:h select_buffer=true initial_mode=normal<CR>" },
 		{
 			"<leader>/",
@@ -104,12 +104,12 @@ return {
 		vim.api.nvim_set_var("telescope#live_grep#open_file_in_current_window", true)
 
 		local lga_actions = require("telescope-live-grep-args.actions")
-		local trouble_ts_provider = require("trouble.providers.telescope")
+		local trouble_ts_provider = require("trouble.sources.telescope")
 		local additional_opts = {
 			defaults = {
 				mappings = {
-					i = { ["<c-t>"] = trouble_ts_provider.open_with_trouble },
-					n = { ["<c-t>"] = trouble_ts_provider.open_with_trouble },
+					i = { ["<c-t>"] = trouble_ts_provider.open },
+					n = { ["<c-t>"] = trouble_ts_provider.open },
 				},
 			},
 			extensions = {
