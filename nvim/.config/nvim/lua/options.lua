@@ -62,7 +62,7 @@ M.setup = function()
 	vim.api.nvim_create_user_command("Q", "q", {})
 	vim.api.nvim_create_user_command("Y", "yy", {})
 	-- g command output to new scratch buffer
-	-- vim.api.nvim_create_user_command(
+	--vim.api.nvim_create_user_command(
 	--	"g",
 	--	"command! -nargs=? Gst let @a='' | execute 'g/<args>/y A' | new | setlocal bt=nofile | put! a",
 	--	{}

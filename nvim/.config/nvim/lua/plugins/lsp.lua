@@ -46,8 +46,7 @@ return {
 			},
 
 			servers = {
-				tsserver = {
-					cmd = { "typescript-language-server", "--stdio" },
+				ts_ls = {
 					filetypes = {
 						"javascript",
 						"javascriptreact",
@@ -263,7 +262,6 @@ return {
 	},
 	{
 		"sourcegraph/sg.nvim",
-		branch = "update-cody-agent-03-12",
 		build = "nvim -l build/init.lua",
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 		keys = {

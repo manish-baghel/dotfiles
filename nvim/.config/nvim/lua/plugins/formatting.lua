@@ -21,6 +21,9 @@ return {
 			go = { "golines", "goimports", "goimports-reviser", { "gofumpt", "gofmt" } },
 			python = { "isort", "black" },
 			javascript = { "eslint_d", { "prettierd", "prettier" } },
+			javascriptreact = { { "prettier", "prettierd" } },
+			typescript = { "eslint_d", { "prettierd", "prettier" } },
+			typescriptreact = { { "prettier", "prettierd" } },
 			sh = { "shfmt" },
 			json = { "jq" },
 			markdown = { "markdownlint" },
@@ -29,8 +32,8 @@ return {
 		},
 
 		format_on_save = {
-			timeout_ms = 500,
-			lsp_fallback = true,
+			timeout_ms = 1000,
+			lsp_format = "fallback",
 		},
 	},
 }
