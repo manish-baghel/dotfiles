@@ -22,7 +22,7 @@ return {
 			"rust_analyzer",
 			"sqlls",
 			"tailwindcss",
-			"tsserver",
+			"ts_ls",
 			"vimls",
 		},
 	},
