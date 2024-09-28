@@ -20,9 +20,9 @@ return {
 			lua = { "stylua" },
 			go = { "golines", "goimports", "goimports-reviser", { "gofumpt", "gofmt" } },
 			python = { "isort", "black" },
-			javascript = { "eslint_d", { "prettierd", "prettier" } },
+			javascript = { { "prettier", "prettierd" } },
 			javascriptreact = { { "prettier", "prettierd" } },
-			typescript = { "eslint_d", { "prettierd", "prettier" } },
+			typescript = { { "prettier", "prettierd" } },
 			typescriptreact = { { "prettier", "prettierd" } },
 			sh = { "shfmt" },
 			json = { "jq" },
@@ -34,7 +34,7 @@ return {
 
 		format_on_save = {
 			timeout_ms = 1000,
-			lsp_format = "fallback",
+			lsp_fallback = true,
 		},
 	},
 }

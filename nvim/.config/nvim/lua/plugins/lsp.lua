@@ -157,6 +157,18 @@ return {
 				marksman = {},
 				texlab = {},
 				pyright = {},
+				-- pylsp = {
+				-- 	settings = {
+				-- 		pylsp = {
+				-- 			plugins = {
+				-- 				pycodestyle = {
+				-- 					ignore = { "W391" },
+				-- 					maxLineLength = 100,
+				-- 				},
+				-- 			},
+				-- 		},
+				-- 	},
+				-- },
 				taplo = {},
 			},
 		},
@@ -176,20 +188,20 @@ return {
 			local lspconfig = require("lspconfig")
 			for server, server_opts in pairs(servers) do
 				local server_opts_with_capabilities =
-						vim.tbl_deep_extend("force", { capabilities = vim.deepcopy(capabilities) }, server_opts)
+					vim.tbl_deep_extend("force", { capabilities = vim.deepcopy(capabilities) }, server_opts)
 				lspconfig[server].setup(server_opts_with_capabilities)
 			end
 
 			if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
 				opts.diagnostics.virtual_text.prefix = vim.fn.has("nvim-0.10.0") == 0 and "●"
-						or function(diagnostic)
-							local icons = require("lazyvim.config").icons.diagnostics
-							for d, icon in pairs(icons) do
-								if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
-									return icon
-								end
+					or function(diagnostic)
+						local icons = require("lazyvim.config").icons.diagnostics
+						for d, icon in pairs(icons) do
+							if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
+								return icon
 							end
 						end
+					end
 			end
 			vim.diagnostic.config(vim.deepcopy(opts.diagnostic))
 
@@ -315,6 +327,7 @@ return {
 			vim.api.nvim_set_hl(0, "CmpItemKindCody", { fg = vim.g.color_palette.peach })
 
 			require("sg").setup({
+				accept_tos = true,
 				enable_cody = true,
 				chat = {
 					default_model = "anthropic/claude-3-5-sonnet-20240620",

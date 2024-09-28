@@ -4,7 +4,7 @@ local config = wezterm.config_builder()
 config.default_prog = { "/usr/bin/fish" }
 
 config.color_scheme = "Catppuccin Mocha"
-config.window_background_opacity = 0.90
+config.window_background_opacity = 1.0
 
 config.enable_scroll_bar = false
 config.enable_tab_bar = false
