@@ -9,6 +9,17 @@ return {
 		{
 			"<leader>ff",
 			function()
+				require("conform").formatters.ruff_format = {
+					args = {
+						"format",
+						"--config",
+						"line-length=100",
+						"--force-exclude",
+						"--stdin-filename",
+						"$FILENAME",
+						"-",
+					},
+				}
 				require("conform").format({ async = true, lsp_fallback = true, formatters = { "injected" } })
 			end,
 			mode = { "n", "v" },
@@ -19,7 +30,20 @@ return {
 		formatters_by_ft = {
 			lua = { "stylua" },
 			go = { "golines", "goimports", "goimports-reviser", { "gofumpt", "gofmt" } },
-			python = { "isort", "black" },
+			python = function(bufnr)
+				if require("conform").get_formatter_info("ruff_format", bufnr).available then
+					return {
+						-- To fix auto-fixable lint errors.
+						"ruff_fix",
+						-- To run the Ruff formatter.
+						"ruff_format",
+						-- To organize the imports.
+						"ruff_organize_imports",
+					}
+				else
+					return { "isort", "black" }
+				end
+			end,
 			javascript = { { "prettier", "prettierd" } },
 			javascriptreact = { { "prettier", "prettierd" } },
 			typescript = { { "prettier", "prettierd" } },
@@ -30,6 +54,8 @@ return {
 			markdown = { "markdownlint" },
 			tex = { "latexindent" },
 			xml = { "xmlformat" },
+			yaml = { "yamlfix" },
+			yml = { "yamlfix" },
 		},
 
 		format_on_save = {

@@ -5,7 +5,7 @@ return {
 	priority = 1000,
 	opts = {
 		flavour = "mocha", -- latte, frappe, macchiato, mocha
-		transparent_background = true, -- disables setting the background color.
+		-- transparent_background = true, -- disables setting the background color.
 		show_end_of_buffer = false, -- shows the '~' characters after the end of buffers
 		color_overrides = {},
 		custom_highlights = {},

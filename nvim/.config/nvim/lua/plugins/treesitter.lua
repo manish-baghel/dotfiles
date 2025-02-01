@@ -86,10 +86,10 @@ return {
 			})
 		end,
 	},
-	{
-		"nvim-treesitter/nvim-treesitter-context",
-		event = "BufReadPost",
-	},
+	-- {
+	-- 	"nvim-treesitter/nvim-treesitter-context",
+	-- 	event = "BufReadPost",
+	-- },
 	{
 		"nvim-treesitter/nvim-treesitter-textobjects",
 		event = "BufReadPost",
