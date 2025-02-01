@@ -339,7 +339,7 @@ return {
 				accept_tos = true,
 				enable_cody = true,
 				chat = {
-					default_model = "anthropic/claude-3-5-sonnet-20240620",
+					default_model = "anthropic/claude-3-5-sonnet-latest",
 				},
 			})
 		end,
