@@ -340,6 +340,7 @@ return {
 				enable_cody = true,
 				chat = {
 					default_model = "anthropic/claude-3-5-sonnet-latest",
+					-- accounts/fireworks/models/deepseek-v3
 				},
 			})
 		end,
