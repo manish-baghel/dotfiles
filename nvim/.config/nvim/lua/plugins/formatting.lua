@@ -27,7 +27,7 @@ return {
 					args = {
 						"format",
 						"--config",
-						"line-length=100",
+						"line-length=120",
 						"--force-exclude",
 						"--stdin-filename",
 						"$FILENAME",
@@ -61,16 +61,16 @@ return {
 				end
 			end,
 			javascript = function(bufnr)
-				return { first(bufnr, "prettier", "prettierd") }
+				return { first(bufnr, "prettierd", "prettier") }
 			end,
 			javascriptreact = function(bufnr)
-				return { first(bufnr, "prettier", "prettierd") }
+				return { first(bufnr, "prettierd", "prettier") }
 			end,
 			typescript = function(bufnr)
-				return { first(bufnr, "prettier", "prettierd") }
+				return { first(bufnr, "prettierd", "prettier") }
 			end,
 			typescriptreact = function(bufnr)
-				return { first(bufnr, "prettier", "prettierd") }
+				return { first(bufnr, "prettierd", "prettier") }
 			end,
 			sh = { "shfmt" },
 			json = { "jq" },
