@@ -72,7 +72,7 @@ return {
 			typescriptreact = function(bufnr)
 				return { first(bufnr, "prettierd", "prettier") }
 			end,
-			sh = { "shfmt" },
+			-- sh = { "shfmt" },
 			json = { "jq" },
 			jsonc = { "jq" },
 			markdown = { "markdownlint" },
