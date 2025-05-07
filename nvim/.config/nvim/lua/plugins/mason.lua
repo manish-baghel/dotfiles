@@ -16,7 +16,6 @@ return {
 			"emmet_ls",
 			"gopls",
 			"html",
-			"htmx",
 			"jqls",
 			"lua_ls",
 			"rust_analyzer",

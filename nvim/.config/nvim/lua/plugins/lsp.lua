@@ -2,33 +2,6 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
-		dependencies = {
-			-- {
-			-- 	"folke/neodev.nvim",
-			-- 	opts = {
-			-- 		library = {
-			-- 			plugins = {
-			-- 				"neotest",
-			-- 			},
-			-- 			types = true,
-			-- 		},
-			-- 	},
-			-- 	ft = "lua",
-			-- },
-			{
-				"lvimuser/lsp-inlayhints.nvim",
-				event = "LspAttach",
-				opts = {
-					inlay_hints = {
-						max_len_align_padding = 1,
-						highlight = "LspInlayHint",
-						priority = 0,
-					},
-					enabled_at_startup = true,
-					debug_mode = false,
-				},
-			},
-		},
 		opts = {
 			diagnostics = {
 				underline = true,
@@ -39,9 +12,6 @@ return {
 					prefix = "icons",
 				},
 				severity_sort = true,
-			},
-			inlay_hints = {
-				enabled = true,
 			},
 
 			servers = {
@@ -55,30 +25,8 @@ return {
 						"typescript.tsx",
 					},
 					settings = {
-						typescript = {
-							-- inlayHints = {
-							-- 	includeInlayParameterNameHints = "all",
-							-- 	includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-							-- 	includeInlayFunctionParameterTypeHints = true,
-							-- 	includeInlayVariableTypeHints = true,
-							-- 	includeInlayVariableTypeHintsWhenTypeMatchesName = false,
-							-- 	includeInlayPropertyDeclarationTypeHints = true,
-							-- 	includeInlayFunctionLikeReturnTypeHints = true,
-							-- 	includeInlayEnumMemberValueHints = true,
-							-- },
-						},
-						javascript = {
-							-- inlayHints = {
-							-- 	includeInlayParameterNameHints = "all",
-							-- 	includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-							-- 	includeInlayFunctionParameterTypeHints = true,
-							-- 	includeInlayVariableTypeHints = true,
-							-- 	includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-							-- 	includeInlayPropertyDeclarationTypeHints = true,
-							-- 	includeInlayFunctionLikeReturnTypeHints = true,
-							-- 	includeInlayEnumMemberValueHints = true,
-							-- },
-						},
+						typescript = {},
+						javascript = {},
 					},
 				},
 				gopls = {
@@ -170,7 +118,6 @@ return {
 				dockerls = {},
 				emmet_ls = {},
 				html = {},
-				htmx = {},
 				jqls = {},
 				nginx_language_server = {},
 				tailwindcss = {},
@@ -263,8 +210,6 @@ return {
 							range = true,
 						}
 					end
-
-					require("lsp-inlayhints").on_attach(client, bufnr)
 
 					local keymap_opts = { buffer = ev.buf }
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, keymap_opts)
