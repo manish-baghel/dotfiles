@@ -33,17 +33,6 @@ return {
 		event = "BufReadPost",
 	},
 	{
-		"junegunn/goyo.vim",
-		keys = {
-			{ "<leader>z", "<CMD>Goyo<CR>" },
-		},
-		config = function()
-			vim.g.goyo_width = 140
-			vim.g.goyo_margin_top = 2
-			vim.g.goyo_margin_bottom = 2
-		end,
-	},
-	{
 		"danymat/neogen",
 		opts = {
 			{

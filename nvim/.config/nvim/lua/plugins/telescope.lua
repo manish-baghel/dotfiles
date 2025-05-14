@@ -16,12 +16,12 @@ return {
 	},
 	cmd = "Telescope",
 	keys = {
-		{ "<leader>s",  "<CMD>Telescope find_files<CR>" },
-		{ "<leader>g",  "<CMD>Telescope live_grep_args<CR>" },
+		{ "<leader>s", "<CMD>Telescope find_files<CR>" },
+		{ "<leader>g", "<CMD>Telescope live_grep_args<CR>" },
 		{ "<leader>gs", "<CMD>Telescope grep_string<CR>" },
 		{ "<leader>rs", "<CMD>Telescope resume<CR>" },
-		{ "<leader>o",  "<CMD>Telescope buffers<CR>" },
-		{ "<leader>h",  "<CMD>Telescope help_tags<CR>" },
+		{ "<leader>o", "<CMD>Telescope buffers<CR>" },
+		{ "<leader>h", "<CMD>Telescope help_tags<CR>" },
 		{ "<leader>nn", "<CMD>Telescope file_browser path=%:p:h select_buffer=true initial_mode=normal<CR>" },
 		{
 			"<leader>/",
@@ -122,8 +122,22 @@ return {
 					},
 				},
 				lsp_handlers = {
+					location = {
+						telescope = {},
+						no_results_message = "No references found",
+					},
+					symbol = {
+						telescope = {},
+						no_results_message = "No symbols found",
+					},
+					call_hierarchy = {
+						telescope = {},
+						no_results_message = "No calls found",
+					},
 					code_action = {
 						telescope = require("telescope.themes").get_dropdown({}),
+						no_results_message = "No code actions available",
+						prefix = "",
 					},
 				},
 				["ui-select"] = {

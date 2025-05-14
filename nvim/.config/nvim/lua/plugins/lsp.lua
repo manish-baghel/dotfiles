@@ -1,12 +1,20 @@
 return {
 	{
 		"neovim/nvim-lspconfig",
+		dependencies = {
+			{
+				-- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
+				-- used for completion, annotations and signatures of Neovim apis
+				"folke/lazydev.nvim",
+				ft = "lua",
+			},
+		},
 		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
 		opts = {
 			diagnostics = {
-				underline = true,
 				update_in_insert = false,
 				virtual_text = {
+					severity = vim.diagnostic.severity.ERROR,
 					spacing = 4,
 					source = "if_many",
 					prefix = "icons",
@@ -102,29 +110,19 @@ return {
 						},
 					},
 				},
-				ruff = {
-					trace = "messages",
-					init_options = {
-						settings = {
-							logLevel = "debug",
-						},
-					},
-				},
+				ruff = {},
 				sqlls = {},
 				vimls = {},
 				rust_analyzer = {},
 				cssls = {},
 				docker_compose_language_service = {},
 				dockerls = {},
-				emmet_ls = {},
 				html = {},
 				jqls = {},
 				nginx_language_server = {},
 				tailwindcss = {},
 				bashls = {},
-				marksman = {},
 				texlab = {},
-				taplo = {},
 			},
 		},
 		config = function(_, opts)
@@ -211,16 +209,78 @@ return {
 						}
 					end
 
+					vim.g["diagnostics_active"] = true
+					function Toggle_diagnostics()
+						if vim.g.diagnostics_active then
+							vim.g.diagnostics_active = false
+							vim.diagnostic.enable(false)
+						else
+							vim.g.diagnostics_active = true
+							vim.diagnostic.enable()
+						end
+					end
+
+					local function filterDuplicates(array)
+						local uniqueArray = {}
+						for _, tableA in ipairs(array) do
+							local isDuplicate = false
+							for _, tableB in ipairs(uniqueArray) do
+								if vim.deep_equal(tableA, tableB) then
+									isDuplicate = true
+									break
+								end
+							end
+							if not isDuplicate then
+								table.insert(uniqueArray, tableA)
+							end
+						end
+						return uniqueArray
+					end
+
+					local pickers = require("telescope.pickers")
+					local finders = require("telescope.finders")
+					local conf = require("telescope.config").values
+					local make_entry = require("telescope.make_entry")
+					local function on_list(options)
+						options.items = filterDuplicates(options.items)
+						if #options.items == 1 then
+							vim.fn.setqflist({}, " ", options)
+							vim.cmd.cfirst()
+						else
+							local opts = {}
+							local previewer = conf.qflist_previewer(opts)
+							pickers
+								.new(opts, {
+									prompt_title = options.title,
+									finder = finders.new_table({
+										results = options.items,
+										entry_maker = make_entry.gen_from_quickfix(opts),
+									}),
+									previewer = previewer,
+									sorter = conf.generic_sorter(opts),
+								})
+								:find()
+						end
+					end
+
 					local keymap_opts = { buffer = ev.buf }
 					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, keymap_opts)
-					vim.keymap.set("n", "gd", vim.lsp.buf.definition, keymap_opts)
+					vim.keymap.set("n", "gd", function()
+						vim.lsp.buf.definition({ on_list = on_list })
+					end, keymap_opts)
+					vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, keymap_opts)
 					vim.keymap.set("n", "K", vim.lsp.buf.hover, keymap_opts)
 					vim.keymap.set({ "n", "v" }, "ga", vim.lsp.buf.code_action, keymap_opts)
-					vim.keymap.set("n", "gr", vim.lsp.buf.references, keymap_opts)
 					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, keymap_opts)
 					vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, keymap_opts)
 					vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, keymap_opts)
 					vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, keymap_opts)
+					vim.keymap.set(
+						"n",
+						"<leader>xd",
+						Toggle_diagnostics,
+						{ noremap = true, silent = true, desc = "Toggle vim diagnostics" }
+					)
 				end,
 			})
 		end,
