@@ -6,6 +6,8 @@ status --is-interactive; and source (jump shell fish | psub)
 set -g fish_greeting
 
 starship init fish | source
+# zoxide is a smarter cs, --cmd cd replaces cd
+zoxide init --cmd cd fish | source
 
 set -gx EDITOR /usr/bin/nvim
 
