@@ -61,16 +61,16 @@ return {
 				end
 			end,
 			javascript = function(bufnr)
-				return { first(bufnr, "prettierd", "prettier") }
+				return { first(bufnr, "prettier") }
 			end,
 			javascriptreact = function(bufnr)
-				return { first(bufnr, "prettierd", "prettier") }
+				return { first(bufnr, "prettier") }
 			end,
 			typescript = function(bufnr)
-				return { first(bufnr, "prettierd", "prettier") }
+				return { first(bufnr, "prettier") }
 			end,
 			typescriptreact = function(bufnr)
-				return { first(bufnr, "prettierd", "prettier") }
+				return { first(bufnr, "prettier") }
 			end,
 			-- sh = { "shfmt" },
 			json = { "jq" },

@@ -14,7 +14,7 @@ return {
 			diagnostics = {
 				update_in_insert = false,
 				virtual_text = {
-					severity = vim.diagnostic.severity.ERROR,
+					severity = vim.diagnostic.severity.WARN,
 					spacing = 4,
 					source = "if_many",
 					prefix = "icons",
@@ -275,6 +275,18 @@ return {
 					vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, keymap_opts)
 					vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, keymap_opts)
 					vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, keymap_opts)
+
+					-- Diagnostic keymaps
+					vim.keymap.set("n", "[d", vim.diagnostic.get_prev, { desc = "Go to previous diagnostic message" })
+					vim.keymap.set("n", "]d", vim.diagnostic.get_next, { desc = "Go to next diagnostic message" })
+					vim.keymap.set(
+						"n",
+						"<space>e",
+						vim.diagnostic.open_float,
+						{ desc = "Open floating diagnostic message" }
+					)
+					vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
+
 					vim.keymap.set(
 						"n",
 						"<leader>xd",
