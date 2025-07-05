@@ -14,7 +14,6 @@ return {
 			"docker_compose_language_service",
 			"dockerls",
 			"emmet_ls",
-			"gopls",
 			"html",
 			"jqls",
 			"lua_ls",
