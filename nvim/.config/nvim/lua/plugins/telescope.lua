@@ -16,11 +16,9 @@ return {
 	},
 	cmd = "Telescope",
 	keys = {
-		{ "<leader>s", "<CMD>Telescope find_files<CR>" },
-		{ "<leader>g", "<CMD>Telescope live_grep_args<CR>" },
-		{ "<leader>gs", "<CMD>Telescope grep_string<CR>" },
-		{ "<leader>rs", "<CMD>Telescope resume<CR>" },
-		{ "<leader>o", "<CMD>Telescope buffers<CR>" },
+		-- { "<leader>g", "<CMD>Telescope live_grep_args<CR>" },
+		-- { "<leader>gs", "<CMD>Telescope grep_string<CR>" },
+		-- { "<leader>rs", "<CMD>Telescope resume<CR>" },
 		{ "<leader>h", "<CMD>Telescope help_tags<CR>" },
 		{ "<leader>nn", "<CMD>Telescope file_browser path=%:p:h select_buffer=true initial_mode=normal<CR>" },
 		{
@@ -39,34 +37,6 @@ return {
 				"node_modules",
 				"^.git/",
 				".DS_Store",
-			},
-			preview = {
-				-- mime_hook = function(filepath, bufnr, opts)
-				-- 	local is_image = function(path)
-				-- 		local image_extensions = { "png", "jpg", "jpeg", "webp", "svg" } -- Supported image formats
-				-- 		local split_path = vim.split(path:lower(), ".", { plain = true })
-				-- 		local extension = split_path[#split_path]
-				-- 		return vim.tbl_contains(image_extensions, extension)
-				-- 	end
-				-- 	if is_image(filepath) then
-				-- 		local term = vim.api.nvim_open_term(bufnr, {})
-				-- 		local function send_output(_, data, _)
-				-- 			for _, d in ipairs(data) do
-				-- 				vim.api.nvim_chan_send(term, d .. "\r\n")
-				-- 			end
-				-- 		end
-				-- 		vim.fn.jobstart({
-				-- 			"feh",
-				-- 			filepath, -- Terminal image viewer command
-				-- 		}, { on_stdout = send_output, stdout_buffered = true, pty = true })
-				-- 	else
-				-- 		require("telescope.previewers.utils").set_preview_message(
-				-- 			bufnr,
-				-- 			opts.winid,
-				-- 			"Binary cannot be previewed"
-				-- 		)
-				-- 	end
-				-- end,
 			},
 		},
 		pickers = {
