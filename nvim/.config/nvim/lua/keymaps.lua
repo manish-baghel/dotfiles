@@ -12,12 +12,13 @@ M.setup = function()
 
 	vim.keymap.set("t", "<esc><esc>", "<c-\\><c-n>", { desc = "Escape Escape exits terminal mode" })
 
-	vim.keymap.set(
-		"n",
-		"<leader>e",
-		"<CMD>e ~/dotfiles/nvim/.config/nvim/init.lua<CR><CMD>cd %:p:h<CR>",
-		{ silent = true }
-	)
+	-- replaced by snacks.nvim find config
+	-- vim.keymap.set(
+	-- 	"n",
+	-- 	"<leader>e",
+	-- 	"<CMD>e ~/dotfiles/nvim/.config/nvim/init.lua<CR><CMD>cd %:p:h<CR>",
+	-- 	{ silent = true }
+	-- )
 	vim.keymap.set("n", "<leader><CR>", "<CMD>noh<CR>", { desc = "clear highlights" })
 	vim.keymap.set("n", "<leader>/", "<CMD>bnext<CR>")
 	vim.keymap.set("n", "<leader>.", "<CMD>bprevious<CR>")
