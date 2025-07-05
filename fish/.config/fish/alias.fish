@@ -6,7 +6,6 @@ alias cl="clear"
 alias ls="lsd"
 alias pgpt="cd ~/Desktop/projects/photoGPT/"
 alias oe="cd ~/Desktop/projects/odineye/"
-alias nvim-stable="/bin/nvim"
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/manish/google-cloud-sdk/path.fish.inc' ]; . '/home/manish/google-cloud-sdk/path.fish.inc'; end
