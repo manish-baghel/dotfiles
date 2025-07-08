@@ -140,6 +140,12 @@ M.setup = function()
 	    command! -bang WQA wqa<bang>
 	    vnoremap <S-Down> <Nop>
 	]])
+
+	vim.filetype.add({
+		extension = {
+			j2 = "jinja",
+		},
+	})
 end
 
 return M
