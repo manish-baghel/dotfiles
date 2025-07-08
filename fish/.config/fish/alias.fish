@@ -1,7 +1,7 @@
 alias reload='exec fish'
 alias bb="sudo bleachbit --clean system.cache system.localizations system.trash system.tmp"
 alias cv="cd ~/Desktop/cv"
-alias installed-pkgs="LC_ALL=C pacman -Qi | awk '/^Name/{name=\$3} /^Installed Size/{print \$4\$5, name}' | sort -h"
+alias pacman-installed-pkgs="LC_ALL=C pacman -Qi | awk '/^Name/{name=\$3} /^Installed Size/{print \$4\$5, name}' | sort -h"
 alias cl="clear"
 alias ls="lsd"
 alias pgpt="cd ~/Desktop/projects/photoGPT/"
