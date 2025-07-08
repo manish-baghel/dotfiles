@@ -18,7 +18,7 @@ return {
 				reverse = true,
 				layout = {
 					box = "horizontal",
-					backdrop = { transparent = true, blend = 40 },
+					backdrop = false,
 					width = 0.8,
 					min_width = 120,
 					height = 0.8,
