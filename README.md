@@ -38,10 +38,10 @@ Pretty fast startup time: 12-20ms
 stow fish
 ```
 
-## Wezterm
+## Ghostty
 
 ```
-stow wezterm
+stow ghostty
 ```
 
 ## Starship
