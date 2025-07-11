@@ -13,7 +13,7 @@ font xft:URWGothic-Book 11
 
 floating_modifier $mod
 
-bindsym $mod+Return exec wezterm
+bindsym $mod+Return exec ghostty
 
 # alternate tiling
 default_orientation vertical 
@@ -25,7 +25,7 @@ bindsym $mod+e layout toggle split
 #bindsym $mod+Shift+q kill
 
 # start program launcher
-bindsym $mod+d exec --no-startup-id "rofi -combi-modi window#drun#run#ssh -show combi -sidebar-mode -theme ~/.config/rofi/launchers/type-1/style-1.rasi -icon-theme Papirus -show-icons -terminal wezterm" 
+bindsym $mod+d exec --no-startup-id "rofi -combi-modi window#drun#run#ssh -show combi -sidebar-mode -theme ~/.config/rofi/launchers/type-1/style-1.rasi -icon-theme Papirus -show-icons -terminal ghostty" 
 bindsym $mod+Ctrl+space exec --no-startup-id "rofimoji"
 
 # change focus

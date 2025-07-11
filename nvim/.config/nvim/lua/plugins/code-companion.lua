@@ -4,6 +4,7 @@ return {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"nvim-treesitter/nvim-treesitter",
+			"ravitemer/codecompanion-history.nvim",
 		},
 		event = { "VeryLazy" },
 		keys = {
@@ -39,6 +40,25 @@ return {
 					},
 					cmd = {
 						adapter = "gemini",
+					},
+				},
+				extensions = {
+					history = {
+						enabled = true,
+						opts = {
+							auto_generate_title = true,
+							title_generation_opts = {
+								adapter = "gemini",
+								model = "gemini-2.5-flash-lite-preview-06-17",
+								refresh_every_n_prompts = 5,
+								max_refreshes = 3,
+								format_title = function(original_title)
+									-- this can be a custom function that applies some custom
+									-- formatting to the title.
+									return original_title
+								end,
+							},
+						},
 					},
 				},
 			})

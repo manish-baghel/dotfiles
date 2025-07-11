@@ -123,6 +123,9 @@ return {
 				tailwindcss = {},
 				bashls = {},
 				texlab = {},
+				jinja_lsp = {
+					filetypes = { "jinja" },
+				},
 			},
 		},
 		config = function(_, opts)
