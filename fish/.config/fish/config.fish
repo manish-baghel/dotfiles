@@ -9,6 +9,7 @@ starship init fish | source
 # zoxide is a smarter cs, --cmd cd replaces cd
 zoxide init --cmd cd fish | source
 
+set -gx TERMINAL /usr/bin/ghostty
 set -gx EDITOR /usr/bin/nvim
 
 set -gx ANDROID_HOME $HOME/Android/Sdk
