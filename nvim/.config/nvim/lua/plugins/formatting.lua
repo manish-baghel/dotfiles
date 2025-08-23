@@ -19,32 +19,11 @@ return {
 	},
 	cmd = "ConformInfo",
 	event = "BufWritePre",
-	keys = {
-		{
-			"<leader>ff",
-			function()
-				require("conform").formatters.ruff_format = {
-					args = {
-						"format",
-						"--config",
-						"line-length=120",
-						"--force-exclude",
-						"--stdin-filename",
-						"$FILENAME",
-						"-",
-					},
-				}
-				require("conform").format({ async = true, lsp_fallback = true, formatters = { "injected" } })
-			end,
-			mode = { "n", "v" },
-			desc = "Format Injected Langs",
-		},
-	},
 	opts = {
 		formatters_by_ft = {
 			lua = { "stylua" },
 			go = function(bufnr)
-				return { "golines", "goimports", "goimports-reviser", first(bufnr, "gofumpt", "gofmt") }
+				return { "golines", "goimports", first(bufnr, "gofumpt", "gofmt") }
 			end,
 			python = function(bufnr)
 				if require("conform").get_formatter_info("ruff_format", bufnr).available then
@@ -81,7 +60,16 @@ return {
 			yaml = { "yamlfix" },
 			yml = { "yamlfix" },
 		},
-
+		keys = {
+			{
+				"<leader>ff",
+				function()
+					require("conform").format({ async = true, lsp_format = "fallback" })
+				end,
+				mode = { "n", "v" },
+				desc = "Format Injected Langs",
+			},
+		},
 		format_on_save = {
 			timeout_ms = 1000,
 			lsp_format = "fallback",
