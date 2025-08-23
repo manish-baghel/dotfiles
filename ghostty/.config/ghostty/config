@@ -1,1 +1,7 @@
+gtk-single-instance = true
+
+theme = "catppuccin-mocha"
 window-decoration = none
+
+app-notifications = false
+copy-on-select = clipboard
