@@ -214,9 +214,9 @@ mode "resize" {
 # Autostart applications
 exec --no-startup-id nitrogen --restore; sleep 1; compton -b
 exec --no-startup-id nm-applet
-exec_always --no-startup-id clipit
-exec_always --no-startup-id fcitx5 -d
-exec_always --no-startup-id fix_xcursor
+exec --no-startup-id fcitx5 -d
+exec --no-startup-id fix_xcursor
+exec_always --no-startup-id $HOME/.config/i3/autostart_clipit.sh
 exec_always --no-startup-id $HOME/.config/polybar/start.sh
 
 # Theme colors

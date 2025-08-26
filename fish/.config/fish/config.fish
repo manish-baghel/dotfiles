@@ -22,6 +22,11 @@ set -gx OLLAMA_FLASH_ATTENTION 1
 set -gx OLLAMA_KV_CACHE_TYPE q8_0
 set -gx OLLAMA_KEEP_ALIVE -1
 
+set -gx XDG_CACHE_HOME $HOME/.cache
+set -gx XDG_CONFIG_HOME $HOME/.config
+set -gx XDG_DATA_HOME $HOME/.local/share
+set -gx XDG_STATE_HOME $HOME/.local/state
+
 if not pgrep -x ssh-agent > /dev/null
     eval "$(ssh-agent -c)"
 end
