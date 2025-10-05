@@ -5,6 +5,7 @@ alias pacman-installed-pkgs="LC_ALL=C pacman -Qi | awk '/^Name/{name=\$3} /^Inst
 alias cl="clear"
 alias ls="lsd"
 alias pgpt="cd ~/Desktop/projects/photoGPT/"
+alias dbt="cd ~/Desktop/projects/dubit/"
 alias oe="cd ~/Desktop/projects/odineye/"
 
 # The next line updates PATH for the Google Cloud SDK.
