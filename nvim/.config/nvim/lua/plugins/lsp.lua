@@ -9,7 +9,7 @@ return {
 				ft = "lua",
 			},
 		},
-		event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+		lazy = false,
 		opts = {
 			diagnostics = {
 				update_in_insert = false,
@@ -141,23 +141,23 @@ return {
 			end
 			-- update capabilities of all servers
 			local servers = opts.servers
-			local lspconfig = require("lspconfig")
 			for server, server_opts in pairs(servers) do
 				local server_opts_with_capabilities =
-					vim.tbl_deep_extend("force", { capabilities = vim.deepcopy(capabilities) }, server_opts)
-				lspconfig[server].setup(server_opts_with_capabilities)
+						vim.tbl_deep_extend("force", { capabilities = vim.deepcopy(capabilities) }, server_opts)
+				vim.lsp.config(server, server_opts_with_capabilities)
+				vim.lsp.enable(server)
 			end
 
 			if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
 				opts.diagnostics.virtual_text.prefix = vim.fn.has("nvim-0.10.0") == 0 and "●"
-					or function(diagnostic)
-						local icons = require("lazyvim.config").icons.diagnostics
-						for d, icon in pairs(icons) do
-							if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
-								return icon
+						or function(diagnostic)
+							local icons = require("lazyvim.config").icons.diagnostics
+							for d, icon in pairs(icons) do
+								if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
+									return icon
+								end
 							end
 						end
-					end
 			end
 			vim.diagnostic.config(vim.deepcopy(opts.diagnostic))
 
@@ -253,16 +253,16 @@ return {
 							local opts = {}
 							local previewer = conf.qflist_previewer(opts)
 							pickers
-								.new(opts, {
-									prompt_title = options.title,
-									finder = finders.new_table({
-										results = options.items,
-										entry_maker = make_entry.gen_from_quickfix(opts),
-									}),
-									previewer = previewer,
-									sorter = conf.generic_sorter(opts),
-								})
-								:find()
+									.new(opts, {
+										prompt_title = options.title,
+										finder = finders.new_table({
+											results = options.items,
+											entry_maker = make_entry.gen_from_quickfix(opts),
+										}),
+										previewer = previewer,
+										sorter = conf.generic_sorter(opts),
+									})
+									:find()
 						end
 					end
 
