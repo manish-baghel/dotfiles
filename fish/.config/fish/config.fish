@@ -10,7 +10,7 @@ starship init fish | source
 zoxide init --cmd cd fish | source
 
 if status --is-interactive
-    atuin init fish | source
+    atuin init fish --disable-up-arrow | source
 end
 
 set -gx TERMINAL /usr/bin/ghostty
