@@ -9,6 +9,10 @@ starship init fish | source
 # zoxide is a smarter cs, --cmd cd replaces cd
 zoxide init --cmd cd fish | source
 
+if status --is-interactive
+    atuin init fish | source
+end
+
 set -gx TERMINAL /usr/bin/ghostty
 set -gx EDITOR /usr/bin/nvim
 
