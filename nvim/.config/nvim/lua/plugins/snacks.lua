@@ -12,6 +12,8 @@ return {
 		explorer = { enabled = true },
 		indent = { enabled = true },
 		input = { enabled = true },
+		git = { enabled = true },
+		gitbrowse = { enabled = true },
 		picker = {
 			enabled = true,
 			layout = {
@@ -128,13 +130,6 @@ return {
 			desc = "Grep",
 		},
 		{
-			"<leader>gb",
-			function()
-				Snacks.picker.grep_buffers()
-			end,
-			desc = "Grep Open Buffers",
-		},
-		{
 			"<leader>gs",
 			function()
 				Snacks.picker.grep_word()
@@ -163,6 +158,13 @@ return {
 				Snacks.zen.zoom()
 			end,
 			desc = "Toggle Zoom",
+		},
+		{
+			"<leader>gb",
+			function()
+				Snacks.gitbrowse()
+			end,
+			desc = "Open git remote in a browser",
 		},
 	},
 }

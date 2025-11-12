@@ -29,10 +29,6 @@ return {
 		"tpope/vim-sleuth", -- detect tabstop and shiftwitdh automatically
 	},
 	{
-		"f-person/git-blame.nvim",
-		event = "BufReadPost",
-	},
-	{
 		"danymat/neogen",
 		opts = {
 			{
