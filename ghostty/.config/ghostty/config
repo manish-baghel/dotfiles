@@ -5,3 +5,5 @@ window-decoration = none
 
 app-notifications = false
 copy-on-select = clipboard
+
+font-size = 14
