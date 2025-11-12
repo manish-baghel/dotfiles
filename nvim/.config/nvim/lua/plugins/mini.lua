@@ -1,7 +1,8 @@
 return { -- Collection of various small independent plugins/modules
-	"echasnovski/mini.nvim",
+	"nvim-mini/mini.nvim",
 	event = "BufReadPost",
 	config = function()
+		require("mini.icons").setup()
 		-- Better Around/Inside textobjects
 		--
 		-- Examples:
@@ -15,6 +16,12 @@ return { -- Collection of various small independent plugins/modules
 		-- - sd'   - [S]urround [D]elete [']quotes
 		-- - sr)'  - [S]urround [R]eplace [)] [']
 		require("mini.surround").setup()
+
+		local MiniFiles = require("mini.files")
+		MiniFiles.setup()
+		vim.keymap.set("n", "<leader>nn", function()
+			MiniFiles.open(vim.api.nvim_buf_get_name(0))
+		end)
 
 		local diff = require("mini.diff")
 		diff.setup({

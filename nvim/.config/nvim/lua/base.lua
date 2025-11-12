@@ -146,7 +146,6 @@ M.setup = function()
 			j2 = "jinja",
 		},
 	})
-
 end
 
 return M
