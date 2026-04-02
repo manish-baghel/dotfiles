@@ -23,7 +23,7 @@ return {
 		formatters_by_ft = {
 			lua = { "stylua" },
 			go = function(bufnr)
-				return { "golines", "goimports", first(bufnr, "gofumpt", "gofmt") }
+				return { "golines", first(bufnr, "gofmt") }
 			end,
 			python = function(bufnr)
 				if require("conform").get_formatter_info("ruff_format", bufnr).available then
@@ -40,19 +40,20 @@ return {
 				end
 			end,
 			javascript = function(bufnr)
-				return { first(bufnr, "prettier") }
+				return { first(bufnr, "oxfmt") }
 			end,
 			javascriptreact = function(bufnr)
-				return { first(bufnr, "prettier") }
+				return { first(bufnr, "oxfmt") }
 			end,
 			typescript = function(bufnr)
-				return { first(bufnr, "prettier") }
+				return { first(bufnr, "oxfmt") }
 			end,
 			typescriptreact = function(bufnr)
-				return { first(bufnr, "prettier") }
+				return { first(bufnr, "oxfmt") }
 			end,
 			-- sh = { "shfmt" },
-			json = { "jq" },
+			json = { "oxfmt" },
+			vue = { "oxfmt" },
 			jsonc = { "jq" },
 			markdown = { "markdownlint" },
 			tex = { "latexindent" },

@@ -289,7 +289,7 @@ exec --no-startup-id pa-applet
 
 # Start Applications
 bindsym $mod+F2 exec google-chrome-stable --enable-features=Vulkan
-bindsym $mod+F3 exec pcmanfm
+bindsym $mod+F3 exec nautilus
 bindsym $mod+Shift+F3 exec ghostty -e 'ranger'
 bindsym $mod+F5 exec ghostty -e 'mocp'
 bindsym $mod+t exec --no-startup-id pkill picom

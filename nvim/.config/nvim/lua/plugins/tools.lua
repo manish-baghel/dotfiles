@@ -26,7 +26,7 @@ return {
 		event = "BufReadPost",
 	},
 	{
-		"tpope/vim-sleuth", -- detect tabstop and shiftwitdh automatically
+		"tpope/vim-sleuth", -- detect tabstop and shiftwidth automatically
 	},
 	{
 		"danymat/neogen",
@@ -42,5 +42,17 @@ return {
 		event = "BufReadPost",
 		dependencies = { "nvim-lua/plenary.nvim" },
 		opts = { signs = false },
+	},
+	{
+		"simondrake/gomodifytags",
+		dependencies = { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+		opts = {
+			transformation = "camelcase",
+			skip_unexported = true,
+			override = true,
+			options = { "json=omitempty" },
+		},
+		cmd = { "GoAddTags" },
+		config = true,
 	},
 }

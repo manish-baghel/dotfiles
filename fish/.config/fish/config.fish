@@ -1,17 +1,14 @@
 source ~/.config/fish/alias.fish
-
-status --is-interactive; and source (jump shell fish | psub)
-
 # disable greeting, by default it's set to a welcome message
 set -g fish_greeting
 
 starship init fish | source
 # zoxide is a smarter cs, --cmd cd replaces cd
 zoxide init --cmd cd fish | source
+status --is-interactive; and source (jump shell fish | psub)
+status --is-interactive; and atuin init fish --disable-up-arrow | source
 
-if status --is-interactive
-    atuin init fish --disable-up-arrow | source
-end
+set -gx GTK_THEME Adwaita:dark
 
 set -gx TERMINAL /usr/bin/ghostty
 set -gx EDITOR /usr/bin/nvim
@@ -38,7 +35,8 @@ if not pgrep -x ssh-agent > /dev/null
 end
 ssh-add
 
-nvm use latest
+set --universal nvm_data ~/.nvm
+set --universal nvm_default_version v25.9.0
 
 # bun
 set --export BUN_INSTALL "$HOME/.bun"
