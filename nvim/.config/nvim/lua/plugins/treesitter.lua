@@ -1,12 +1,13 @@
 return {
 	{
 		"nvim-treesitter/nvim-treesitter",
+		branch = "main",
 		build = ":TSUpdate",
 		event = "BufReadPost",
+		lazy = false,
 		cmd = { "TSInstall", "TSUpdate" },
 		config = function()
-			---@diagnostic disable-next-line: missing-fields
-			require("nvim-treesitter.configs").setup({
+			require("nvim-treesitter").setup({
 				ignore_install = {},
 				ensure_installed = {
 					"bash",
@@ -85,14 +86,6 @@ return {
 				playground = {},
 			})
 		end,
-	},
-	-- {
-	-- 	"nvim-treesitter/nvim-treesitter-context",
-	-- 	event = "BufReadPost",
-	-- },
-	{
-		"nvim-treesitter/nvim-treesitter-textobjects",
-		event = "BufReadPost",
 	},
 	{
 		"nvim-treesitter/playground",
