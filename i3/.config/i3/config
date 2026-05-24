@@ -1,5 +1,9 @@
 set $mod Mod4
 
+set $mon4k HDMI-0
+set $mon1080 DP-2
+set $term ghostty
+
 new_window pixel 1
 new_float normal
 
@@ -9,11 +13,11 @@ bindsym $mod+u border none
 bindsym $mod+y border pixel 1
 bindsym $mod+n border normal
 
-font JetBrainsMono 14
+font pango:JetBrainsMono Nerd Font 11
 
 floating_modifier $mod
 
-bindsym $mod+Return exec ghostty
+bindsym $mod+Return exec $term
 
 # alternate tiling
 default_orientation vertical 
@@ -49,6 +53,22 @@ bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
+
+# Focus monitor/output
+bindsym $mod+Ctrl+j focus output left
+bindsym $mod+Ctrl+semicolon focus output right
+bindsym $mod+Ctrl+Left focus output left
+bindsym $mod+Ctrl+Right focus output right
+
+# Move focused window to monitor/output and follow it
+bindsym $mod+Ctrl+Shift+j move container to output left; focus output left
+bindsym $mod+Ctrl+Shift+semicolon move container to output right; focus output right
+bindsym $mod+Ctrl+Shift+Left move container to output left; focus output left
+bindsym $mod+Ctrl+Shift+Right move container to output right; focus output right
+
+# Move current workspace to another monitor
+bindsym $mod+Ctrl+Shift+o move workspace to output right
+bindsym $mod+Ctrl+Shift+i move workspace to output left
 
 # workspace back and forth (with/without active container)
 workspace_auto_back_and_forth yes
@@ -98,6 +118,17 @@ set $ws5 5
 set $ws6 6
 set $ws7 7
 set $ws8 8
+
+# Workspace monitor assignment
+workspace $ws1 output $mon4k
+workspace $ws2 output $mon4k
+workspace $ws3 output $mon4k
+workspace $ws4 output $mon4k
+workspace $ws5 output $mon4k
+
+workspace $ws6 output $mon1080
+workspace $ws7 output $mon1080
+workspace $ws8 output $mon1080
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
@@ -152,6 +183,9 @@ bindsym $mod+Shift+c reload
 # Restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 
+# Re-apply monitor layout manually
+bindsym $mod+Shift+m exec --no-startup-id ~/.config/i3/scripts/monitors.sh
+
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
 
@@ -197,21 +231,34 @@ mode "resize" {
 }
 
 # Autostart applications
-exec --no-startup-id nitrogen --restore; sleep 1; compton -b
+
+# Load DPI/font/cursor settings first
+exec --no-startup-id xrdb -merge ~/.Xresources
+
+# Monitor layout: HDMI-0 4K primary left, DP-2 1080p right bottom-aligned
+exec_always --no-startup-id ~/.config/i3/scripts/monitors.sh
+
+# Wallpaper and compositor
+exec --no-startup-id nitrogen --restore
+exec --no-startup-id picom -b
+
+# Applets / input
 exec --no-startup-id nm-applet
 exec --no-startup-id fcitx5 -d
 exec --no-startup-id fix_xcursor
+
+# Clipboard and bar, after monitor layout is applied
 exec_always --no-startup-id $HOME/.config/i3/autostart_clipit.sh
 exec_always --no-startup-id $HOME/.config/polybar/start.sh
 
 # Theme colors
-client.focused #707880 #1d1f21 #707880 #8c9440 #8c9440
-client.focused_inactive #707880 #1d1f21 #707880 #5f819d #5f819d
-client.unfocused #707880 #1d1f21 #707880 #5f819d #5f819d
-client.urgent #707880 #1d1f21 #707880 #5f819d #5f819d
-client.placeholder #707880 #1d1f21 #707880 #5f819d #5f819d
+client.focused #bdc4df #1e1e20 #bdc4df #bdc4df #bdc4df
+client.focused_inactive #bdc4df #1e1e20 #bdc4df #9198c3 #9198c3
+client.unfocused #bdc4df #1e1e20 #bdc4df #9198c3 #9198c3
+client.urgent #bdc4df #1e1e20 #bdc4df #9198c3 #9198c3
+client.placeholder #bdc4df #1e1e20 #bdc4df #9198c3 #9198c3
 
-client.background #1d1f21
+client.background #1e1e20
 
 # Gaps
 gaps inner 2
