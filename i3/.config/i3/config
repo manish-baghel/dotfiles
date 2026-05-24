@@ -236,7 +236,7 @@ mode "resize" {
 exec --no-startup-id xrdb -merge ~/.Xresources
 
 # Monitor layout: HDMI-0 4K primary left, DP-2 1080p right bottom-aligned
-exec_always --no-startup-id ~/.config/i3/scripts/monitors.sh
+exec_always --no-startup-id ~/.config/i3/scripts/monitors.sh auto
 
 # Wallpaper and compositor
 exec --no-startup-id nitrogen --restore
