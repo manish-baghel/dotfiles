@@ -184,7 +184,9 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 
 # Re-apply monitor layout manually
-bindsym $mod+Shift+m exec --no-startup-id ~/.config/i3/scripts/monitors.sh
+bindsym $mod+Shift+m exec --no-startup-id ~/.config/i3/scripts/monitors.sh auto
+bindsym $mod+Shift+F11 exec --no-startup-id ~/.config/i3/scripts/monitors.sh single
+bindsym $mod+Shift+F12 exec --no-startup-id ~/.config/i3/scripts/monitors.sh dual
 
 # exit i3 (logs you out of your X session)
 bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
@@ -335,7 +337,7 @@ exec --no-startup-id pa-applet
 # bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
 
 # Start Applications
-bindsym $mod+F2 exec google-chrome-stable --enable-features=Vulkan
+bindsym $mod+F2 exec google-chrome-stable --enable-unsafe-webgpu --enable-features=Vulkan
 bindsym $mod+F3 exec nautilus
 bindsym $mod+Shift+F3 exec ghostty -e 'ranger'
 bindsym $mod+F5 exec ghostty -e 'mocp'

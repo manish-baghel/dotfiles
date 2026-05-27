@@ -195,6 +195,18 @@ fi
 
 SECONDARY_X="$PRIMARY_W"
 
+mm_for_dpi() {
+	awk -v px="$1" -v dpi="$DPI" 'BEGIN { printf "%d", (px * 25.4 / dpi) + 0.5 }'
+}
+
+PRIMARY_FBMM_W="$(mm_for_dpi "$PRIMARY_W")"
+PRIMARY_FBMM_H="$(mm_for_dpi "$PRIMARY_H")"
+
+FBMM_W="$(mm_for_dpi "$FB_W")"
+FBMM_H="$(mm_for_dpi "$FB_H")"
+
+emit_line "# primary_fbmm=${PRIMARY_FBMM_W}x${PRIMARY_FBMM_H} fbmm=${FBMM_W}x${FBMM_H}"
+
 emit_line "# primary=$PRIMARY secondary=$SECONDARY dpi=$DPI scale=$SCALE"
 emit_line "# secondary_logical=${SECONDARY_LOGICAL_W}x${SECONDARY_LOGICAL_H} fb=${FB_W}x${FB_H} secondary_pos=${SECONDARY_X}x${SECONDARY_Y}"
 
@@ -284,7 +296,7 @@ single_layout() {
 	run sleep 0.3
 
 	# Step 3: shrink framebuffer after DP-2 is off.
-	if ! run xrandr --fb "${PRIMARY_W}x${PRIMARY_H}" --dpi "$DPI"; then
+	if ! run xrandr --fb "${PRIMARY_W}x${PRIMARY_H}" --fbmm "${PRIMARY_FBMM_W}x${PRIMARY_FBMM_H}"; then
 		emit_line "# Framebuffer shrink failed; leaving visible primary layout"
 	fi
 
@@ -322,7 +334,7 @@ dual_layout() {
 	# Validation command. In live mode this is actually executed before applying.
 	if ! run xrandr --dryrun \
 		--fb "${FB_W}x${FB_H}" \
-		--dpi "$DPI" \
+		--fbmm "${FBMM_W}x${FBMM_H}" \
 		--output "$PRIMARY" --primary \
 		--mode "$PRIMARY_MODE" \
 		--rate "$PRIMARY_RATE" \
@@ -344,7 +356,7 @@ dual_layout() {
 
 	if ! run xrandr \
 		--fb "${FB_W}x${FB_H}" \
-		--dpi "$DPI" \
+		--fbmm "${FBMM_W}x${FBMM_H}" \
 		--output "$PRIMARY" --primary \
 		--mode "$PRIMARY_MODE" \
 		--rate "$PRIMARY_RATE" \
