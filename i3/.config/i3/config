@@ -238,29 +238,28 @@ mode "resize" {
 exec --no-startup-id xrdb -merge ~/.Xresources
 
 # Monitor layout: HDMI-0 4K primary left, DP-2 1080p right bottom-aligned
+# - applies xrandr layout
+# - restores wallpaper with nitrogen(--force-setter=xinerama)
+# - runs fix_xcursor
+# - starts/restarts polybar
+# - restarts clipit
 exec_always --no-startup-id ~/.config/i3/scripts/monitors.sh auto
 
-# Wallpaper and compositor
-exec --no-startup-id nitrogen --restore
+# compositor
 exec --no-startup-id picom -b
 
 # Applets / input
 exec --no-startup-id nm-applet
 exec --no-startup-id fcitx5 -d
-exec --no-startup-id fix_xcursor
-
-# Clipboard and bar, after monitor layout is applied
-exec_always --no-startup-id $HOME/.config/i3/autostart_clipit.sh
-exec_always --no-startup-id $HOME/.config/polybar/start.sh
 
 # Theme colors
-client.focused #bdc4df #1e1e20 #bdc4df #bdc4df #bdc4df
-client.focused_inactive #bdc4df #1e1e20 #bdc4df #9198c3 #9198c3
-client.unfocused #bdc4df #1e1e20 #bdc4df #9198c3 #9198c3
-client.urgent #bdc4df #1e1e20 #bdc4df #9198c3 #9198c3
-client.placeholder #bdc4df #1e1e20 #bdc4df #9198c3 #9198c3
+client.focused #b0c4bb #2f2f38 #b0c4bb #81a2be #81a2be
+client.focused_inactive #b0c4bb #2f2f38 #b0c4bb #688486 #688486
+client.unfocused #b0c4bb #2f2f38 #b0c4bb #688486 #688486
+client.urgent #b0c4bb #2f2f38 #b0c4bb #688486 #688486
+client.placeholder #b0c4bb #2f2f38 #b0c4bb #688486 #688486
 
-client.background #1e1e20
+client.background #2f2f38
 
 # Gaps
 gaps inner 2

@@ -147,14 +147,20 @@ notify() {
 }
 
 refresh_desktop_bits() {
-	run_bg nitrogen --restore
+	run_bg nitrogen --restore --force-setter=xinerama
 
 	if command -v fix_xcursor >/dev/null 2>&1; then
 		run_bg fix_xcursor
 	fi
 
 	if [ -x "$HOME/.config/polybar/start.sh" ]; then
-		run_bg "$HOME/.config/polybar/start.sh"
+		run_quiet "$HOME/.config/polybar/start.sh"
+	fi
+
+	if command -v clipit >/dev/null 2>&1; then
+		run_quiet killall -q clipit
+		run sleep 1
+		run_bg clipit
 	fi
 }
 
