@@ -383,7 +383,11 @@ dual_layout() {
 	fi
 
 	run_quiet i3-msg \
-		"workspace 6; move workspace to output $SECONDARY; workspace 7; move workspace to output $SECONDARY; workspace 8; move workspace to output $SECONDARY; workspace 1"
+		"workspace 6; move workspace to output $SECONDARY; \
+		 workspace 7; move workspace to output $SECONDARY; \
+		 workspace 8; move workspace to output $SECONDARY; \
+		 workspace 6; \
+		 workspace 1"
 
 	refresh_desktop_bits
 	notify "Dual: $PRIMARY + $SECONDARY, DPI $DPI, scale $SCALE"
