@@ -30,14 +30,13 @@ set -gx XDG_STATE_HOME $HOME/.local/state
 
 set -gx BAT_THEME "Monokai Extended"
 
-if status is-interactive
-    if not pgrep -x ssh-agent >/dev/null
-        eval (ssh-agent -c)
-    end
+if not pgrep -x ssh-agent >/dev/null
+    echo "not running, starting new one"
+    eval "$(ssh-agent -c)"
+end
 
-    if not ssh-add -l >/dev/null 2>&1
-        ssh-add
-    end
+if status is-interactive
+    ssh-add
 end
 
 set --universal nvm_data ~/.nvm
