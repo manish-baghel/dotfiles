@@ -232,7 +232,8 @@ mode "resize" {
         bindsym Escape mode "default"
 }
 
-# Autostart applications
+# Startup setup
+# 1. Monitors config, polybar, clipit
 
 # Load DPI/font/cursor settings first
 exec --no-startup-id xrdb -merge ~/.Xresources
@@ -252,14 +253,29 @@ exec --no-startup-id picom -b
 exec --no-startup-id nm-applet
 exec --no-startup-id fcitx5 -d
 
-# Theme colors
-client.focused #b0c4bb #2f2f38 #b0c4bb #81a2be #81a2be
-client.focused_inactive #b0c4bb #2f2f38 #b0c4bb #688486 #688486
-client.unfocused #b0c4bb #2f2f38 #b0c4bb #688486 #688486
-client.urgent #b0c4bb #2f2f38 #b0c4bb #688486 #688486
-client.placeholder #b0c4bb #2f2f38 #b0c4bb #688486 #688486
+# Auto-connect SRS-XB13 once after login
+exec --no-startup-id ~/.config/i3/scripts/bluetooth-autoconnect.sh start
+### Manual Bluetooth UI
+bindsym $mod+Ctrl+b exec --no-startup-id ~/.config/i3/scripts/bluetooth-autoconnect.sh menu
+### Status notification
+bindsym $mod+Ctrl+Shift+b exec --no-startup-id ~/.config/i3/scripts/bluetooth-autoconnect.sh status
+### Restart auto watcher
+bindsym $mod+Ctrl+Mod1+b exec --no-startup-id ~/.config/i3/scripts/bluetooth-autoconnect.sh restart
+### Stop auto watcher
+bindsym $mod+Ctrl+Shift+Mod1+b exec --no-startup-id ~/.config/i3/scripts/bluetooth-autoconnect.sh stop
 
-client.background #2f2f38
+# other startup applications
+assign [class="discord"] 8
+exec_always --no-startup-id workspace 8;sleep 5; discord;
+
+# Theme colors
+client.focused #d9d6ca #1c1c22 #d9d6ca #5c828d #5c828d
+client.focused_inactive #d9d6ca #1c1c22 #d9d6ca #3e646f #3e646f
+client.unfocused #d9d6ca #1c1c22 #d9d6ca #3e646f #3e646f
+client.urgent #d9d6ca #1c1c22 #d9d6ca #3e646f #3e646f
+client.placeholder #d9d6ca #1c1c22 #d9d6ca #3e646f #3e646f
+
+client.background #1c1c22
 
 # Gaps
 gaps inner 2
