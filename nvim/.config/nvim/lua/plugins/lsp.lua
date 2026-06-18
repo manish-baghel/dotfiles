@@ -329,7 +329,7 @@ return {
 					end
 
 					if client:supports_method(methods.textDocument_codeLens, bufnr) then
-						vim.lsp.codelens.enable(true, { bufnr = bufnr, client_id = client.id })
+						vim.lsp.codelens.enable(true, { bufnr = bufnr })
 					end
 
 					-- Set autocommands conditional on server_capabilities
