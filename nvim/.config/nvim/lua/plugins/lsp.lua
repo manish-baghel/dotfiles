@@ -8,6 +8,7 @@ return {
 				"folke/lazydev.nvim",
 				ft = "lua",
 			},
+			"b0o/schemastore.nvim",
 		},
 		lazy = false,
 		opts = {
@@ -23,22 +24,10 @@ return {
 			},
 
 			servers = {
-				ts_ls = {
-					filetypes = {
-						"javascript",
-						"javascriptreact",
-						"javascript.jsx",
-						"typescript",
-						"typescriptreact",
-						"typescript.tsx",
-					},
-					settings = {
-						typescript = {},
-						javascript = {},
-					},
-				},
+				ts_ls = {},
 				oxfmt = {}, -- JS/TS
 				oxlint = {},
+				jsonls = {},
 				gopls = {
 					settings = {
 						gopls = {
@@ -132,6 +121,11 @@ return {
 			},
 		},
 		config = function(_, opts)
+			if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
+				opts.diagnostics.virtual_text.prefix = "●"
+			end
+			vim.diagnostic.config(vim.deepcopy(opts.diagnostics))
+
 			local has_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
 			local capabilities = vim.tbl_deep_extend(
 				"force",
@@ -139,34 +133,184 @@ return {
 				has_cmp and cmp_nvim_lsp.default_capabilities() or {},
 				opts.capabilities or {}
 			) or {}
-			if capabilities then
-				capabilities.textDocument.completion.completionItem.snippetSupport = true
-			end
-			-- update capabilities of all servers
+			capabilities.textDocument = capabilities.textDocument or {}
+			capabilities.textDocument.completion = capabilities.textDocument.completion or {}
+			capabilities.textDocument.completion.completionItem = capabilities.textDocument.completion.completionItem or {}
+			capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+			vim.lsp.config("*", { capabilities = capabilities })
+
 			local servers = opts.servers
+			servers.jsonls = vim.tbl_deep_extend("force", {
+				settings = {
+					json = {
+						schemas = require("schemastore").json.schemas(),
+						validate = { enable = true },
+					},
+				},
+			}, servers.jsonls or {})
+
 			for server, server_opts in pairs(servers) do
-				local server_opts_with_capabilities =
-					vim.tbl_deep_extend("force", { capabilities = vim.deepcopy(capabilities) }, server_opts)
-				vim.lsp.config(server, server_opts_with_capabilities)
+				vim.lsp.config(server, server_opts)
 				vim.lsp.enable(server)
 			end
 
-			if type(opts.diagnostics.virtual_text) == "table" and opts.diagnostics.virtual_text.prefix == "icons" then
-				opts.diagnostics.virtual_text.prefix = vim.fn.has("nvim-0.10.0") == 0 and "●"
-					or function(diagnostic)
-						local icons = require("lazyvim.config").icons.diagnostics
-						for d, icon in pairs(icons) do
-							if diagnostic.severity == vim.diagnostic.severity[d:upper()] then
-								return icon
+			local methods = vim.lsp.protocol.Methods
+			vim.g.diagnostics_active = vim.diagnostic.is_enabled()
+			function _G.Toggle_diagnostics()
+				local enabled = not vim.diagnostic.is_enabled()
+				vim.diagnostic.enable(enabled)
+				vim.g.diagnostics_active = enabled
+			end
+
+			local function symbol_range_at_cursor(bufnr)
+				local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+				row = row - 1
+
+				local line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, false)[1] or ""
+				local function is_symbol_char(char)
+					return char:match("[%w_]") ~= nil
+				end
+
+				local start_col = col
+				while start_col > 0 and is_symbol_char(line:sub(start_col, start_col)) do
+					start_col = start_col - 1
+				end
+
+				local end_col = col
+				while end_col < #line and is_symbol_char(line:sub(end_col + 1, end_col + 1)) do
+					end_col = end_col + 1
+				end
+
+				return row, col, start_col, end_col
+			end
+
+			local function get_inlay_hint_at_cursor(bufnr)
+				local row, col, start_col, end_col = symbol_range_at_cursor(bufnr)
+				local hints = vim.lsp.inlay_hint.get({
+					bufnr = bufnr,
+					range = {
+						start = { line = row, character = start_col },
+						["end"] = { line = row, character = end_col },
+					},
+				})
+
+				if #hints == 0 then
+					return
+				end
+
+				table.sort(hints, function(a, b)
+					return math.abs(a.inlay_hint.position.character - col)
+						< math.abs(b.inlay_hint.position.character - col)
+				end)
+
+				return hints[1]
+			end
+
+			local function extend_markdown(contents, input)
+				if not input then
+					return
+				end
+
+				local ok = pcall(vim.lsp.util.convert_input_to_markdown_lines, input, contents)
+				if not ok and type(input) == "string" then
+					vim.list_extend(contents, vim.split(input, "\n", { plain = true }))
+				end
+			end
+
+			local function inlay_hint_tooltip_lines(hint)
+				local contents = {}
+				extend_markdown(contents, hint.tooltip)
+				if #contents > 0 then
+					return contents
+				end
+
+				if type(hint.label) == "table" then
+					for _, part in ipairs(hint.label) do
+						if part.tooltip then
+							if #contents > 0 then
+								table.insert(contents, "")
 							end
+							extend_markdown(contents, part.tooltip)
 						end
 					end
+				end
+
+				return contents
 			end
-			vim.diagnostic.config(vim.deepcopy(opts.diagnostic))
+
+			local function first_inlay_hint_location(hint)
+				if type(hint.label) ~= "table" then
+					return
+				end
+
+				for _, part in ipairs(hint.label) do
+					if part.location then
+						return part.location
+					end
+				end
+			end
+
+			local function show_inlay_hint_hover()
+				local bufnr = vim.api.nvim_get_current_buf()
+				local hint_item = get_inlay_hint_at_cursor(bufnr)
+				if not hint_item then
+					return false
+				end
+
+				local client = vim.lsp.get_client_by_id(hint_item.client_id)
+				if not client then
+					return false
+				end
+
+				local hint = vim.deepcopy(hint_item.inlay_hint)
+				if client:supports_method(methods.inlayHint_resolve, bufnr) then
+					local response = client:request_sync(methods.inlayHint_resolve, hint, 500, bufnr)
+					if response and not response.err and response.result then
+						hint = response.result
+					end
+				end
+
+				local contents = inlay_hint_tooltip_lines(hint)
+				if #contents > 0 then
+					vim.lsp.util.open_floating_preview(contents, "markdown", {
+						border = "rounded",
+						focus_id = "inlay_hint_hover",
+					})
+					return true
+				end
+
+				local location = first_inlay_hint_location(hint)
+				if not location then
+					return false
+				end
+
+				local response = client:request_sync(methods.textDocument_hover, {
+					textDocument = { uri = location.uri },
+					position = location.range.start,
+				}, 500, bufnr)
+
+				if not (response and not response.err and response.result and response.result.contents) then
+					return false
+				end
+
+				contents = {}
+				extend_markdown(contents, response.result.contents)
+				if #contents == 0 then
+					return false
+				end
+
+				vim.lsp.util.open_floating_preview(contents, "markdown", {
+					border = "rounded",
+					focus_id = "inlay_hint_hover",
+				})
+				return true
+			end
 
 			-- Use LspAttach autocommand to only map the following keys
 			-- after the language server attaches to the current buffer
-			local userLspGroup = vim.api.nvim_create_augroup("UserLspConfig", {})
+			local userLspGroup = vim.api.nvim_create_augroup("UserLspConfig", { clear = true })
+			local documentHighlightGroup = vim.api.nvim_create_augroup("UserLspDocumentHighlight", { clear = false })
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = userLspGroup,
 				callback = function(ev)
@@ -180,51 +324,35 @@ return {
 						return
 					end
 
-					if client.server_capabilities.completionProvider then
-						vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
+					if client:supports_method(methods.textDocument_inlayHint, bufnr) then
+						vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
 					end
-					if client.server_capabilities.definitionProvider then
-						vim.bo[bufnr].tagfunc = "v:lua.vim.lsp.tagfunc"
+
+					if client:supports_method(methods.textDocument_codeLens, bufnr) then
+						vim.lsp.codelens.enable(true, { bufnr = bufnr, client_id = client.id })
 					end
+
 					-- Set autocommands conditional on server_capabilities
-					if client.server_capabilities.documentHighlightProvider then
-						local group = vim.api.nvim_create_augroup("LSPDocumentHighlight", {})
+					if client:supports_method(methods.textDocument_documentHighlight, bufnr) then
+						vim.api.nvim_clear_autocmds({ group = documentHighlightGroup, buffer = bufnr })
 
 						vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
 							buffer = bufnr,
-							group = group,
+							group = documentHighlightGroup,
 							callback = vim.lsp.buf.document_highlight,
 						})
 
-						vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+						vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "BufLeave" }, {
 							buffer = bufnr,
-							group = group,
+							group = documentHighlightGroup,
 							callback = vim.lsp.buf.clear_references,
 						})
 					end
-					-- missing semantic tokens support for gopls
-					if client.name == "gopls" and not client.server_capabilities.semanticTokensProvider then
-						local semantic = client.config.capabilities.textDocument.semanticTokens
-						client.server_capabilities.semanticTokensProvider = {
-							full = true,
-							legend = {
-								tokenModifiers = semantic.tokenModifiers,
-								tokenTypes = semantic.tokenTypes,
-							},
-							range = true,
-						}
-					end
 
-					vim.g["diagnostics_active"] = true
-					function Toggle_diagnostics()
-						if vim.g.diagnostics_active then
-							vim.g.diagnostics_active = false
-							vim.diagnostic.enable(false)
-						else
-							vim.g.diagnostics_active = true
-							vim.diagnostic.enable()
-						end
+					if vim.b[bufnr].user_lsp_keymaps_set then
+						return
 					end
+					vim.b[bufnr].user_lsp_keymaps_set = true
 
 					local function filterDuplicates(array)
 						local uniqueArray = {}
@@ -275,7 +403,11 @@ return {
 						vim.lsp.buf.definition({ on_list = on_list })
 					end, keymap_opts)
 					vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, keymap_opts)
-					vim.keymap.set("n", "K", vim.lsp.buf.hover, keymap_opts)
+					vim.keymap.set("n", "K", function()
+						if not show_inlay_hint_hover() then
+							vim.lsp.buf.hover()
+						end
+					end, keymap_opts)
 					vim.keymap.set({ "n", "v" }, "ga", vim.lsp.buf.code_action, keymap_opts)
 					vim.keymap.set("n", "gi", vim.lsp.buf.implementation, keymap_opts)
 					vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, keymap_opts)
@@ -283,8 +415,12 @@ return {
 					vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, keymap_opts)
 
 					-- Diagnostic keymaps
-					vim.keymap.set("n", "[d", vim.diagnostic.get_prev, { desc = "Go to previous diagnostic message" })
-					vim.keymap.set("n", "]d", vim.diagnostic.get_next, { desc = "Go to next diagnostic message" })
+					vim.keymap.set("n", "[d", function()
+						vim.diagnostic.jump({ count = -1, float = true })
+					end, { desc = "Go to previous diagnostic message" })
+					vim.keymap.set("n", "]d", function()
+						vim.diagnostic.jump({ count = 1, float = true })
+					end, { desc = "Go to next diagnostic message" })
 					vim.keymap.set(
 						"n",
 						"<space>e",

@@ -5,8 +5,7 @@ AUTO_DEVICE_NAME="SRS-XB13"
 
 # Leave empty for normal bluetoothctl behavior.
 # If generic connect still causes profile weirdness, try:
-# CONNECT_PROFILE="a2dp-sink"
-CONNECT_PROFILE=""
+CONNECT_PROFILE="a2dp-sink"
 
 INTERVAL=2
 STARTUP_GRACE_SECONDS=2
