@@ -14,9 +14,11 @@ set -gx TERMINAL /usr/bin/ghostty
 set -gx EDITOR /usr/bin/nvim
 
 set -gx ANDROID_HOME $HOME/Android/Sdk
+set -gx ANDROID_SDK_ROOT ''
 fish_add_path $ANDROID_HOME/emulator
 fish_add_path $ANDROID_HOME/platform-tools
 fish_add_path /usr/bin
+fish_add_path $HOME/.nebius/bin
 
 set -gx OLLAMA_MODELS /home/manish/Desktop/ollama-models
 set -gx OLLAMA_FLASH_ATTENTION 1

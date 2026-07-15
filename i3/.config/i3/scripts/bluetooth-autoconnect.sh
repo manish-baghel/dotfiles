@@ -1,149 +1,106 @@
 #!/usr/bin/env bash
-set -u
+set -uo pipefail
 
 AUTO_DEVICE_NAME="SRS-XB13"
-
-# Leave empty for normal bluetoothctl behavior.
-# If generic connect still causes profile weirdness, try:
 CONNECT_PROFILE="a2dp-sink"
 
-INTERVAL=2
-STARTUP_GRACE_SECONDS=2
-
-CONNECT_TIMEOUT=6
-CONNECT_RETRY_SECONDS=3
-CONNECT_RETRY_SLOW_SECONDS=10
-SLOW_AFTER_FAILURES=4
-
+RETRY_SECONDS=5
+BT_QUERY_TIMEOUT=2
+CONNECT_TIMEOUT=8
+PAIR_TIMEOUT=30
 SCAN_SECONDS=5
-UNKNOWN_TARGET_SCAN_INTERVAL=30
-
-PACTL_TIMEOUT=2
 
 STATE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/i3-bluetooth"
 PIDFILE="$STATE_DIR/autoconnect.pid"
 LOCKFILE="$STATE_DIR/autoconnect.lock"
-LOG="$STATE_DIR/autoconnect.log"
 STATE_FILE="$STATE_DIR/autoconnect.state"
+LOG="$STATE_DIR/autoconnect.log"
 
-SELF="$(readlink -f "$0" 2>/dev/null || realpath "$0" 2>/dev/null || printf '%s\n' "$0")"
+SELF="$(readlink -f -- "$0" 2>/dev/null || printf '%s\n' "$0")"
+
+# Polybar colours.
+COLOR_CONNECTED="#9ece6a"
+COLOR_WAITING="#e0af68"
+COLOR_DISCONNECTED="#f7768e"
+COLOR_MUTED="#737aa2"
+
+COLOR_BATTERY_LOW="#ff9e64"
+COLOR_BATTERY_MID="#e0af68"
+COLOR_BATTERY_HIGH="#9ece6a"
+
+# Font Awesome / Nerd Font glyphs.
+ICON_BLUETOOTH=""
+ICON_BATTERY_FULL=""
+ICON_BATTERY_75=""
+ICON_BATTERY_50=""
+ICON_BATTERY_25=""
+ICON_BATTERY_EMPTY=""
 
 mkdir -p "$STATE_DIR"
 
-LOG_MAX_BYTES=$((5 * 1024 * 1024))
-
-rotate_log_if_needed() {
-	[ -f "$LOG" ] || return 0
-
-	local size
-	size="$(wc -c <"$LOG" 2>/dev/null || printf '0')"
-
-	if [ "$size" -gt "$LOG_MAX_BYTES" ]; then
-		mv "$LOG" "${LOG}.$(date '+%Y%m%d-%H%M%S')" 2>/dev/null || true
-		: >"$LOG"
-	fi
-}
-
 log() {
-	rotate_log_if_needed
-	printf '[%s] [pid:%s] %s\n' "$(date '+%F %T.%3N')" "$$" "$*" >>"$LOG"
-}
-
-log_section() {
-	log "========== $* =========="
-}
-
-log_multiline() {
-	local prefix="$1"
-	local text="${2:-}"
-
-	if [ -z "$text" ]; then
-		log "$prefix | <no output>"
-		return 0
-	fi
-
-	while IFS= read -r line; do
-		log "$prefix | $line"
-	done <<<"$text"
-}
-
-run_logged() {
-	local label="$1"
-	shift
-
-	local start end rc out
-	start="$(date +%s%3N)"
-
-	log "CMD[$label] start: $(printf '%q ' "$@")"
-
-	out="$("$@" 2>&1)"
-	rc=$?
-
-	end="$(date +%s%3N)"
-
-	log "CMD[$label] exit=$rc duration_ms=$((end - start))"
-	log_multiline "CMD[$label]" "$out"
-
-	printf '%s\n' "$out"
-	return "$rc"
-}
-
-run_logged_timeout() {
-	local seconds="$1"
-	local label="$2"
-	shift 2
-
-	if command -v timeout >/dev/null 2>&1; then
-		run_logged "$label" timeout "$seconds" "$@"
-	else
-		run_logged "$label" "$@"
-	fi
+	printf '[%s] [pid:%s] %s\n' \
+		"$(date '+%F %T')" \
+		"$$" \
+		"$*" >>"$LOG"
 }
 
 notify() {
 	notify-send "Bluetooth" "$1" >/dev/null 2>&1 || true
 }
 
-bt() {
-	bluetoothctl -- "$@"
-}
-
-now_epoch() {
-	date +%s
-}
-
 write_state() {
-	local new_state="$*"
-	local old_state=""
-
-	if [ -r "$STATE_FILE" ]; then
-		old_state="$(cat "$STATE_FILE" 2>/dev/null || true)"
-	fi
-
-	printf '%s\n' "$new_state" >"$STATE_FILE"
-
-	if [ "$new_state" != "$old_state" ]; then
-		log "STATE: ${old_state:-<none>} -> $new_state"
-	fi
+	printf '%s\n' "$1" >"$STATE_FILE"
 }
 
 read_state() {
 	if [ -r "$STATE_FILE" ]; then
 		cat "$STATE_FILE"
+	else
+		printf 'stopped\n'
 	fi
+}
+
+# Quiet Bluetooth reads used by Polybar and the watcher.
+# Any stuck bluetoothctl process is killed after BT_QUERY_TIMEOUT.
+bt_read() {
+	timeout "$BT_QUERY_TIMEOUT" bluetoothctl "$@" 2>/dev/null || true
+}
+
+# Logged Bluetooth mutations such as connect, pair, trust, and disconnect.
+bt_run() {
+	local seconds="$1"
+	local label="$2"
+	shift 2
+
+	local output rc
+
+	log "CMD[$label]: bluetoothctl $(printf '%q ' "$@")"
+
+	output="$(timeout "$seconds" bluetoothctl "$@" 2>&1)"
+	rc=$?
+
+	if [ -n "$output" ]; then
+		while IFS= read -r line; do
+			log "CMD[$label] | $line"
+		done <<<"$output"
+	fi
+
+	log "CMD[$label] exit=$rc"
+	return "$rc"
 }
 
 get_mac_by_name() {
 	local wanted="$1"
 
-	bt devices 2>/dev/null |
+	bt_read devices |
 		awk -v wanted="$wanted" '
 			$1 == "Device" {
 				mac = $2
 				name = $0
-				sub(/^Device[[:space:]]+[0-9A-Fa-f:]+[[:space:]]+/, "", name)
+				sub(/^Device[[:space:]]+[^[:space:]]+[[:space:]]+/, "", name)
 
-				if (name == wanted || index(name, wanted)) {
+				if (name == wanted) {
 					print mac
 					exit
 				}
@@ -151,120 +108,88 @@ get_mac_by_name() {
 		'
 }
 
-device_name_for_mac() {
-	local mac="$1"
+device_info() {
+	local mac="${1:-}"
 
-	bt devices 2>/dev/null |
-		awk -v mac="$mac" '
-			$1 == "Device" && $2 == mac {
-				name = $0
-				sub(/^Device[[:space:]]+[0-9A-Fa-f:]+[[:space:]]+/, "", name)
-				print name
-				exit
+	[ -n "$mac" ] || return 0
+	bt_read info "$mac"
+}
+
+# Parse one property from a captured `bluetoothctl info` result.
+#
+# bluetoothctl indents properties:
+#
+#         Paired: yes
+#         Battery Percentage: 0x46 (70)
+#
+# We trim the key and value before comparing.
+info_value() {
+	local info="$1"
+	local wanted="$2"
+
+	printf '%s\n' "$info" |
+		awk -v wanted="$wanted" '
+			{
+				colon = index($0, ":")
+				if (colon == 0) {
+					next
+				}
+
+				key = substr($0, 1, colon - 1)
+				value = substr($0, colon + 1)
+
+				sub(/^[[:space:]]+/, "", key)
+				sub(/[[:space:]]+$/, "", key)
+
+				sub(/^[[:space:]]+/, "", value)
+				sub(/[[:space:]]+$/, "", value)
+
+				if (key == wanted) {
+					print value
+					exit
+				}
 			}
 		'
 }
 
-adapter_powered() {
-	bt show 2>/dev/null |
-		awk -F': ' '/Powered:/ { print $2; exit }'
+battery_percent() {
+	local info="$1"
+	local raw hex
+
+	raw="$(info_value "$info" "Battery Percentage")"
+
+	if [[ "$raw" =~ \(([0-9]{1,3})\) ]]; then
+		printf '%s\n' "${BASH_REMATCH[1]}"
+	elif [[ "$raw" =~ ^([0-9]{1,3})%?$ ]]; then
+		printf '%s\n' "${BASH_REMATCH[1]}"
+	elif [[ "$raw" =~ ^0x([0-9A-Fa-f]+) ]]; then
+		hex="${BASH_REMATCH[1]}"
+		printf '%d\n' "$((16#$hex))"
+	fi
+}
+
+controller_powered() {
+	info_value "$(bt_read show)" "Powered"
 }
 
 ensure_power_on() {
-	local powered
-	powered="$(adapter_powered)"
+	[ "$(controller_powered)" = "yes" ] && return 0
 
-	if [ "$powered" = "yes" ]; then
-		return 0
-	fi
-
-	run_logged "power-on" bluetoothctl -- power on >/dev/null || true
+	bt_run "$BT_QUERY_TIMEOUT" power-on power on || true
 }
 
-device_prop() {
-	local mac="${1:-}"
-	local prop="${2:-}"
-
-	[ -n "$mac" ] || return 0
-	[ -n "$prop" ] || return 0
-
-	bt info "$mac" 2>/dev/null |
-		awk -F': ' -v prop="$prop" '$1 == prop { print $2; exit }'
+is_connected_info() {
+	[ "$(info_value "$1" "Connected")" = "yes" ]
 }
 
-is_connected() {
-	local mac="${1:-}"
+ensure_trusted() {
+	local mac="$1"
+	local info="$2"
 
-	[ -n "$mac" ] || return 1
+	[ "$(info_value "$info" "Trusted")" = "yes" ] && return 0
+	[ "$(info_value "$info" "Paired")" = "yes" ] || return 1
 
-	bt info "$mac" 2>/dev/null |
-		grep -q "Connected: yes"
-}
-
-connected_text() {
-	local mac="${1:-}"
-
-	if [ -z "$mac" ]; then
-		printf 'unknown'
-		return
-	fi
-
-	bt info "$mac" 2>/dev/null |
-		awk -F': ' '/Connected:/ { print $2; exit }'
-}
-
-is_trusted() {
-	local mac="${1:-}"
-
-	[ -n "$mac" ] || return 1
-
-	bt info "$mac" 2>/dev/null |
-		grep -q "Trusted: yes"
-}
-
-is_paired() {
-	local mac="${1:-}"
-
-	[ -n "$mac" ] || return 1
-
-	bt info "$mac" 2>/dev/null |
-		grep -q "Paired: yes"
-}
-
-audio_sink_status() {
-	local mac="${1:-}"
-	local sink_mac out rc
-
-	[ -n "$mac" ] || {
-		printf 'no'
-		return
-	}
-
-	if ! command -v pactl >/dev/null 2>&1; then
-		printf 'unknown'
-		return
-	fi
-
-	sink_mac="${mac//:/_}"
-
-	if command -v timeout >/dev/null 2>&1; then
-		out="$(timeout "$PACTL_TIMEOUT" pactl list short sinks 2>/dev/null)"
-		rc=$?
-	else
-		out="$(pactl list short sinks 2>/dev/null)"
-		rc=$?
-	fi
-
-	if [ "$rc" -ne 0 ]; then
-		printf 'unknown'
-		return
-	fi
-
-	if printf '%s\n' "$out" | grep -Fq "bluez_sink.${sink_mac}"; then
-		printf 'yes'
-	else
-		printf 'no'
-	fi
+	bt_run "$BT_QUERY_TIMEOUT" "trust-$mac" trust "$mac"
 }
 
 watcher_running() {
@@ -281,194 +206,101 @@ watcher_running() {
 	return 1
 }
 
-watcher_pid() {
-	if watcher_running; then
-		cat "$PIDFILE"
-	fi
-}
-
-snapshot_adapter() {
-	log_section "adapter snapshot"
-
-	run_logged "bluetoothctl-show" bluetoothctl -- show >/dev/null || true
-
-	if command -v rfkill >/dev/null 2>&1; then
-		run_logged "rfkill-bluetooth" rfkill list bluetooth >/dev/null || true
-	fi
-
-	if command -v systemctl >/dev/null 2>&1; then
-		run_logged "systemctl-bluetooth-active" systemctl is-active bluetooth >/dev/null || true
-	fi
-}
-
-snapshot_device() {
-	local mac="${1:-}"
-
-	log_section "device snapshot: ${mac:-<no-mac>}"
-
-	run_logged "bluetoothctl-devices" bluetoothctl -- devices >/dev/null || true
-
-	if [ -n "$mac" ]; then
-		run_logged "bluetoothctl-info-$mac" bluetoothctl -- info "$mac" >/dev/null || true
-	fi
-
-	run_logged "bluetoothctl-devices-connected" bluetoothctl -- devices Connected >/dev/null || true
-	run_logged "bluetoothctl-devices-paired" bluetoothctl -- devices Paired >/dev/null || true
-	run_logged "bluetoothctl-devices-trusted" bluetoothctl -- devices Trusted >/dev/null || true
-
-	if command -v pactl >/dev/null 2>&1; then
-		run_logged "pactl-sinks-short" pactl list short sinks >/dev/null || true
-		run_logged "pactl-cards-short" pactl list short cards >/dev/null || true
-	fi
-}
-
-debug_snapshot() {
-	local mac
-
-	mac="$(get_mac_by_name "$AUTO_DEVICE_NAME")"
-
-	log_section "manual debug snapshot"
-	snapshot_adapter
-	snapshot_device "$mac"
-
-	if command -v journalctl >/dev/null 2>&1; then
-		run_logged "journalctl-bluetooth" journalctl -u bluetooth -n 120 --no-pager >/dev/null || true
-	fi
-
-	notify "Bluetooth debug snapshot written to $LOG"
-}
-
-ensure_target_trusted_once() {
+connect_device() {
 	local mac="$1"
-	local label="${2:-auto}"
+	local source="${2:-auto}"
+	local info name
 
-	[ -n "$mac" ] || return 1
-
-	if is_trusted "$mac"; then
-		return 0
-	fi
-
-	if ! is_paired "$mac"; then
-		log "$label trust skipped: $mac is not paired."
-		return 1
-	fi
-
-	log_section "$label trust once: $mac"
-
-	if run_logged "$label-trust-$mac" bluetoothctl -- trust "$mac" >/dev/null; then
-		sleep 1
-		if is_trusted "$mac"; then
-			log "$label trust result: SUCCESS $mac"
-			return 0
-		fi
-	fi
-
-	log "$label trust result: FAILED $mac"
-	return 1
-}
-
-connect_attempt() {
-	local mac="$1"
-	local mode="${2:-auto}"
-	local name
-
-	[ -n "$mac" ] || return 1
-
-	name="$(device_name_for_mac "$mac")"
+	info="$(device_info "$mac")"
+	name="$(info_value "$info" "Name")"
 	[ -n "$name" ] || name="$mac"
 
-	if is_connected "$mac"; then
-		write_state "connected"
-		log "$mode connect skipped: already Connected=yes $name <$mac>"
+	if is_connected_info "$info"; then
+		write_state connected
 		return 0
 	fi
 
-	log_section "$mode connect attempt: $name <$mac>"
-	write_state "connecting"
-
 	ensure_power_on
+	ensure_trusted "$mac" "$info" || true
 
-	# Trust once if needed. This prevents interactive A2DP authorization prompts.
-	ensure_target_trusted_once "$mac" "$mode" || true
+	write_state connecting
 
 	if [ -n "$CONNECT_PROFILE" ]; then
-		run_logged_timeout "$CONNECT_TIMEOUT" "$mode-connect-$mac-$CONNECT_PROFILE" \
-			bluetoothctl -- connect "$mac" "$CONNECT_PROFILE" >/dev/null || true
+		bt_run \
+			"$CONNECT_TIMEOUT" \
+			"$source-connect-$mac" \
+			connect "$mac" "$CONNECT_PROFILE" ||
+			true
 	else
-		run_logged_timeout "$CONNECT_TIMEOUT" "$mode-connect-$mac" \
-			bluetoothctl -- connect "$mac" >/dev/null || true
+		bt_run \
+			"$CONNECT_TIMEOUT" \
+			"$source-connect-$mac" \
+			connect "$mac" ||
+			true
 	fi
 
+	# BlueZ normally updates Connected immediately. Give it one second
+	# before reading the final state.
 	sleep 1
 
-	if is_connected "$mac"; then
-		write_state "connected"
-		log "$mode connect result: SUCCESS $name <$mac>"
+	info="$(device_info "$mac")"
+
+	if is_connected_info "$info"; then
+		write_state connected
+		log "$source connection succeeded: $name <$mac>"
 		notify "Connected to $name"
 		return 0
 	fi
 
-	log "$mode connect result: FAILED $name <$mac>"
+	write_state waiting
+	log "$source connection failed: $name <$mac>"
 	return 1
 }
 
 start_watcher() {
 	if watcher_running; then
-		notify "Auto watcher already running. PID: $(watcher_pid)"
+		notify "Auto-connect watcher is already running"
 		return 0
 	fi
 
-	local mac
-	mac="$(get_mac_by_name "$AUTO_DEVICE_NAME")"
-
-	if [ -n "$mac" ]; then
-		ensure_target_trusted_once "$mac" start || true
-
-		if is_connected "$mac"; then
-			write_state "connected"
-			log "Start skipped: $AUTO_DEVICE_NAME already Connected=yes at $mac."
-			return 0
-		fi
-	fi
-
+	# Do not query Bluetooth here. Starting must always be immediate and
+	# non-blocking, even when bluetoothd is still initializing.
 	nohup "$SELF" watch >/dev/null 2>&1 &
-	notify "Auto watcher started for $AUTO_DEVICE_NAME"
+
+	notify "Auto-connect watcher started for $AUTO_DEVICE_NAME"
 }
 
 stop_watcher() {
 	local silent="${1:-0}"
+	local pid
 
 	if ! watcher_running; then
 		rm -f "$PIDFILE"
-		case "$(read_state)" in
-		connected) ;;
-		*) write_state "stopped" ;;
-		esac
+		write_state stopped
 
-		if [ "$silent" != "1" ]; then
-			notify "Auto watcher is not running"
-		fi
+		[ "$silent" = "1" ] ||
+			notify "Auto-connect watcher is not running"
 
 		return 0
 	fi
 
-	local pid
 	pid="$(cat "$PIDFILE")"
 
 	kill "$pid" 2>/dev/null || true
-	sleep 0.2
 
-	if kill -0 "$pid" 2>/dev/null; then
-		kill -9 "$pid" 2>/dev/null || true
-	fi
+	for _ in 1 2 3 4 5; do
+		kill -0 "$pid" 2>/dev/null || break
+		sleep 0.1
+	done
+
+	kill -9 "$pid" 2>/dev/null || true
 
 	rm -f "$PIDFILE"
-	write_state "stopped"
-	log "Watcher stopped by user."
+	write_state stopped
+	log "Watcher stopped"
 
-	if [ "$silent" != "1" ]; then
-		notify "Auto watcher stopped"
-	fi
+	[ "$silent" = "1" ] ||
+		notify "Auto-connect watcher stopped"
 }
 
 restart_watcher() {
@@ -476,298 +308,299 @@ restart_watcher() {
 	start_watcher
 }
 
-scan_devices_once() {
-	log_section "scan once for ${SCAN_SECONDS}s"
-
-	local out rc start end
-	start="$(date +%s%3N)"
-
-	out="$(
-		{
-			printf 'scan on\n'
-			sleep "$SCAN_SECONDS"
-			printf 'scan off\n'
-			printf 'quit\n'
-		} | bluetoothctl 2>&1
-	)"
-	rc=$?
-	end="$(date +%s%3N)"
-
-	log "SCAN exit=$rc duration_ms=$((end - start))"
-	log_multiline "SCAN" "$out"
-	return "$rc"
-}
-
 watch_loop() {
 	exec 9>"$LOCKFILE"
 
 	if ! flock -n 9; then
-		log "Watcher already running. Exiting duplicate."
+		log "Another watcher already holds the lock"
 		exit 0
 	fi
 
 	echo "$$" >"$PIDFILE"
+	write_state waiting
+	log "Watcher started: target=$AUTO_DEVICE_NAME"
 
 	cleanup() {
 		rm -f "$PIDFILE"
-		case "$(read_state)" in
-		connected) ;;
-		*) write_state "stopped" ;;
-		esac
-		log "Watcher exited."
+
+		[ "$(read_state)" = "connected" ] ||
+			write_state stopped
+
+		log "Watcher exited"
 	}
 
 	trap cleanup EXIT
 	trap 'exit 0' INT TERM
 
-	log_section "watcher started: target=$AUTO_DEVICE_NAME"
-	write_state "starting"
-
-	if [ "$STARTUP_GRACE_SECONDS" -gt 0 ]; then
-		write_state "startup-grace-${STARTUP_GRACE_SECONDS}s"
-		sleep "$STARTUP_GRACE_SECONDS"
-	fi
-
-	local mac last_attempt=0 failures=0 retry_after now last_unknown_scan=0 rc
-
 	while true; do
-		now="$(now_epoch)"
-		mac="$(get_mac_by_name "$AUTO_DEVICE_NAME")"
+		local mac info
 
 		ensure_power_on
+		mac="$(get_mac_by_name "$AUTO_DEVICE_NAME")"
 
 		if [ -z "$mac" ]; then
-			write_state "target-unknown"
-			log "Target not known in bluetoothctl devices: $AUTO_DEVICE_NAME"
-
-			if [ $((now - last_unknown_scan)) -ge "$UNKNOWN_TARGET_SCAN_INTERVAL" ]; then
-				scan_devices_once || true
-				last_unknown_scan="$(now_epoch)"
-			fi
-
-			sleep "$INTERVAL"
+			write_state target-unknown
+			sleep "$RETRY_SECONDS"
 			continue
 		fi
 
-		ensure_target_trusted_once "$mac" auto || true
+		info="$(device_info "$mac")"
 
-		if is_connected "$mac"; then
-			write_state "connected"
-			log "$AUTO_DEVICE_NAME already Connected=yes at $mac. Exiting watcher."
+		if is_connected_info "$info"; then
+			write_state connected
+			log "$AUTO_DEVICE_NAME is connected; watcher exiting"
 			notify "$AUTO_DEVICE_NAME connected"
 			exit 0
 		fi
 
-		if [ "$failures" -ge "$SLOW_AFTER_FAILURES" ]; then
-			retry_after="$CONNECT_RETRY_SLOW_SECONDS"
-		else
-			retry_after="$CONNECT_RETRY_SECONDS"
-		fi
+		connect_device "$mac" auto && exit 0
 
-		if [ "$last_attempt" -ne 0 ] && [ $((now - last_attempt)) -lt "$retry_after" ]; then
-			write_state "retry-in-$((retry_after - (now - last_attempt)))s"
-			sleep "$INTERVAL"
-			continue
-		fi
-
-		last_attempt="$(now_epoch)"
-
-		connect_attempt "$mac" auto
-		rc=$?
-
-		if [ "$rc" -eq 0 ]; then
-			log "Auto watcher connected successfully. Exiting."
-			exit 0
-		fi
-
-		failures=$((failures + 1))
-		log "Auto attempt failed. failure_count=$failures retry_after=${retry_after}s"
-
-		sleep "$INTERVAL"
+		sleep "$RETRY_SECONDS"
 	done
 }
 
-connect_mac() {
-	local mac="$1"
+scan_once() {
+	ensure_power_on
+	notify "Scanning for Bluetooth devices…"
 
-	stop_watcher 1
-	connect_attempt "$mac" manual
+	{
+		printf 'scan on\n'
+		sleep "$SCAN_SECONDS"
+		printf 'scan off\n'
+		printf 'quit\n'
+	} |
+		timeout "$((SCAN_SECONDS + 3))" bluetoothctl \
+			>>"$LOG" 2>&1 ||
+		true
+
+	notify "Bluetooth scan finished"
 }
 
-disconnect_mac() {
-	local mac="$1"
-	local name
+battery_icon() {
+	local percent="$1"
 
-	name="$(device_name_for_mac "$mac")"
-	[ -n "$name" ] || name="$mac"
-
-	stop_watcher 1
-
-	log_section "manual disconnect: $name <$mac>"
-	run_logged "manual-disconnect-$mac" bluetoothctl -- disconnect "$mac" >/dev/null || true
-	sleep 1
-
-	if is_connected "$mac"; then
-		log "Manual disconnect result: STILL CONNECTED $name <$mac>"
-		notify "Still connected to $name"
-		return 1
+	if ((percent <= 10)); then
+		printf '%s' "$ICON_BATTERY_EMPTY"
+	elif ((percent <= 30)); then
+		printf '%s' "$ICON_BATTERY_25"
+	elif ((percent <= 60)); then
+		printf '%s' "$ICON_BATTERY_50"
+	elif ((percent <= 85)); then
+		printf '%s' "$ICON_BATTERY_75"
+	else
+		printf '%s' "$ICON_BATTERY_FULL"
 	fi
+}
 
-	write_state "stopped"
-	log "Manual disconnect result: DISCONNECTED $name <$mac>"
-	notify "Disconnected $name"
+battery_color() {
+	local percent="$1"
+
+	if ((percent <= 20)); then
+		printf '%s' "$COLOR_BATTERY_LOW"
+	elif ((percent <= 60)); then
+		printf '%s' "$COLOR_BATTERY_MID"
+	else
+		printf '%s' "$COLOR_BATTERY_HIGH"
+	fi
+}
+
+battery_markup() {
+	local percent="$1"
+	local icon color
+
+	[ -n "$percent" ] || return 0
+
+	icon="$(battery_icon "$percent")"
+	color="$(battery_color "$percent")"
+
+	# The first "%" is the battery percentage symbol.
+	# The second "%" begins Polybar's %{F-} colour reset tag.
+	printf '%s' "%{F${color}}${icon} ${percent}%%{F-}"
 }
 
 status_notify() {
-	local mac connected powered watcher state paired trusted services_resolved name battery sink_status
+	local mac info name battery battery_label watcher
 
 	mac="$(get_mac_by_name "$AUTO_DEVICE_NAME")"
-	name="$AUTO_DEVICE_NAME"
-	powered="$(adapter_powered)"
-	state="$(read_state)"
-	watcher="stopped"
 
-	if watcher_running; then
-		watcher="running, PID $(watcher_pid)"
-	fi
+	watcher=stopped
+	watcher_running && watcher=running
 
 	if [ -z "$mac" ]; then
-		notify "Target: $name
+		notify "Target: $AUTO_DEVICE_NAME
 MAC: not found
-Adapter powered: ${powered:-unknown}
-Connected: unknown
 Watcher: $watcher
-State: ${state:-unknown}"
+State: $(read_state)"
+
 		return 0
 	fi
 
-	connected="$(connected_text "$mac")"
-	paired="$(device_prop "$mac" Paired)"
-	trusted="$(device_prop "$mac" Trusted)"
-	services_resolved="$(device_prop "$mac" ServicesResolved)"
-	battery="$(device_prop "$mac" "Battery Percentage")"
-	sink_status="$(audio_sink_status "$mac")"
+	info="$(device_info "$mac")"
+	name="$(info_value "$info" "Name")"
+	battery="$(battery_percent "$info")"
 
-	notify "Target: $name
+	battery_label="${battery:+${battery}%}"
+	[ -n "$battery_label" ] || battery_label=unknown
+
+	notify "Name: ${name:-$AUTO_DEVICE_NAME}
 MAC: $mac
-Adapter powered: ${powered:-unknown}
-Connected: ${connected:-unknown}
-Paired: ${paired:-unknown}
-Trusted: ${trusted:-unknown}
-ServicesResolved: ${services_resolved:-unknown}
-Audio sink: $sink_status
-Battery: ${battery:-unknown}
+Connected: $(info_value "$info" "Connected")
+Paired: $(info_value "$info" "Paired")
+Bonded: $(info_value "$info" "Bonded")
+Trusted: $(info_value "$info" "Trusted")
+Blocked: $(info_value "$info" "Blocked")
+Battery: $battery_label
 Watcher: $watcher
-State: ${state:-unknown}"
+State: $(read_state)"
 }
 
 polybar_output() {
-	local mac state
+	local mac info name connected battery battery_text state
 
 	mac="$(get_mac_by_name "$AUTO_DEVICE_NAME")"
 	state="$(read_state)"
 
-	# Important: no pactl call here. Polybar runs often.
-	if [ -n "$mac" ] && is_connected "$mac"; then
-		printf 'BT %s ✓\n' "$AUTO_DEVICE_NAME"
-		return
-	fi
-
-	if watcher_running; then
-		case "$state" in
-		starting | startup-grace-*) printf 'BT %s boot\n' "$AUTO_DEVICE_NAME" ;;
-		connecting) printf 'BT %s conn\n' "$AUTO_DEVICE_NAME" ;;
-		retry-in-*) printf 'BT %s wait\n' "$AUTO_DEVICE_NAME" ;;
-		target-unknown) printf 'BT ?\n' ;;
-		*) printf 'BT %s …\n' "$AUTO_DEVICE_NAME" ;;
-		esac
-		return
-	fi
-
 	if [ -z "$mac" ]; then
-		printf 'BT ?\n'
+		printf '%s\n' \
+			"%{F${COLOR_MUTED}}${ICON_BLUETOOTH} ?%{F-}"
+
+		return 0
+	fi
+
+	info="$(device_info "$mac")"
+	name="$(info_value "$info" "Name")"
+	connected="$(info_value "$info" "Connected")"
+	battery="$(battery_percent "$info")"
+	battery_text="$(battery_markup "$battery")"
+
+	[ -n "$name" ] || name="$AUTO_DEVICE_NAME"
+
+	if [ "$connected" = "yes" ]; then
+		printf '%s\n' \
+			"%{F${COLOR_CONNECTED}}${ICON_BLUETOOTH}%{F-} ${name}${battery_text:+  $battery_text}"
+	elif watcher_running; then
+		printf '%s\n' \
+			"%{F${COLOR_WAITING}}${ICON_BLUETOOTH}%{F-} ${name}  ${state}"
 	else
-		printf 'BT %s ×\n' "$AUTO_DEVICE_NAME"
+		printf '%s\n' \
+			"%{F${COLOR_DISCONNECTED}}${ICON_BLUETOOTH}%{F-} ${name} ×"
 	fi
 }
 
 format_device_row() {
 	local mac="$1"
-	local name status prefix paired trusted sink
+	local info name connected paired trusted battery prefix details
 
-	name="$(device_name_for_mac "$mac")"
+	info="$(device_info "$mac")"
+
+	name="$(info_value "$info" "Name")"
+	connected="$(info_value "$info" "Connected")"
+	paired="$(info_value "$info" "Paired")"
+	trusted="$(info_value "$info" "Trusted")"
+	battery="$(battery_percent "$info")"
+
 	[ -n "$name" ] || name="$mac"
 
-	status="off"
-	if is_connected "$mac"; then
-		status="connected"
-	fi
-
-	sink="$(audio_sink_status "$mac")"
-	paired="$(device_prop "$mac" Paired)"
-	trusted="$(device_prop "$mac" Trusted)"
-
 	prefix="  "
-	if [ "$name" = "$AUTO_DEVICE_NAME" ] || [[ "$name" == *"$AUTO_DEVICE_NAME"* ]]; then
-		prefix="★ "
-	fi
+	[ "$name" = "$AUTO_DEVICE_NAME" ] && prefix="★ "
 
-	printf '%s%s    %s    [%s paired:%s trusted:%s sink:%s]\n' \
-		"$prefix" "$name" "$mac" "$status" "${paired:-?}" "${trusted:-?}" "$sink"
+	details="connected:${connected:-?} paired:${paired:-?} trusted:${trusted:-?}"
+
+	[ -n "$battery" ] &&
+		details+=" battery:${battery}%"
+
+	printf '%s%s    %s    [%s]\n' \
+		"$prefix" \
+		"$name" \
+		"$mac" \
+		"$details"
 }
 
 device_rows() {
-	local auto_mac
+	local auto_mac mac
+
 	auto_mac="$(get_mac_by_name "$AUTO_DEVICE_NAME")"
 
-	if [ -n "$auto_mac" ]; then
+	[ -n "$auto_mac" ] &&
 		format_device_row "$auto_mac"
-	fi
 
-	bt devices 2>/dev/null |
-		awk '$1 == "Device" { print $2 }' |
-		while read -r mac; do
-			[ -n "$mac" ] || continue
-			[ "$mac" = "$auto_mac" ] && continue
-			format_device_row "$mac"
-		done
+	while read -r mac; do
+		[ -n "$mac" ] || continue
+		[ "$mac" = "$auto_mac" ] && continue
+
+		format_device_row "$mac"
+	done < <(
+		bt_read devices |
+			awk '$1 == "Device" { print $2 }'
+	)
 }
 
-scan_once() {
-	notify "Scanning Bluetooth devices for ${SCAN_SECONDS}s…"
-	ensure_power_on
-	scan_devices_once || true
-	notify "Bluetooth scan finished"
+connect_mac() {
+	stop_watcher 1
+	connect_device "$1" manual
+}
+
+disconnect_mac() {
+	local mac="$1"
+	local info name
+
+	stop_watcher 1
+
+	info="$(device_info "$mac")"
+	name="$(info_value "$info" "Name")"
+
+	[ -n "$name" ] || name="$mac"
+
+	bt_run \
+		"$BT_QUERY_TIMEOUT" \
+		"disconnect-$mac" \
+		disconnect "$mac" ||
+		true
+
+	write_state stopped
+	notify "Disconnected $name"
+}
+
+show_device_info() {
+	local mac="$1"
+	local info name battery battery_label
+
+	info="$(device_info "$mac")"
+	name="$(info_value "$info" "Name")"
+	battery="$(battery_percent "$info")"
+
+	battery_label="${battery:+${battery}%}"
+	[ -n "$battery_label" ] || battery_label=unknown
+
+	notify "Name: ${name:-$mac}
+MAC: $mac
+Connected: $(info_value "$info" "Connected")
+Paired: $(info_value "$info" "Paired")
+Bonded: $(info_value "$info" "Bonded")
+Trusted: $(info_value "$info" "Trusted")
+Blocked: $(info_value "$info" "Blocked")
+Battery: $battery_label"
 }
 
 device_action_menu() {
 	local mac="$1"
-	local name connected paired trusted services_resolved action info
+	local info name action
 
-	name="$(device_name_for_mac "$mac")"
+	info="$(device_info "$mac")"
+	name="$(info_value "$info" "Name")"
+
 	[ -n "$name" ] || name="$mac"
-
-	connected="$(connected_text "$mac")"
-	paired="$(device_prop "$mac" Paired)"
-	trusted="$(device_prop "$mac" Trusted)"
-	services_resolved="$(device_prop "$mac" ServicesResolved)"
 
 	action="$(
 		printf '%s\n' \
-			"Connect" \
-			"Disconnect" \
-			"Stop watcher + disconnect" \
-			"Trust" \
-			"Untrust" \
-			"Pair" \
-			"Remove device" \
-			"Info notification" \
-			"Debug snapshot" \
-			"Restart auto watcher" \
-			"Stop auto watcher" |
-			rofi -dmenu -i \
-				-p "$name" \
-				-mesg "MAC: $mac | Connected: ${connected:-unknown} | Paired: ${paired:-?} | Trusted: ${trusted:-?} | ServicesResolved: ${services_resolved:-?}"
+			Connect \
+			Disconnect \
+			Trust \
+			Untrust \
+			Pair \
+			Remove \
+			Info |
+			rofi -dmenu -i -p "$name"
 	)" || return 0
 
 	case "$action" in
@@ -777,118 +610,86 @@ device_action_menu() {
 	Disconnect)
 		disconnect_mac "$mac"
 		;;
-	"Stop watcher + disconnect")
-		stop_watcher 1
-		disconnect_mac "$mac"
-		;;
 	Trust)
-		log_section "manual trust: $name <$mac>"
-		run_logged "manual-trust-$mac" bluetoothctl -- trust "$mac" >/dev/null || true
-		sleep 1
-		notify "Trust command sent for $name"
+		bt_run \
+			"$BT_QUERY_TIMEOUT" \
+			"trust-$mac" \
+			trust "$mac" ||
+			true
+
+		notify "Trusted $name"
 		;;
 	Untrust)
-		log_section "manual untrust: $name <$mac>"
-		run_logged "manual-untrust-$mac" bluetoothctl -- untrust "$mac" >/dev/null || true
-		sleep 1
-		notify "Untrust command sent for $name"
+		bt_run \
+			"$BT_QUERY_TIMEOUT" \
+			"untrust-$mac" \
+			untrust "$mac" ||
+			true
+
+		notify "Untrusted $name"
 		;;
 	Pair)
 		stop_watcher 1
-		log_section "manual pair: $name <$mac>"
-		run_logged_timeout "$CONNECT_TIMEOUT" "manual-pair-$mac" bluetoothctl -- pair "$mac" >/dev/null || true
-		sleep 1
-		notify "Pair command sent for $name"
+
+		bt_run \
+			"$PAIR_TIMEOUT" \
+			"pair-$mac" \
+			pair "$mac" ||
+			true
+
+		notify "Pair command finished for $name"
 		;;
-	"Remove device")
+	Remove)
 		stop_watcher 1
-		log_section "manual remove: $name <$mac>"
-		run_logged "manual-remove-$mac" bluetoothctl -- remove "$mac" >/dev/null || true
+
+		bt_run \
+			"$BT_QUERY_TIMEOUT" \
+			"remove-$mac" \
+			remove "$mac" ||
+			true
+
 		notify "Removed $name"
 		;;
-	"Info notification")
-		info="$(
-			bt info "$mac" 2>/dev/null |
-				awk -F': ' '
-					/Name:/ { name=$2 }
-					/Alias:/ { alias=$2 }
-					/Connected:/ { connected=$2 }
-					/Paired:/ { paired=$2 }
-					/Bonded:/ { bonded=$2 }
-					/Trusted:/ { trusted=$2 }
-					/Blocked:/ { blocked=$2 }
-					/ServicesResolved:/ { services=$2 }
-					/Battery Percentage:/ { battery=$2 }
-					END {
-						printf "Name: %s\nAlias: %s\nConnected: %s\nPaired: %s\nBonded: %s\nTrusted: %s\nBlocked: %s\nServicesResolved: %s\nBattery: %s", name, alias, connected, paired, bonded, trusted, blocked, services, battery
-					}
-				'
-		)"
-		notify "$info"
-		;;
-	"Debug snapshot")
-		snapshot_adapter
-		snapshot_device "$mac"
-		notify "Debug snapshot written to $LOG"
-		;;
-	"Restart auto watcher")
-		restart_watcher
-		;;
-	"Stop auto watcher")
-		stop_watcher
+	Info)
+		show_device_info "$mac"
 		;;
 	esac
 }
 
 manual_menu() {
-	if ! command -v rofi >/dev/null 2>&1; then
-		notify "rofi is not installed/found"
+	command -v rofi >/dev/null 2>&1 || {
+		notify "rofi is not installed"
 		return 1
-	fi
+	}
 
-	local choice mac state watcher
-
-	state="$(read_state)"
-	watcher="stopped"
-	if watcher_running; then
-		watcher="running"
-	fi
+	local choice mac
 
 	choice="$(
 		{
-			printf '★ Auto target: %s\n' "$AUTO_DEVICE_NAME"
-			printf '↻ Restart auto watcher\n'
-			printf '■ Stop auto watcher\n'
-			printf '⌕ Scan %ss then reopen\n' "$SCAN_SECONDS"
-			printf 'ⓘ Status notification\n'
-			printf '⚙ Debug snapshot\n'
+			printf '↻ Start/restart auto-connect\n'
+			printf '■ Stop auto-connect\n'
+			printf '⌕ Scan for devices\n'
+			printf 'ⓘ Auto-target status\n'
 			printf '────────────\n'
 			device_rows
 		} |
-			rofi -dmenu -i \
-				-p "Bluetooth" \
-				-mesg "Watcher: $watcher | State: ${state:-unknown} | Enter: manage device"
+			rofi -dmenu -i -p "Bluetooth" \
+				-mesg "Auto target: $AUTO_DEVICE_NAME | State: $(read_state)"
 	)" || return 0
 
 	case "$choice" in
-	"★ Auto target:"*)
-		status_notify
-		;;
-	"↻ Restart auto watcher")
+	"↻ Start/restart auto-connect")
 		restart_watcher
 		;;
-	"■ Stop auto watcher")
+	"■ Stop auto-connect")
 		stop_watcher
 		;;
-	"⌕ Scan "*)
+	"⌕ Scan for devices")
 		scan_once
 		manual_menu
 		;;
-	"ⓘ Status notification")
+	"ⓘ Auto-target status")
 		status_notify
-		;;
-	"⚙ Debug snapshot")
-		debug_snapshot
 		;;
 	"────────────")
 		return 0
@@ -900,19 +701,48 @@ manual_menu() {
 				head -n1
 		)"
 
-		if [ -n "$mac" ]; then
+		[ -n "$mac" ] &&
 			device_action_menu "$mac"
-		fi
 		;;
 	esac
 }
 
-show_log() {
-	tail -n 160 "$LOG"
+debug_snapshot() {
+	local mac output
+
+	mac="$(get_mac_by_name "$AUTO_DEVICE_NAME")"
+
+	log "========== debug snapshot =========="
+
+	bt_run "$BT_QUERY_TIMEOUT" show show || true
+	bt_run "$BT_QUERY_TIMEOUT" devices devices || true
+
+	[ -n "$mac" ] &&
+		bt_run "$BT_QUERY_TIMEOUT" "info-$mac" info "$mac" ||
+		true
+
+	if command -v journalctl >/dev/null 2>&1; then
+		output="$(
+			journalctl \
+				-u bluetooth \
+				-n 80 \
+				--no-pager \
+				2>&1 ||
+				true
+		)"
+
+		while IFS= read -r line; do
+			log "JOURNAL | $line"
+		done <<<"$output"
+	fi
+
+	notify "Bluetooth debug snapshot written to $LOG"
 }
 
-follow_log() {
-	tail -f "$LOG"
+usage() {
+	printf \
+		'Usage: %s {start|stop|restart|status|polybar|menu|watch|scan|debug|log|follow-log}\n' \
+		"$0"
 }
 
 case "${1:-status}" in
@@ -944,13 +774,15 @@ debug)
 	debug_snapshot
 	;;
 log)
-	show_log
+	touch "$LOG"
+	tail -n 120 "$LOG"
 	;;
 follow-log)
-	follow_log
+	touch "$LOG"
+	tail -f "$LOG"
 	;;
 *)
-	echo "Usage: $0 {start|stop|restart|status|polybar|menu|watch|scan|debug|log|follow-log}" >&2
+	usage >&2
 	exit 2
 	;;
 esac

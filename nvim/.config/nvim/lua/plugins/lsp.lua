@@ -135,7 +135,8 @@ return {
 			) or {}
 			capabilities.textDocument = capabilities.textDocument or {}
 			capabilities.textDocument.completion = capabilities.textDocument.completion or {}
-			capabilities.textDocument.completion.completionItem = capabilities.textDocument.completion.completionItem or {}
+			capabilities.textDocument.completion.completionItem = capabilities.textDocument.completion.completionItem
+				or {}
 			capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 			vim.lsp.config("*", { capabilities = capabilities })
@@ -324,9 +325,9 @@ return {
 						return
 					end
 
-					if client:supports_method(methods.textDocument_inlayHint, bufnr) then
-						vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-					end
+					-- if client:supports_method(methods.textDocument_inlayHint, bufnr) then
+					-- 	vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+					-- end
 
 					if client:supports_method(methods.textDocument_codeLens, bufnr) then
 						vim.lsp.codelens.enable(true, { bufnr = bufnr })
