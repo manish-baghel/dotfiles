@@ -1,3 +1,17 @@
+local function tsgo_inlay_hints_disabled()
+	return {
+		enumMemberValues = { enabled = false },
+		functionLikeReturnTypes = { enabled = false },
+		parameterNames = {
+			enabled = "none",
+			suppressWhenArgumentMatchesName = true,
+		},
+		parameterTypes = { enabled = false },
+		propertyDeclarationTypes = { enabled = false },
+		variableTypes = { enabled = false },
+	}
+end
+
 return {
 	{
 		"neovim/nvim-lspconfig",
@@ -24,7 +38,16 @@ return {
 			},
 
 			servers = {
-				ts_ls = {},
+				tsgo = {
+					settings = {
+						javascript = {
+							inlayHints = tsgo_inlay_hints_disabled(),
+						},
+						typescript = {
+							inlayHints = tsgo_inlay_hints_disabled(),
+						},
+					},
+				},
 				oxfmt = {}, -- JS/TS
 				oxlint = {},
 				jsonls = {},
@@ -51,13 +74,13 @@ return {
 								vendor = true,
 							},
 							hints = {
-								assignVariableTypes = true,
-								compositeLiteralFields = true,
-								compositeLiteralTypes = true,
-								constantValues = true,
-								functionTypeParameters = true,
-								parameterNames = true,
-								rangeVariableTypes = true,
+								assignVariableTypes = false,
+								compositeLiteralFields = false,
+								compositeLiteralTypes = false,
+								constantValues = false,
+								functionTypeParameters = false,
+								parameterNames = false,
+								rangeVariableTypes = false,
 							},
 							staticcheck = true,
 							semanticTokens = true,
@@ -82,7 +105,7 @@ return {
 								callSnippet = "Replace",
 							},
 							hint = {
-								enable = true,
+								enable = false,
 							},
 						},
 					},
@@ -157,6 +180,8 @@ return {
 			end
 
 			local methods = vim.lsp.protocol.Methods
+			vim.lsp.inlay_hint.enable(false)
+
 			vim.g.diagnostics_active = vim.diagnostic.is_enabled()
 			function _G.Toggle_diagnostics()
 				local enabled = not vim.diagnostic.is_enabled()
@@ -325,13 +350,7 @@ return {
 						return
 					end
 
-					-- if client:supports_method(methods.textDocument_inlayHint, bufnr) then
-					-- 	vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-					-- end
-
-					if client:supports_method(methods.textDocument_codeLens, bufnr) then
-						vim.lsp.codelens.enable(true, { bufnr = bufnr })
-					end
+					vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
 
 					-- Set autocommands conditional on server_capabilities
 					if client:supports_method(methods.textDocument_documentHighlight, bufnr) then

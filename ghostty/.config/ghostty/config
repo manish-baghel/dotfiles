@@ -1,6 +1,6 @@
 gtk-single-instance = true
 
-theme = "catppuccin-mocha"
+theme = "Catppuccin Mocha"
 window-decoration = none
 
 app-notifications = false

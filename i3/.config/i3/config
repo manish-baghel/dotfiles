@@ -269,13 +269,13 @@ assign [class="discord"] 8
 exec_always --no-startup-id workspace 8;sleep 5; discord;
 
 # Theme colors
-client.focused #c6c6c6 #1f1f1f #c6c6c6 #8abeb7 #8abeb7
-client.focused_inactive #c6c6c6 #1f1f1f #c6c6c6 #8abeb7 #8abeb7
-client.unfocused #c6c6c6 #1f1f1f #c6c6c6 #8abeb7 #8abeb7
-client.urgent #c6c6c6 #1f1f1f #c6c6c6 #8abeb7 #8abeb7
-client.placeholder #c6c6c6 #1f1f1f #c6c6c6 #8abeb7 #8abeb7
+client.focused #b0c4bb #2f2f38 #b0c4bb #81a2be #81a2be
+client.focused_inactive #b0c4bb #2f2f38 #b0c4bb #688486 #688486
+client.unfocused #b0c4bb #2f2f38 #b0c4bb #688486 #688486
+client.urgent #b0c4bb #2f2f38 #b0c4bb #688486 #688486
+client.placeholder #b0c4bb #2f2f38 #b0c4bb #688486 #688486
 
-client.background #1f1f1f
+client.background #2f2f38
 
 # Gaps
 gaps inner 2
