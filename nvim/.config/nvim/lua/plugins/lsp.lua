@@ -38,12 +38,9 @@ return {
 			},
 
 			servers = {
-				tsgo = {
+				tsc = {
 					settings = {
-						javascript = {
-							inlayHints = tsgo_inlay_hints_disabled(),
-						},
-						typescript = {
+						["js/ts"] = {
 							inlayHints = tsgo_inlay_hints_disabled(),
 						},
 					},

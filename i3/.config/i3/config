@@ -172,6 +172,7 @@ for_window [class="Nitrogen"] floating enable sticky enable border normal
 for_window [class="Pamac-manager"] floating enable
 for_window [class="Pavucontrol"] floating enable
 for_window [title="Proton VPN"] floating enable
+for_window [title="Tensaku"] floating enable, move position center
 for_window [class="ghostty"] border pixel 1
 
 # switch to workspace with urgent window automatically
@@ -269,13 +270,13 @@ assign [class="discord"] 8
 exec_always --no-startup-id workspace 8;sleep 5; discord;
 
 # Theme colors
-client.focused #b0c4bb #2f2f38 #b0c4bb #81a2be #81a2be
-client.focused_inactive #b0c4bb #2f2f38 #b0c4bb #688486 #688486
-client.unfocused #b0c4bb #2f2f38 #b0c4bb #688486 #688486
-client.urgent #b0c4bb #2f2f38 #b0c4bb #688486 #688486
-client.placeholder #b0c4bb #2f2f38 #b0c4bb #688486 #688486
+client.focused #b0b287 #1d1e26 #b0b287 #789073 #789073
+client.focused_inactive #b0b287 #1d1e26 #b0b287 #789073 #789073
+client.unfocused #b0b287 #1d1e26 #b0b287 #789073 #789073
+client.urgent #b0b287 #1d1e26 #b0b287 #789073 #789073
+client.placeholder #b0b287 #1d1e26 #b0b287 #789073 #789073
 
-client.background #2f2f38
+client.background #1d1e26
 
 # Gaps
 gaps inner 2
@@ -358,15 +359,16 @@ exec --no-startup-id pa-applet
 # bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
 
 # Start Applications
-bindsym $mod+F2 exec google-chrome-stable --enable-unsafe-webgpu --enable-features=Vulkan
+# bindsym $mod+F2 exec google-chrome-stable --enable-unsafe-webgpu --enable-features=Vulkan
+bindsym $mod+F2 exec google-chrome-stable
 bindsym $mod+F3 exec nautilus
 bindsym $mod+Shift+F3 exec ghostty -e 'ranger'
 bindsym $mod+F5 exec ghostty -e 'mocp'
 bindsym $mod+t exec --no-startup-id pkill picom
 bindsym $mod+Ctrl+t exec --no-startup-id picom -b
 bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
-bindsym $mod+Print --release exec --no-startup-id scrot -f ~/Pictures/%Y-%m-%d-%H%M%S.png -e 'satty -f $f -o $f --actions-on-escape save-to-file --early-exit'
-bindsym $mod+Shift+Print --release exec --no-startup-id scrot -s -f ~/Pictures/%Y-%m-%d-%H%M%S.png -e 'satty -f $f -o $f --actions-on-escape save-to-file --early-exit'
+bindsym $mod+Print --release exec --no-startup-id scrot -f ~/Pictures/%Y-%m-%d-%H%M%S.png -e 'tensaku -f $f -o $f --actions-on-escape save-to-file --early-exit'
+bindsym $mod+Shift+Print --release exec --no-startup-id scrot -s -f ~/Pictures/%Y-%m-%d-%H%M%S.png -e 'tensaku -f $f -o $f --actions-on-escape save-to-file --early-exit'
 bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 
 
